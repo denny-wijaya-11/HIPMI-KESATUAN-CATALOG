@@ -1,4 +1,8 @@
 import mongoose from 'mongoose';
+import dns from 'node:dns';
+
+// Fix for querySrv ECONNREFUSED (commonly blocked by Indonesian ISPs)
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 const MONGODB_URI = process.env.MONGODB_URI;
 

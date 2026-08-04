@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 const navigation = [
   { name: "Dashboard", href: "/admin", icon: HomeIcon },
   { name: "Produk", href: "/admin/products", icon: ShoppingBagIcon },
-  { name: "Anggota", href: "/admin/members", icon: UsersIcon },
+  { name: "Akun & Akses", href: "/admin/users", icon: UsersIcon },
 ];
 
 export default function Sidebar() {
@@ -15,14 +16,11 @@ export default function Sidebar() {
   return (
     <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
       <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
-        <div className="flex items-center h-16 flex-shrink-0 px-4 bg-white border-b border-gray-100">
-          <div className="flex items-center gap-2 w-full">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-inner">
-              H
+        <div className="flex items-center h-28 flex-shrink-0 px-4 bg-white border-b border-gray-100">
+          <div className="flex items-center justify-center w-full py-2 h-full">
+            <div className="relative w-56 h-full flex items-center justify-center">
+              <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain" />
             </div>
-            <span className="font-bold text-lg tracking-tight text-blue-900 truncate">
-              Admin Panel
-            </span>
           </div>
         </div>
         <div className="flex-1 flex flex-col overflow-y-auto">
@@ -37,8 +35,8 @@ export default function Sidebar() {
                     group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200
                     ${
                       isActive
-                        ? "bg-blue-50 text-blue-700"
-                        : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                        ? "bg-red-50 text-red-700"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-red-600"
                     }
                   `}
                 >
@@ -47,8 +45,8 @@ export default function Sidebar() {
                       flex-shrink-0 -ml-1 mr-3 h-5 w-5 transition-colors duration-200
                       ${
                         isActive
-                          ? "text-blue-700"
-                          : "text-gray-400 group-hover:text-blue-600"
+                          ? "text-red-700"
+                          : "text-gray-400 group-hover:text-red-600"
                       }
                     `}
                   />
