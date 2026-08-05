@@ -1,7 +1,21 @@
 import Image from "next/image";
 import Link from "next/link";
+import mongoose from "mongoose";
+import Product from "@/models/Product";
 
-export default function Home() {
+export const dynamic = 'force-dynamic';
+
+async function getProducts() {
+  if (mongoose.connection.readyState !== 1) {
+    await mongoose.connect(process.env.MONGODB_URI);
+  }
+  const products = await Product.find({}).populate('owner', 'name').sort({ createdAt: -1 }).limit(6);
+  return products;
+}
+
+export default async function Home() {
+  const products = await getProducts();
+
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-300 font-sans selection:bg-red-500/30">
       {/* Decorative Background Elements */}
@@ -84,92 +98,46 @@ export default function Home() {
             </div>
 
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {/* Product Card 1 */}
-              <div className="group rounded-3xl bg-white/5 border border-white/10 hover:border-red-500/50 overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(220,38,38,0.15)] hover:-translate-y-2 flex flex-col">
-                <div className="relative h-72 w-full bg-neutral-800 overflow-hidden">
-                  <Image src="/images/coffee.png" alt="Es Kopi Susu Aren" fill className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/20 to-transparent" />
-                  <div className="absolute top-5 right-5 bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold text-white border border-white/10">
-                    Minuman
-                  </div>
+              {products.length === 0 ? (
+                <div className="col-span-full text-center py-12 text-neutral-500">
+                  Belum ada produk di katalog.
                 </div>
-                <div className="p-8 flex-1 flex flex-col relative -mt-6">
-                  <div className="flex-1">
-                    <p className="text-sm text-red-400 font-medium mb-2">Kedai Kopi Mahasiswa</p>
-                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-red-300 transition-colors">Es Kopi Susu Aren</h3>
-                    <p className="text-neutral-400 text-sm leading-relaxed line-clamp-2">Perpaduan espresso pilihan dengan susu segar dan gula aren asli. Bikin melek seharian!</p>
-                  </div>
-                  <div className="mt-8 flex items-center justify-between">
-                    <div className="flex flex-col">
-                      <span className="text-xs text-neutral-500 mb-1">Harga</span>
-                      <span className="text-2xl font-bold text-white">Rp 18.000</span>
+              ) : (
+                products.map((product) => (
+                  <div key={product._id.toString()} className="group rounded-3xl bg-white/5 border border-white/10 hover:border-red-500/50 overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(220,38,38,0.15)] hover:-translate-y-2 flex flex-col">
+                    <div className="relative h-72 w-full bg-neutral-800 overflow-hidden">
+                      <Image 
+                        src={product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png'} 
+                        alt={product.name || 'Produk'} 
+                        fill 
+                        className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/20 to-transparent" />
+                      <div className="absolute top-5 right-5 bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold text-white border border-white/10">
+                        {product.category || 'Lainnya'}
+                      </div>
                     </div>
-                    <button className="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white p-3 rounded-2xl transition-all duration-300 border border-red-500/30">
-                       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Product Card 2 */}
-              <div className="group rounded-3xl bg-white/5 border border-white/10 hover:border-orange-500/50 overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(249,115,22,0.15)] hover:-translate-y-2 flex flex-col">
-                <div className="relative h-72 w-full bg-neutral-800 overflow-hidden">
-                  <Image src="/images/tshirt.png" alt="T-Shirt Minimalis" fill className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/20 to-transparent" />
-                  <div className="absolute top-5 right-5 bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold text-white border border-white/10">
-                    Fashion
-                  </div>
-                </div>
-                <div className="p-8 flex-1 flex flex-col relative -mt-6">
-                  <div className="flex-1">
-                    <p className="text-sm text-orange-400 font-medium mb-2">Apparel Nusantara</p>
-                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-orange-300 transition-colors">Premium Blank T-Shirt</h3>
-                    <p className="text-neutral-400 text-sm leading-relaxed line-clamp-2">Kaos berbahan katun bambu super lembut dengan desain polos elegan yang cocok untuk keseharian.</p>
-                  </div>
-                  <div className="mt-8 flex items-center justify-between">
-                    <div className="flex flex-col">
-                      <span className="text-xs text-neutral-500 mb-1">Harga</span>
-                      <span className="text-2xl font-bold text-white">Rp 125.000</span>
+                    <div className="p-8 flex-1 flex flex-col relative -mt-6">
+                      <div className="flex-1">
+                        <p className="text-sm text-red-400 font-medium mb-2">{product.owner?.name || 'HIPMORA Tenant'}</p>
+                        <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-red-300 transition-colors">{product.name || 'Produk Tanpa Nama'}</h3>
+                        <p className="text-neutral-400 text-sm leading-relaxed line-clamp-2">{product.description || '-'}</p>
+                      </div>
+                      <div className="mt-8 flex items-center justify-between">
+                        <div className="flex flex-col">
+                          <span className="text-xs text-neutral-500 mb-1">Harga</span>
+                          <span className="text-2xl font-bold text-white">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
+                        </div>
+                        <button className="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white p-3 rounded-2xl transition-all duration-300 border border-red-500/30">
+                           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
-                    <button className="bg-orange-600/20 hover:bg-orange-600 text-orange-400 hover:text-white p-3 rounded-2xl transition-all duration-300 border border-orange-500/30">
-                       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                    </button>
                   </div>
-                </div>
-              </div>
-
-              {/* Product Card 3 */}
-              <div className="group rounded-3xl bg-white/5 border border-white/10 hover:border-amber-500/50 overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(245,158,11,0.15)] hover:-translate-y-2 flex flex-col">
-                <div className="relative h-72 w-full bg-neutral-800 overflow-hidden">
-                  <Image src="/images/bag.png" alt="Tote Bag Kanvas" fill className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/20 to-transparent" />
-                  <div className="absolute top-5 right-5 bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold text-white border border-white/10">
-                    Aksesoris
-                  </div>
-                </div>
-                <div className="p-8 flex-1 flex flex-col relative -mt-6">
-                  <div className="flex-1">
-                    <p className="text-sm text-amber-400 font-medium mb-2">Kreasi Tangan</p>
-                    <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-amber-300 transition-colors">Classic Canvas Tote</h3>
-                    <p className="text-neutral-400 text-sm leading-relaxed line-clamp-2">Tas jinjing berbahan kanvas tebal yang ramah lingkungan dengan resleting dan ruang luas.</p>
-                  </div>
-                  <div className="mt-8 flex items-center justify-between">
-                    <div className="flex flex-col">
-                      <span className="text-xs text-neutral-500 mb-1">Harga</span>
-                      <span className="text-2xl font-bold text-white">Rp 55.000</span>
-                    </div>
-                    <button className="bg-amber-600/20 hover:bg-amber-600 text-amber-400 hover:text-white p-3 rounded-2xl transition-all duration-300 border border-amber-500/30">
-                       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
+                ))
+              )}
             </div>
           </div>
         </section>
