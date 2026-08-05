@@ -12,6 +12,17 @@ async function connectDB() {
   }
 }
 
+// Helper to transform Google Drive URLs to direct image links
+function transformImageUrl(url) {
+  if (!url) return '';
+  const driveRegex = /drive\.google\.com\/file\/d\/([^\/]+)/;
+  const match = url.match(driveRegex);
+  if (match && match[1]) {
+    return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+  }
+  return url;
+}
+
 // Helper to get current user payload from token
 async function getUserPayload() {
   const cookieStore = await cookies();
@@ -61,6 +72,8 @@ export async function POST(request) {
     if (!name || !description || !price) {
       return NextResponse.json({ error: 'Name, description, and price are required' }, { status: 400 });
     }
+    let finalImage = image || '/images/placeholder.png';
+    finalImage = transformImageUrl(finalImage);
 
     // Create product
     const newProduct = await Product.create({
@@ -68,7 +81,7 @@ export async function POST(request) {
       description,
       price: Number(price),
       category: category || 'Lainnya',
-      image: image || '/images/placeholder.png',
+      image: finalImage,
       owner: user.id // Tautkan ke ID user yang sedang login
     });
 

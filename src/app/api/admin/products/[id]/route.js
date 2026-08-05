@@ -11,6 +11,17 @@ async function connectDB() {
   }
 }
 
+// Helper to transform Google Drive URLs to direct image links
+function transformImageUrl(url) {
+  if (!url) return '';
+  const driveRegex = /drive\.google\.com\/file\/d\/([^\/]+)/;
+  const match = url.match(driveRegex);
+  if (match && match[1]) {
+    return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+  }
+  return url;
+}
+
 // Helper to get current user payload from token
 async function getUserPayload() {
   const cookieStore = await cookies();
@@ -67,6 +78,10 @@ export async function PUT(request, { params }) {
     // Role check for update
     if (user.role === 'operator' && product.owner.toString() !== user.id) {
       return NextResponse.json({ error: 'Forbidden. You can only edit your own products.' }, { status: 403 });
+    }
+
+    if (body.image) {
+      body.image = transformImageUrl(body.image);
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(
