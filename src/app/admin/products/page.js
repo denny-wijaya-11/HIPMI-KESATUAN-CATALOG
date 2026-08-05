@@ -29,7 +29,7 @@ async function getProducts(user) {
   
   let query = {};
   if (user.role === 'operator') {
-    query = { owner: user.userId };
+    query = { owner: user.id };
   }
 
   const products = await Product.find(query)

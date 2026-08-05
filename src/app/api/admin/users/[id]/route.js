@@ -105,7 +105,7 @@ export async function DELETE(request, { params }) {
     const { id } = resolvedParams;
     
     // Prevent self-deletion
-    if (id === user.userId) {
+    if (id === user.id) {
       return NextResponse.json({ error: 'Cannot delete your own account' }, { status: 400 });
     }
 

@@ -39,7 +39,7 @@ export async function GET(request, { params }) {
     }
     
     // Check if operator owns it
-    if (user.role === 'operator' && product.owner.toString() !== user.userId) {
+    if (user.role === 'operator' && product.owner.toString() !== user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -65,7 +65,7 @@ export async function PUT(request, { params }) {
     }
 
     // Role check for update
-    if (user.role === 'operator' && product.owner.toString() !== user.userId) {
+    if (user.role === 'operator' && product.owner.toString() !== user.id) {
       return NextResponse.json({ error: 'Forbidden. You can only edit your own products.' }, { status: 403 });
     }
 

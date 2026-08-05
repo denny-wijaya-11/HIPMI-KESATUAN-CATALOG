@@ -36,7 +36,7 @@ export async function GET(request) {
     
     // Jika role operator, hanya ambil produk miliknya sendiri
     if (user.role === 'operator') {
-      query = { owner: user.userId };
+      query = { owner: user.id };
     }
 
     // Ambil data produk dan relasi ke nama pemiliknya
@@ -69,7 +69,7 @@ export async function POST(request) {
       price: Number(price),
       category: category || 'Lainnya',
       image: image || '/images/placeholder.png',
-      owner: user.userId // Tautkan ke ID user yang sedang login
+      owner: user.id // Tautkan ke ID user yang sedang login
     });
 
     return NextResponse.json({ message: 'Product created successfully', product: newProduct }, { status: 201 });
