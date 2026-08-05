@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import mongoose from "mongoose";
 import Product from "@/models/Product";
+import User from "@/models/User";
 
 export const dynamic = 'force-dynamic';
 
