@@ -116,25 +116,25 @@ export default async function ProductsPage() {
                           <div className="flex items-center">
                             <div className="h-10 w-10 flex-shrink-0 relative rounded bg-gray-100 overflow-hidden border border-gray-200">
                               <Image 
-                                src={product.image.startsWith('http') ? product.image : '/images/placeholder.png'} 
-                                alt={product.name} 
+                                src={product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png'} 
+                                alt={product.name || 'Product'} 
                                 fill
                                 className="object-cover"
                               />
                             </div>
                             <div className="ml-4">
-                              <div className="font-medium text-gray-900 truncate max-w-[200px]">{product.name}</div>
-                              <div className="text-gray-500 text-xs truncate max-w-[200px]">{product.description}</div>
+                              <div className="font-medium text-gray-900 truncate max-w-[200px]">{product.name || 'Produk Tanpa Nama'}</div>
+                              <div className="text-gray-500 text-xs truncate max-w-[200px]">{product.description || '-'}</div>
                             </div>
                           </div>
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           <span className="inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800">
-                            {product.category}
+                            {product.category || 'Lainnya'}
                           </span>
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 font-medium">
-                          Rp {product.price.toLocaleString('id-ID')}
+                          Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}
                         </td>
                         {user.role !== 'operator' && (
                           <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
