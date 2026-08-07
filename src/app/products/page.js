@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 import Product from "@/models/Product";
 import User from "@/models/User";
 import CategoryFilter from "@/components/public/CategoryFilter";
+import AddToCartButton from "@/components/public/AddToCartButton";
+import CartIcon from "@/components/public/CartIcon";
 
 export const dynamic = 'force-dynamic';
 
@@ -28,21 +30,21 @@ export default async function ProductsPage({ searchParams }) {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-300 font-sans selection:bg-red-500/30">
-      {/* Decorative Background Elements */}
+      {/* Abstract Background Elements (Optimized for performance) */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-red-900/20 blur-[120px]" />
-        <div className="absolute top-[20%] -right-[10%] w-[40%] h-[60%] rounded-full bg-orange-900/10 blur-[120px]" />
-        <div className="absolute -bottom-[20%] left-[20%] w-[60%] h-[50%] rounded-full bg-amber-900/20 blur-[120px]" />
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(220,38,38,0.15)_0,transparent_50%)] animate-pulse" />
+        <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(234,88,12,0.15)_0,transparent_50%)] animate-pulse animation-delay-2000" />
+        <div className="absolute -bottom-32 left-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(202,138,4,0.15)_0,transparent_50%)] animate-pulse animation-delay-4000" />
       </div>
 
       {/* Navbar */}
-      <header className="sticky top-0 z-50 bg-neutral-950/70 backdrop-blur-xl border-b border-white/5">
+      <header className="sticky top-0 z-50 bg-neutral-950/40 backdrop-blur-md border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-28">
             <div className="flex items-center group cursor-pointer h-full py-2">
               <Link href="/">
                 <div className="relative w-64 h-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                  <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain" priority />
+                  <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain" priority sizes="(max-width: 768px) 100vw, 256px" />
                 </div>
               </Link>
             </div>
@@ -53,7 +55,10 @@ export default async function ProductsPage({ searchParams }) {
               <Link href="/#tentang" className="text-sm font-medium text-neutral-300 hover:text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-red-500 hover:after:w-full after:transition-all after:duration-300 pb-1">Tentang Kami</Link>
             </nav>
             <div className="flex items-center space-x-6">
-              {/* Empty space to balance navbar */}
+              <CartIcon />
+              <Link href="/login" className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 px-6 py-2.5 rounded-full transition-all duration-300 hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] border border-red-500 hidden md:block">
+                Login HIPMORA
+              </Link>
             </div>
           </div>
         </div>
@@ -62,7 +67,7 @@ export default async function ProductsPage({ searchParams }) {
       <main className="relative z-10">
         {/* All Products Section */}
         <section className="py-24 relative">
-          <div className="absolute inset-0 bg-neutral-900/50 backdrop-blur-3xl border-y border-white/5" />
+          <div className="absolute inset-0 bg-neutral-900/90 border-y border-white/5" />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
               <div>
@@ -88,9 +93,10 @@ export default async function ProductsPage({ searchParams }) {
                         src={product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png'} 
                         alt={product.name || 'Produk'} 
                         fill 
-                        className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" 
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" 
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/20 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/40 to-transparent" />
                       <div className="absolute top-5 right-5 bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold text-white border border-white/10">
                         {product.category || 'Lainnya'}
                       </div>
@@ -106,11 +112,7 @@ export default async function ProductsPage({ searchParams }) {
                           <span className="text-xs text-neutral-500 mb-1">Harga</span>
                           <span className="text-2xl font-bold text-white">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
                         </div>
-                        <button className="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white p-3 rounded-2xl transition-all duration-300 border border-red-500/30">
-                           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                          </svg>
-                        </button>
+                        <AddToCartButton product={JSON.parse(JSON.stringify(product))} />
                       </div>
                     </div>
                   </div>

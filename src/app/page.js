@@ -3,6 +3,8 @@ import Link from "next/link";
 import mongoose from "mongoose";
 import Product from "@/models/Product";
 import User from "@/models/User";
+import AddToCartButton from "@/components/public/AddToCartButton";
+import CartIcon from "@/components/public/CartIcon";
 
 export const dynamic = 'force-dynamic';
 
@@ -37,13 +39,16 @@ export default async function Home() {
               </div>
             </div>
             <nav className="hidden md:flex space-x-10">
-              <Link href="/" className="text-sm font-medium text-neutral-300 hover:text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-red-500 hover:after:w-full after:transition-all after:duration-300 pb-1">Beranda</Link>
+              <Link href="/" className="text-sm font-medium text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-px after:bg-red-500 pb-1">Beranda</Link>
               <Link href="/products" className="text-sm font-medium text-neutral-300 hover:text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-red-500 hover:after:w-full after:transition-all after:duration-300 pb-1">Produk</Link>
               <Link href="/#produk" className="text-sm font-medium text-neutral-300 hover:text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-red-500 hover:after:w-full after:transition-all after:duration-300 pb-1">Katalog Unggulan</Link>
-              <Link href="#" className="text-sm font-medium text-neutral-300 hover:text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-red-500 hover:after:w-full after:transition-all after:duration-300 pb-1">Tentang Kami</Link>
+              <Link href="/#tentang" className="text-sm font-medium text-neutral-300 hover:text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-red-500 hover:after:w-full after:transition-all after:duration-300 pb-1">Tentang Kami</Link>
             </nav>
             <div className="flex items-center space-x-6">
-              {/* Removed Admin Panel button to keep it hidden from public */}
+              <CartIcon />
+              <Link href="/login" className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 px-6 py-2.5 rounded-full transition-all duration-300 hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] border border-red-500 hidden md:block">
+                Login HIPMORA
+              </Link>
             </div>
           </div>
         </div>
@@ -130,11 +135,7 @@ export default async function Home() {
                           <span className="text-xs text-neutral-500 mb-1">Harga</span>
                           <span className="text-2xl font-bold text-white">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
                         </div>
-                        <button className="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white p-3 rounded-2xl transition-all duration-300 border border-red-500/30">
-                           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                          </svg>
-                        </button>
+                        <AddToCartButton product={JSON.parse(JSON.stringify(product))} />
                       </div>
                     </div>
                   </div>
