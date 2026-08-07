@@ -6,6 +6,7 @@ import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 import Image from "next/image";
 import DeleteProductButton from "@/components/admin/DeleteProductButton";
+import ToggleFeaturedButton from "@/components/admin/ToggleFeaturedButton";
 
 export const dynamic = 'force-dynamic';
 
@@ -99,6 +100,9 @@ export default async function ProductsPage() {
                       <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                         Harga
                       </th>
+                      <th scope="col" className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
+                        Unggulan
+                      </th>
                       {user.role !== 'operator' && (
                         <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                           Pemilik (UKM)
@@ -135,6 +139,21 @@ export default async function ProductsPage() {
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 font-medium">
                           Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-center">
+                          {user.role === 'operator' ? (
+                            product.isFeatured ? (
+                              <span className="inline-flex rounded-full bg-yellow-100 px-2 text-xs font-semibold leading-5 text-yellow-800">
+                                Ya
+                              </span>
+                            ) : (
+                              <span className="inline-flex rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-500">
+                                Tidak
+                              </span>
+                            )
+                          ) : (
+                            <ToggleFeaturedButton productId={product._id.toString()} initialIsFeatured={product.isFeatured} />
+                          )}
                         </td>
                         {user.role !== 'operator' && (
                           <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">

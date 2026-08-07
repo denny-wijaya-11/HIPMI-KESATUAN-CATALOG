@@ -10,7 +10,7 @@ async function getProducts() {
   if (mongoose.connection.readyState !== 1) {
     await mongoose.connect(process.env.MONGODB_URI);
   }
-  const products = await Product.find({}).populate('owner', 'name').sort({ createdAt: -1 }).limit(3);
+  const products = await Product.find({ isFeatured: true }).populate('owner', 'name').sort({ createdAt: -1 }).limit(5);
   return products;
 }
 
@@ -100,7 +100,7 @@ export default async function Home() {
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {products.length === 0 ? (
                 <div className="col-span-full text-center py-12 text-neutral-500">
-                  Belum ada produk di katalog.
+                  Belum ada produk unggulan saat ini.
                 </div>
               ) : (
                 products.map((product) => (

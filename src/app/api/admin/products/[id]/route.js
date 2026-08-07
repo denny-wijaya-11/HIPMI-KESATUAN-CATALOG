@@ -83,6 +83,11 @@ export async function PUT(request, { params }) {
     if (body.image) {
       body.image = transformImageUrl(body.image);
     }
+    
+    // Prevent operators from altering isFeatured
+    if (user.role === 'operator' && body.isFeatured !== undefined) {
+      delete body.isFeatured;
+    }
 
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
