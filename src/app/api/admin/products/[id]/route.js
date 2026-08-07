@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import { jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 import Product from '@/models/Product';
 
 // Helper to ensure DB connection
@@ -94,6 +95,9 @@ export async function PUT(request, { params }) {
       { $set: body },
       { new: true, runValidators: true }
     );
+
+    // Revalidate the cache so the homepage and products page update instantly
+    revalidatePath('/', 'layout');
 
     return NextResponse.json({ message: 'Product updated successfully', product: updatedProduct });
   } catch (error) {

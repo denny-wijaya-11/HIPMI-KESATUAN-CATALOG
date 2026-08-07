@@ -67,7 +67,7 @@ export default async function Home() {
                 Temukan dan dukung produk-produk kreatif hasil karya mahasiswa pengusaha dari HIPMORA. Inovasi berawal dari sini.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Link href="#produk" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-white bg-red-600 hover:bg-red-500 shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:shadow-[0_0_40px_rgba(220,38,38,0.5)] transition-all duration-300 hover:-translate-y-1">
+                <Link href="/products" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-white bg-red-600 hover:bg-red-500 shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:shadow-[0_0_40px_rgba(220,38,38,0.5)] transition-all duration-300 hover:-translate-y-1">
                   Eksplorasi Katalog
                 </Link>
                 <Link href="#tentang" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-white bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300">
