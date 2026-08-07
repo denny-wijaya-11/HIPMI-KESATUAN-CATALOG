@@ -96,6 +96,6 @@ export async function GET(request) {
 
   } catch (error) {
     console.error('Google Auth Error:', error);
-    return NextResponse.redirect(new URL('/login?error=GoogleAuthFailed', request.url));
+    return NextResponse.redirect(new URL('/login?error=' + encodeURIComponent(error.message || 'GoogleAuthFailed'), request.url));
   }
 }
