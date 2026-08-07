@@ -19,20 +19,21 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-300 font-sans selection:bg-red-500/30">
-      {/* Decorative Background Elements */}
-      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-red-900/20 blur-[120px]" />
-        <div className="absolute top-[20%] -right-[10%] w-[40%] h-[60%] rounded-full bg-orange-900/10 blur-[120px]" />
-        <div className="absolute -bottom-[20%] left-[20%] w-[60%] h-[50%] rounded-full bg-amber-900/20 blur-[120px]" />
+      {/* Abstract Background Elements (Optimized for performance) */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(220,38,38,0.15)_0,transparent_50%)] animate-pulse" />
+        <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(234,88,12,0.15)_0,transparent_50%)] animate-pulse animation-delay-2000" />
+        <div className="absolute -bottom-32 left-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(202,138,4,0.15)_0,transparent_50%)] animate-pulse animation-delay-4000" />
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
       </div>
 
       {/* Navbar */}
-      <header className="sticky top-0 z-50 bg-neutral-950/70 backdrop-blur-xl border-b border-white/5">
+      <header className="sticky top-0 z-50 bg-neutral-950/40 backdrop-blur-md border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-28">
             <div className="flex items-center group cursor-pointer h-full py-2">
               <div className="relative w-64 h-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain" priority />
+                <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain" priority sizes="(max-width: 768px) 100vw, 256px" />
               </div>
             </div>
             <nav className="hidden md:flex space-x-10">
@@ -80,7 +81,7 @@ export default async function Home() {
 
         {/* Featured Products Section */}
         <section id="produk" className="py-24 relative">
-          <div className="absolute inset-0 bg-neutral-900/50 backdrop-blur-3xl border-y border-white/5" />
+          <div className="absolute inset-0 bg-neutral-900/90 border-y border-white/5" />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
               <div>
@@ -110,9 +111,10 @@ export default async function Home() {
                         src={product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png'} 
                         alt={product.name || 'Produk'} 
                         fill 
-                        className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" 
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" 
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/20 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/40 to-transparent" />
                       <div className="absolute top-5 right-5 bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold text-white border border-white/10">
                         {product.category || 'Lainnya'}
                       </div>

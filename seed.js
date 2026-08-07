@@ -29,10 +29,10 @@ async function seed() {
     
     const User = mongoose.models.User || mongoose.model('User', userSchema);
     
-    const email = 'hpratama.work@gmail.com';
-    const password = 'Freelance2023'; // Bisa diganti nanti
-    const name = 'Hari Pratama'; // Bisa diganti nanti
-    const role = 'admin'; // Menjadikan dia sebagai operator
+    const email = '';
+    const password = ''; // Bisa diganti nanti
+    const name = ''; // Bisa diganti nanti
+    const role = ''; // Menjadikan dia sebagai operator
     
     const existingUser = await User.findOne({ email });
     if (existingUser) {
