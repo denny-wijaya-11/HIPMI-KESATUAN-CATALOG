@@ -3,19 +3,28 @@ import Link from "next/link";
 import mongoose from "mongoose";
 import Product from "@/models/Product";
 import User from "@/models/User";
+import CategoryFilter from "@/components/public/CategoryFilter";
 
 export const dynamic = 'force-dynamic';
 
-async function getAllProducts() {
+async function getAllProducts(category) {
   if (mongoose.connection.readyState !== 1) {
     await mongoose.connect(process.env.MONGODB_URI);
   }
-  const products = await Product.find({}).populate('owner', 'name').sort({ createdAt: -1 });
+  
+  let query = {};
+  if (category && category !== 'Semua') {
+    query.category = category;
+  }
+
+  const products = await Product.find(query).populate('owner', 'name').sort({ createdAt: -1 });
   return products;
 }
 
-export default async function ProductsPage() {
-  const products = await getAllProducts();
+export default async function ProductsPage({ searchParams }) {
+  const resolvedParams = await searchParams;
+  const category = resolvedParams?.category;
+  const products = await getAllProducts(category);
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-300 font-sans selection:bg-red-500/30">
@@ -63,6 +72,8 @@ export default async function ProductsPage() {
                 </p>
               </div>
             </div>
+
+            <CategoryFilter />
 
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {products.length === 0 ? (

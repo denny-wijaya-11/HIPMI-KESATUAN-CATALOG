@@ -33,8 +33,8 @@ async function resetPassword() {
     // ==========================================
     // UBAH DATA DI BAWAH INI SESUAI KEBUTUHAN
     // ==========================================
-    const targetEmail = 'admin@hipmi.kesatuan.ac.id'; // Email akun yang mau direset
-    const passwordBaru = 'password123'; // Password barunya
+    const targetEmail = ''; // Email akun yang mau direset
+    const passwordBaru = ''; // Password barunya
     // ==========================================
     
     const existingUser = await User.findOne({ email: targetEmail });
