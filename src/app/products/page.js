@@ -6,16 +6,16 @@ import User from "@/models/User";
 
 export const dynamic = 'force-dynamic';
 
-async function getProducts() {
+async function getAllProducts() {
   if (mongoose.connection.readyState !== 1) {
     await mongoose.connect(process.env.MONGODB_URI);
   }
-  const products = await Product.find({}).populate('owner', 'name').sort({ createdAt: -1 }).limit(3);
+  const products = await Product.find({}).populate('owner', 'name').sort({ createdAt: -1 });
   return products;
 }
 
-export default async function Home() {
-  const products = await getProducts();
+export default async function ProductsPage() {
+  const products = await getAllProducts();
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-300 font-sans selection:bg-red-500/30">
@@ -31,70 +31,37 @@ export default async function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-28">
             <div className="flex items-center group cursor-pointer h-full py-2">
-              <div className="relative w-64 h-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain" priority />
-              </div>
+              <Link href="/">
+                <div className="relative w-64 h-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                  <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain" priority />
+                </div>
+              </Link>
             </div>
             <nav className="hidden md:flex space-x-10">
               <Link href="/" className="text-sm font-medium text-neutral-300 hover:text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-red-500 hover:after:w-full after:transition-all after:duration-300 pb-1">Beranda</Link>
-              <Link href="/products" className="text-sm font-medium text-neutral-300 hover:text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-red-500 hover:after:w-full after:transition-all after:duration-300 pb-1">Produk</Link>
+              <Link href="/products" className="text-sm font-medium text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-px after:bg-red-500 pb-1">Produk</Link>
               <Link href="/#produk" className="text-sm font-medium text-neutral-300 hover:text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-red-500 hover:after:w-full after:transition-all after:duration-300 pb-1">Katalog Unggulan</Link>
-              <Link href="#" className="text-sm font-medium text-neutral-300 hover:text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-red-500 hover:after:w-full after:transition-all after:duration-300 pb-1">Tentang Kami</Link>
+              <Link href="/#tentang" className="text-sm font-medium text-neutral-300 hover:text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-red-500 hover:after:w-full after:transition-all after:duration-300 pb-1">Tentang Kami</Link>
             </nav>
             <div className="flex items-center space-x-6">
-              {/* Removed Admin Panel button to keep it hidden from public */}
+              {/* Empty space to balance navbar */}
             </div>
           </div>
         </div>
       </header>
 
       <main className="relative z-10">
-        {/* Hero Section */}
-        <section className="relative pt-20 pb-32 lg:pt-32 lg:pb-40 overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <div className="text-center max-w-4xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold uppercase tracking-wider mb-8">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                Platform Katalog Resmi
-              </div>
-              <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight leading-tight mb-8">
-                Mendukung Ekosistem <br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-500 animate-gradient">
-                  Pengusaha Muda
-                </span>
-              </h1>
-              <p className="mt-4 text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto leading-relaxed mb-10">
-                Temukan dan dukung produk-produk kreatif hasil karya mahasiswa pengusaha dari HIPMORA. Inovasi berawal dari sini.
-              </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Link href="#produk" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-white bg-red-600 hover:bg-red-500 shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:shadow-[0_0_40px_rgba(220,38,38,0.5)] transition-all duration-300 hover:-translate-y-1">
-                  Eksplorasi Katalog
-                </Link>
-                <Link href="#tentang" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-white bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300">
-                  Pelajari Lebih Lanjut
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Featured Products Section */}
-        <section id="produk" className="py-24 relative">
+        {/* All Products Section */}
+        <section className="py-24 relative">
           <div className="absolute inset-0 bg-neutral-900/50 backdrop-blur-3xl border-y border-white/5" />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
               <div>
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Katalog Unggulan</h2>
+                <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Semua Produk</h1>
                 <p className="text-neutral-400 max-w-xl text-lg">
-                  Kurasi produk terbaik dari anggota HIPMORA minggu ini.
+                  Jelajahi seluruh karya dan produk inovatif dari anggota HIPMORA Kesatuan.
                 </p>
               </div>
-              <button className="inline-flex items-center gap-2 text-red-400 hover:text-red-300 font-medium transition-colors group">
-                Lihat Semua Koleksi
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 group-hover:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
             </div>
 
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -141,29 +108,6 @@ export default async function Home() {
             </div>
           </div>
         </section>
-
-        {/* CTA Section */}
-        <section className="py-24 relative overflow-hidden">
-          <div className="absolute inset-0 bg-red-900/20" />
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="bg-gradient-to-br from-red-900/50 to-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-10 md:p-16 text-center shadow-2xl">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-                Punya Bisnis Inovatif?
-              </h2>
-              <p className="text-lg text-red-200 max-w-2xl mx-auto mb-10">
-                Bergabunglah dengan ratusan mahasiswa pengusaha lainnya. Dapatkan akses ke pasar yang lebih luas dan komunitas yang suportif.
-              </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Link href="/login" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-neutral-900 bg-white hover:bg-gray-100 shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all duration-300">
-                  Daftar Sebagai Tenant
-                </Link>
-                <Link href="#tentang" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all duration-300">
-                  Hubungi Admin
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
       </main>
 
       {/* Footer */}
@@ -183,9 +127,9 @@ export default async function Home() {
             <div>
               <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-6">Navigasi</h3>
               <ul className="space-y-4 text-sm text-neutral-400">
-                <li><Link href="#" className="hover:text-red-400 transition-colors">Beranda</Link></li>
-                <li><Link href="#produk" className="hover:text-red-400 transition-colors">Katalog Produk</Link></li>
-                <li><Link href="#" className="hover:text-red-400 transition-colors">Tentang Kami</Link></li>
+                <li><Link href="/" className="hover:text-red-400 transition-colors">Beranda</Link></li>
+                <li><Link href="/products" className="hover:text-red-400 transition-colors">Katalog Produk</Link></li>
+                <li><Link href="/#tentang" className="hover:text-red-400 transition-colors">Tentang Kami</Link></li>
               </ul>
             </div>
             <div>
