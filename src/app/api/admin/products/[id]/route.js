@@ -85,19 +85,23 @@ export async function PUT(request, { params }) {
       body.image = transformImageUrl(body.image);
     }
     
-    // Prevent operators from altering isFeatured
-    if (user.role === 'operator' && body.isFeatured !== undefined) {
-      delete body.isFeatured;
+    // Set fields individually to guarantee schema validation and save
+    if (body.name !== undefined) product.name = body.name;
+    if (body.description !== undefined) product.description = body.description;
+    if (body.price !== undefined) product.price = body.price;
+    if (body.category !== undefined) product.category = body.category;
+    if (body.image !== undefined) product.image = body.image;
+    
+    // Only admins/developers can alter isFeatured
+    if (user.role !== 'operator' && body.isFeatured !== undefined) {
+      product.isFeatured = body.isFeatured;
     }
 
-    const updatedProduct = await Product.findByIdAndUpdate(
-      id,
-      { $set: body },
-      { new: true, runValidators: true }
-    );
+    const updatedProduct = await product.save();
 
     // Revalidate the cache so the homepage and products page update instantly
     revalidatePath('/', 'layout');
+    revalidatePath('/admin/products', 'page');
 
     return NextResponse.json({ message: 'Product updated successfully', product: updatedProduct });
   } catch (error) {
