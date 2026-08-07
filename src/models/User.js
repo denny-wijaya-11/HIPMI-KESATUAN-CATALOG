@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Please provide a password'],
+    required: function() { return this.authProvider === 'local'; },
     minlength: 6,
     select: false,
   },
@@ -23,8 +23,16 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['developer', 'admin', 'operator'], //Pemilihan role yang tersedia
-    default: 'operator',
+    enum: ['developer', 'admin', 'operator', 'user'], // ditambahkan 'user'
+    default: 'user',
+  },
+  city: {
+    type: String,
+  },
+  authProvider: {
+    type: String,
+    enum: ['local', 'google'],
+    default: 'local'
   }
 }, { timestamps: true });
 
