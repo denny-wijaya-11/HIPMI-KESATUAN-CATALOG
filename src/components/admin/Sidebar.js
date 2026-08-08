@@ -60,7 +60,7 @@ export default function Sidebar() {
           <Link href="/" className="flex-shrink-0 w-full group block">
             <div className="flex items-center">
               <div>
-                <div className="inline-block h-9 w-9 rounded-full bg-gray-100 flex items-center justify-center border border-gray-200 group-hover:bg-gray-200 transition-colors">
+                <div className="flex h-9 w-9 rounded-full bg-gray-100 items-center justify-center border border-gray-200 group-hover:bg-gray-200 transition-colors">
                   <ArrowLeftOnRectangleIcon className="h-5 w-5 text-gray-500" />
                 </div>
               </div>

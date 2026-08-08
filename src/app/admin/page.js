@@ -1,5 +1,6 @@
 import User from "@/models/User";
 import Product from "@/models/Product";
+import SiteStat from "@/models/SiteStat";
 import mongoose from "mongoose";
 import Link from "next/link";
 
@@ -14,8 +15,8 @@ async function getStats() {
   const totalUsers = await User.countDocuments();
   const totalProducts = await Product.countDocuments();
   
-  // Just placeholders for now until we have traffic/analytics logic
-  const totalVisitors = "1,450";
+  const siteStat = await SiteStat.findOne({ id: 'global' });
+  const totalVisitors = siteStat ? siteStat.totalVisitors.toLocaleString() : "0";
   const newProducts = "0"; 
 
   return { totalUsers, totalProducts, totalVisitors, newProducts };
@@ -27,7 +28,7 @@ export default async function AdminDashboard() {
   const stats = [
     { name: "Total Produk", stat: data.totalProducts, change: "Data Real", changeType: "increase" },
     { name: "Total Akun (Admin/Operator)", stat: data.totalUsers, change: "Data Real", changeType: "increase" },
-    { name: "Total Pengunjung", stat: data.totalVisitors, change: "Dummy", changeType: "increase" },
+    { name: "Total Pengunjung", stat: data.totalVisitors, change: "Data Real", changeType: "increase" },
     { name: "Produk Baru (Minggu Ini)", stat: data.newProducts, change: "Dummy", changeType: "decrease" },
   ];
 

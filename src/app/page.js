@@ -3,6 +3,7 @@ import Link from "next/link";
 import mongoose from "mongoose";
 import Product from "@/models/Product";
 import User from "@/models/User";
+import SiteStat from "@/models/SiteStat";
 import AddToCartButton from "@/components/public/AddToCartButton";
 import CartIcon from "@/components/public/CartIcon";
 
@@ -17,6 +18,16 @@ async function getProducts() {
 }
 
 export default async function Home() {
+  // Increment total visitors in background without awaiting (to not slow down render)
+  if (mongoose.connection.readyState !== 1) {
+    await mongoose.connect(process.env.MONGODB_URI);
+  }
+  SiteStat.findOneAndUpdate(
+    { id: 'global' },
+    { $inc: { totalVisitors: 1 } },
+    { upsert: true, new: true }
+  ).exec().catch(err => console.error("Failed to update visitor count:", err));
+
   const products = await getProducts();
 
   return (
