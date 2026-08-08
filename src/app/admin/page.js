@@ -3,6 +3,8 @@ import Product from "@/models/Product";
 import mongoose from "mongoose";
 import Link from "next/link";
 
+export const dynamic = 'force-dynamic';
+
 // Connect to DB helper (since Server Components in App Router need to ensure connection)
 async function getStats() {
   if (mongoose.connection.readyState !== 1) {
