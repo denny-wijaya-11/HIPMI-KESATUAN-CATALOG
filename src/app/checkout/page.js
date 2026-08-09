@@ -206,7 +206,7 @@ export default function CheckoutPage() {
             
             <div className="bg-white p-4 rounded-2xl inline-block mb-6 shadow-xl relative w-64 h-64 mx-auto">
               <Image 
-                src="/images/QRIS BAYAR.jpeg" 
+                src="/images/QRIS BAYAR TEST.png" 
                 alt="QRIS HIPMORA" 
                 fill
                 className="object-contain rounded-xl p-2"
