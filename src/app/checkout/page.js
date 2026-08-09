@@ -55,7 +55,7 @@ export default function CheckoutPage() {
     message += `%0ATotal Bayar: *Rp ${total.toLocaleString('id-ID')}*%0A%0ABerikut saya lampirkan bukti pembayaran QRIS saya.`;
     
     // Ganti nomor WA di sini
-    const adminPhone = '6281234567890'; 
+    const adminPhone = '6285122961923'; 
     setWaLink(`https://wa.me/${adminPhone}?text=${message}`);
 
     setTimeout(() => {
