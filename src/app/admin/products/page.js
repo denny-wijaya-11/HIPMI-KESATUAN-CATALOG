@@ -22,14 +22,17 @@ async function getUserPayload() {
   }
 }
 
-async function getProducts(user) {
+async function getProducts(user, search) {
   if (mongoose.connection.readyState !== 1) {
     await mongoose.connect(process.env.MONGODB_URI);
   }
   
   let query = {};
   if (user.role === 'operator') {
-    query = { owner: user.id };
+    query.owner = user.id;
+  }
+  if (search) {
+    query.name = { $regex: search, $options: 'i' };
   }
 
   const products = await Product.find(query)
@@ -39,11 +42,13 @@ async function getProducts(user) {
   return products;
 }
 
-export default async function ProductsPage() {
+export default async function ProductsPage({ searchParams }) {
+  const resolvedParams = await searchParams;
+  const search = resolvedParams?.search || '';
   const user = await getUserPayload();
   if (!user) return <div>Unauthorized</div>;
 
-  const products = await getProducts(user);
+  const products = await getProducts(user, search);
 
   return (
     <div>

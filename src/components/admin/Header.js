@@ -1,8 +1,22 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Header() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/admin/products?search=${encodeURIComponent(searchQuery)}`);
+    } else {
+      router.push(`/admin/products`);
+    }
+  };
   return (
     <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow-sm border-b border-gray-200">
       <button
@@ -14,18 +28,20 @@ export default function Header() {
       </button>
       <div className="flex-1 px-4 flex justify-between">
         <div className="flex-1 flex items-center">
-          <div className="w-full max-w-xs relative text-gray-400 focus-within:text-gray-600">
+          <form onSubmit={handleSearch} className="w-full max-w-xs relative text-gray-400 focus-within:text-gray-600">
             <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
               <MagnifyingGlassIcon className="h-5 w-5" aria-hidden="true" />
             </div>
             <input
               id="search"
               className="block w-full h-full pl-8 pr-3 py-2 border-transparent text-gray-900 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-0 focus:border-transparent sm:text-sm transition-colors bg-transparent"
-              placeholder="Cari..."
+              placeholder="Cari Produk..."
               type="search"
               name="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </div>
+          </form>
         </div>
         <div className="ml-4 flex items-center md:ml-6 space-x-4">
           <button
