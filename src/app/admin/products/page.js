@@ -5,8 +5,7 @@ import Link from "next/link";
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 import Image from "next/image";
-import DeleteProductButton from "@/components/admin/DeleteProductButton";
-import ToggleFeaturedButton from "@/components/admin/ToggleFeaturedButton";
+import BulkDeleteTable from "@/components/admin/BulkDeleteTable";
 
 export const dynamic = 'force-dynamic';
 
@@ -87,94 +86,7 @@ export default async function ProductsPage() {
                 </div>
               </div>
             ) : (
-              <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-300">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                        Produk
-                      </th>
-                      <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Kategori
-                      </th>
-                      <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Harga
-                      </th>
-                      <th scope="col" className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
-                        Unggulan
-                      </th>
-                      {user.role !== 'operator' && (
-                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                          Pemilik (UKM)
-                        </th>
-                      )}
-                      <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                        <span className="sr-only">Aksi</span>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 bg-white">
-                    {products.map((product) => (
-                      <tr key={product._id.toString()}>
-                        <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
-                          <div className="flex items-center">
-                            <div className="h-10 w-10 flex-shrink-0 relative rounded bg-gray-100 overflow-hidden border border-gray-200">
-                              <Image 
-                                src={product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png'} 
-                                alt={product.name || 'Product'} 
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-                            <div className="ml-4">
-                              <div className="font-medium text-gray-900 truncate max-w-[200px]">{product.name || 'Produk Tanpa Nama'}</div>
-                              <div className="text-gray-500 text-xs truncate max-w-[200px]">{product.description || '-'}</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          <span className="inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800">
-                            {product.category || 'Lainnya'}
-                          </span>
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 font-medium">
-                          Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}
-                        </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-center">
-                          {user.role === 'operator' ? (
-                            product.isFeatured ? (
-                              <span className="inline-flex rounded-full bg-yellow-100 px-2 text-xs font-semibold leading-5 text-yellow-800">
-                                Ya
-                              </span>
-                            ) : (
-                              <span className="inline-flex rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-500">
-                                Tidak
-                              </span>
-                            )
-                          ) : (
-                            <ToggleFeaturedButton productId={product._id.toString()} initialIsFeatured={product.isFeatured} />
-                          )}
-                        </td>
-                        {user.role !== 'operator' && (
-                          <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                            {product.owner?.name || 'Unknown'}
-                          </td>
-                        )}
-                        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                          <div className="flex justify-end gap-3">
-                            <Link href={`/admin/products/${product._id.toString()}/edit`} className="text-red-600 hover:text-red-900">
-                              Edit
-                            </Link>
-                            {user.role !== 'operator' && (
-                              <DeleteProductButton productId={product._id.toString()} />
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <BulkDeleteTable products={JSON.parse(JSON.stringify(products))} userRole={user.role} />
             )}
           </div>
         </div>

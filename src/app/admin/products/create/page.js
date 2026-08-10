@@ -124,6 +124,7 @@ export default function CreateProductPage() {
                   <option value="Minuman">Minuman</option>
                   <option value="Fashion">Fashion</option>
                   <option value="Aksesoris">Aksesoris</option>
+                  <option value="Perlengkapan">Perlengkapan</option>
                   <option value="Jasa">Jasa</option>
                   <option value="Lainnya">Lainnya</option>
                 </select>
