@@ -47,6 +47,7 @@ export async function POST(request) {
 
     // Revalidate paths so UI updates instantly
     revalidatePath('/', 'layout');
+    revalidatePath('/admin', 'layout');
     revalidatePath('/admin/products', 'page');
     revalidatePath('/products', 'page');
 

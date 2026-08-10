@@ -129,6 +129,12 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
+    // Revalidate paths so UI updates instantly
+    revalidatePath('/', 'layout');
+    revalidatePath('/admin', 'layout');
+    revalidatePath('/admin/products', 'page');
+    revalidatePath('/products', 'page');
+
     return NextResponse.json({ message: 'Product deleted successfully' });
   } catch (error) {
     console.error('Error deleting product:', error);
