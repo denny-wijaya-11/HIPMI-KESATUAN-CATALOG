@@ -29,6 +29,9 @@ const UserSchema = new mongoose.Schema({
   city: {
     type: String,
   },
+  university: {
+    type: String,
+  },
   authProvider: {
     type: String,
     enum: ['local', 'google'],

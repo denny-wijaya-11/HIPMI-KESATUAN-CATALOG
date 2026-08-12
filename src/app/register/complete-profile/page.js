@@ -16,9 +16,30 @@ const REGIONS = [
   'Lainnya'
 ];
 
+const UNIVERSITIES = [
+  'IBI Kesatuan (IBIK)',
+  'Institut Pertanian Bogor (IPB)',
+  'Universitas Pakuan (UNPAK)',
+  'Universitas Djuanda (UNIDA)',
+  'Universitas Terbuka (UT) Bogor',
+  'Universitas Indonesia (UI)',
+  'Institut Teknologi Bandung (ITB)',
+  'Universitas Padjadjaran (UNPAD)',
+  'Universitas Pendidikan Indonesia (UPI)',
+  'Telkom University',
+  'Universitas Trisakti',
+  'Universitas Bina Nusantara (BINUS)',
+  'Universitas Gunadarma',
+  'UIN Syarif Hidayatullah Jakarta',
+  'UIN Sunan Gunung Djati Bandung',
+  'Lainnya'
+];
+
 export default function CompleteProfilePage() {
   const [name, setName] = useState('');
   const [city, setCity] = useState(REGIONS[0]);
+  const [university, setUniversity] = useState(UNIVERSITIES[0]);
+  const [customUniversity, setCustomUniversity] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
@@ -29,10 +50,12 @@ export default function CompleteProfilePage() {
     setError('');
 
     try {
+      const finalUniversity = university === 'Lainnya' ? customUniversity : university;
+      
       const res = await fetch('/api/auth/google/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, city }),
+        body: JSON.stringify({ name, city, university: finalUniversity }),
       });
 
       const data = await res.json();
@@ -122,6 +145,53 @@ export default function CompleteProfilePage() {
                 </div>
               </div>
             </div>
+
+            <div>
+              <label htmlFor="university" className="block text-sm font-medium text-gray-700">
+                Universitas / Institut (UKM HIPMI PT)
+              </label>
+              <div className="mt-1 relative">
+                <select
+                  id="university"
+                  name="university"
+                  required
+                  value={university}
+                  onChange={(e) => setUniversity(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm transition-colors bg-white cursor-pointer"
+                >
+                  {UNIVERSITIES.map((univ) => (
+                    <option key={univ} value={univ}>
+                      {univ}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {university === 'Lainnya' && (
+              <div>
+                <label htmlFor="customUniversity" className="block text-sm font-medium text-gray-700">
+                  Sebutkan Universitas / Institut Anda
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="customUniversity"
+                    name="customUniversity"
+                    type="text"
+                    required
+                    value={customUniversity}
+                    placeholder="Ketik nama kampus Anda..."
+                    onChange={(e) => setCustomUniversity(e.target.value)}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm transition-colors bg-white"
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="pt-2">
               <button

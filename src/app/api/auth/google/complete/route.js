@@ -13,7 +13,7 @@ async function connectDB() {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { name, city } = body;
+    const { name, city, university } = body;
 
     if (!name || !city) {
       return NextResponse.json({ error: 'Name and city are required' }, { status: 400 });
@@ -48,6 +48,7 @@ export async function POST(request) {
       email,
       name,
       city,
+      university: university || 'Belum diisi',
       role: 'user', // Defaults to buyer/user
       authProvider: 'google',
     });
