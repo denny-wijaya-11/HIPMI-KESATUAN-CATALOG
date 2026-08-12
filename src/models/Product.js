@@ -30,6 +30,16 @@ const ProductSchema = new mongoose.Schema({
       'Kab. Kuningan', 'Kab. Majalengka', 'Kab. Pangandaran', 'Kab. Purwakarta', 'Kab. Subang', 'Kab. Sumedang'
     ]
   },
+  isFromUniversity: {
+    type: Boolean,
+    default: true
+  },
+  university: {
+    type: String
+  },
+  address: {
+    type: String
+  },
   image: {
     type: String,
     default: '/images/placeholder.png'

@@ -91,8 +91,19 @@ export default async function ProductDetailPage({ params }) {
                     <span className="block text-sm text-neutral-500 mb-1">Harga</span>
                     <span className="text-3xl font-bold text-white">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
                   </div>
-                  <div className="transform scale-110 origin-left sm:origin-right">
-                    <AddToCartButton product={JSON.parse(JSON.stringify(product))} />
+                  <div className="flex flex-col sm:flex-row items-center gap-3">
+                    <Link
+                      href={`/chat?userId=${product.owner?._id}&userName=${product.owner?.name}&productId=${product._id}`}
+                      className="inline-flex items-center justify-center rounded-full bg-white/10 px-6 py-3 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white/20 hover:bg-white/20 transition-all sm:w-auto w-full whitespace-nowrap"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                      </svg>
+                      Chat Penjual
+                    </Link>
+                    <div className="transform origin-center sm:scale-110 w-full sm:w-auto">
+                      <AddToCartButton product={JSON.parse(JSON.stringify(product))} />
+                    </div>
                   </div>
                 </div>
               </div>

@@ -30,6 +30,15 @@ async function getProducts(user, search, region, sort) {
   
   let query = {};
   if (user.role === 'operator') {
+    const operatorDetails = await User.findById(user.id);
+    if (operatorDetails) {
+      if (operatorDetails.isStudent) {
+        query.university = operatorDetails.university;
+      } else {
+        query.address = operatorDetails.address;
+      }
+    }
+  } else if (user.role === 'tenant') {
     query.owner = user.id;
   }
   if (search) {

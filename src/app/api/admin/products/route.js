@@ -67,7 +67,7 @@ export async function POST(request) {
 
   try {
     await connectDB();
-    const { name, description, price, category, region, image } = await request.json();
+    const { name, description, price, category, region, image, isFromUniversity, university, address } = await request.json();
 
     if (!name || !description || !price || !region) {
       return NextResponse.json({ error: 'Name, description, price, and region are required' }, { status: 400 });
@@ -83,6 +83,9 @@ export async function POST(request) {
       category: category || 'Lainnya',
       region: region,
       image: finalImage,
+      isFromUniversity: isFromUniversity,
+      university: isFromUniversity ? university : null,
+      address: !isFromUniversity ? address : null,
       owner: user.id // Tautkan ke ID user yang sedang login
     });
 

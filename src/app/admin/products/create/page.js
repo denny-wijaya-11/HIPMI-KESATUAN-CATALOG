@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { REGIONS, UNIVERSITIES } from '@/lib/constants';
 
 export default function CreateProductPage() {
   const router = useRouter();
@@ -15,7 +16,10 @@ export default function CreateProductPage() {
     price: '',
     category: 'Lainnya',
     region: 'Kota Bogor',
-    image: ''
+    image: '',
+    isFromUniversity: true,
+    university: UNIVERSITIES[0],
+    address: ''
   });
 
   const handleChange = (e) => {
@@ -183,7 +187,66 @@ export default function CreateProductPage() {
               </div>
             </div>
 
-            <div className="sm:col-span-6">
+            <div className="sm:col-span-6 border-t border-gray-900/10 pt-6 mt-2">
+              <h3 className="text-base font-semibold leading-7 text-gray-900">Detail Asal Produk</h3>
+              <p className="mt-1 text-sm leading-6 text-gray-600">
+                Tentukan asal produk (Kampus UKM atau Umum).
+              </p>
+            </div>
+
+            <div className="sm:col-span-6 flex items-center">
+              <input
+                id="isFromUniversity"
+                name="isFromUniversity"
+                type="checkbox"
+                checked={formData.isFromUniversity}
+                onChange={(e) => setFormData({ ...formData, isFromUniversity: e.target.checked })}
+                className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
+              />
+              <label htmlFor="isFromUniversity" className="ml-3 block text-sm font-medium leading-6 text-gray-900">
+                Produk ini berasal dari Mahasiswa / UKM Kampus?
+              </label>
+            </div>
+
+            {formData.isFromUniversity ? (
+              <div className="sm:col-span-6">
+                <label htmlFor="university" className="block text-sm font-medium leading-6 text-gray-900">
+                  Universitas Asal Produk
+                </label>
+                <div className="mt-2">
+                  <select
+                    id="university"
+                    name="university"
+                    value={formData.university}
+                    onChange={handleChange}
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
+                  >
+                    {UNIVERSITIES.map((univ) => (
+                      <option key={univ} value={univ}>{univ}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            ) : (
+              <div className="sm:col-span-6">
+                <label htmlFor="address" className="block text-sm font-medium leading-6 text-gray-900">
+                  Alamat Lengkap Produk
+                </label>
+                <div className="mt-2">
+                  <textarea
+                    id="address"
+                    name="address"
+                    rows={3}
+                    value={formData.address}
+                    onChange={handleChange}
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
+                    placeholder="Masukkan alamat lengkap pengiriman/toko..."
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="sm:col-span-6 border-t border-gray-900/10 pt-6 mt-2">
               <label htmlFor="image" className="block text-sm font-medium leading-6 text-gray-900">
                 URL Gambar (Opsional)
               </label>

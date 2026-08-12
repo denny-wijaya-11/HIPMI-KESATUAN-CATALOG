@@ -32,6 +32,13 @@ const UserSchema = new mongoose.Schema({
   university: {
     type: String,
   },
+  isStudent: {
+    type: Boolean,
+    default: true
+  },
+  address: {
+    type: String,
+  },
   authProvider: {
     type: String,
     enum: ['local', 'google'],

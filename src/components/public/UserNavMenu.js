@@ -61,6 +61,13 @@ export default function UserNavMenu({ user, isMobile = false }) {
             Dashboard Admin
           </Link>
         )}
+        <Link 
+          href="/chat" 
+          className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-neutral-800"
+          onClick={() => setIsOpen(false)}
+        >
+          Pesan Masuk
+        </Link>
         {(user.role === 'tenant' || user.role === 'admin' || user.role === 'developer' || user.role === 'operator') && (
           <Link 
             href="/tenant" 
@@ -106,6 +113,14 @@ export default function UserNavMenu({ user, isMobile = false }) {
                 Dashboard Admin
               </Link>
             )}
+            <Link 
+              href="/chat" 
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors"
+              role="menuitem"
+              onClick={() => setIsOpen(false)}
+            >
+              Pesan Masuk
+            </Link>
             {(user.role === 'tenant' || user.role === 'admin' || user.role === 'developer' || user.role === 'operator') && (
               <Link 
                 href="/tenant" 

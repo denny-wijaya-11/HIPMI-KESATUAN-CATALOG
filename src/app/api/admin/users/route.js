@@ -48,7 +48,7 @@ export async function POST(request) {
 
   try {
     await connectDB();
-    const { email, password, name, role } = await request.json();
+    const { email, password, name, role, isStudent, university, city, address } = await request.json();
 
     if (!email || !password || !name || !role) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
@@ -64,13 +64,26 @@ export async function POST(request) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create user
-    const newUser = await User.create({
+    // Create user object
+    const userData = {
       email,
       password: hashedPassword,
       name,
       role
-    });
+    };
+
+    if (role === 'operator') {
+      userData.isStudent = isStudent;
+      if (isStudent) {
+        userData.university = university;
+      } else {
+        userData.city = city;
+        userData.address = address;
+      }
+    }
+
+    // Create user
+    const newUser = await User.create(userData);
 
     return NextResponse.json({ message: 'User created successfully', user: { id: newUser._id, email: newUser.email } }, { status: 201 });
   } catch (error) {
