@@ -27,7 +27,7 @@ export default async function Home() {
   SiteStat.findOneAndUpdate(
     { id: 'global' },
     { $inc: { totalVisitors: 1 } },
-    { upsert: true, new: true }
+    { upsert: true, returnDocument: 'after' }
   ).exec().catch(err => console.error("Failed to update visitor count:", err));
 
   const products = await getProducts();
