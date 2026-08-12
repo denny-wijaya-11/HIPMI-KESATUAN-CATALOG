@@ -6,6 +6,7 @@ import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 import Image from "next/image";
 import BulkDeleteTable from "@/components/admin/BulkDeleteTable";
+import AdminProductFilter from "@/components/admin/AdminProductFilter";
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +23,7 @@ async function getUserPayload() {
   }
 }
 
-async function getProducts(user, search) {
+async function getProducts(user, search, region, sort) {
   if (mongoose.connection.readyState !== 1) {
     await mongoose.connect(process.env.MONGODB_URI);
   }
@@ -34,10 +35,17 @@ async function getProducts(user, search) {
   if (search) {
     query.name = { $regex: search, $options: 'i' };
   }
+  if (region && region !== 'Semua') {
+    query.region = region;
+  }
+
+  let sortOption = { createdAt: -1 };
+  if (sort === 'price_asc') sortOption = { price: 1 };
+  if (sort === 'price_desc') sortOption = { price: -1 };
 
   const products = await Product.find(query)
     .populate('owner', 'name')
-    .sort({ createdAt: -1 });
+    .sort(sortOption);
     
   return products;
 }
@@ -45,10 +53,13 @@ async function getProducts(user, search) {
 export default async function ProductsPage({ searchParams }) {
   const resolvedParams = await searchParams;
   const search = resolvedParams?.search || '';
+  const region = resolvedParams?.region || 'Semua';
+  const sort = resolvedParams?.sort || 'newest';
+  
   const user = await getUserPayload();
   if (!user) return <div>Unauthorized</div>;
 
-  const products = await getProducts(user, search);
+  const products = await getProducts(user, search, region, sort);
 
   return (
     <div>
@@ -70,6 +81,8 @@ export default async function ProductsPage({ searchParams }) {
           </Link>
         </div>
       </div>
+      
+      <AdminProductFilter />
       
       <div className="mt-8 flex flex-col">
         <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
