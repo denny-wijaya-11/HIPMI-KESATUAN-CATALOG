@@ -4,9 +4,21 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
+const REGIONS = [
+  'Kota Bogor',
+  'Kabupaten Bogor',
+  'Jakarta',
+  'Depok',
+  'Tangerang',
+  'Bekasi',
+  'Sukabumi',
+  'Cianjur',
+  'Lainnya'
+];
+
 export default function CompleteProfilePage() {
   const [name, setName] = useState('');
-  const [city, setCity] = useState('');
+  const [city, setCity] = useState(REGIONS[0]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
@@ -88,17 +100,26 @@ export default function CompleteProfilePage() {
               <label htmlFor="city" className="block text-sm font-medium text-gray-700">
                 Kota Asal
               </label>
-              <div className="mt-1">
-                <input
+              <div className="mt-1 relative">
+                <select
                   id="city"
                   name="city"
-                  type="text"
                   required
                   value={city}
-                  placeholder="Misal: Bogor"
                   onChange={(e) => setCity(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm transition-colors bg-white"
-                />
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm transition-colors bg-white cursor-pointer"
+                >
+                  {REGIONS.map((region) => (
+                    <option key={region} value={region}>
+                      {region}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 pt-7 text-gray-500">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
             </div>
 
