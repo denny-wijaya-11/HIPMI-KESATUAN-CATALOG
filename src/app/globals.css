@@ -23,9 +23,9 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-  cursor: url('/images/CURSOR_32.png') 16 16, auto;
+  cursor: url('/images/CURSOR_32.png'), auto;
 }
 
 a, button, input, select, textarea, [role="button"], label, .cursor-pointer {
-  cursor: url('/images/CURSOR_32.png') 16 16, pointer !important;
+  cursor: url('/images/CURSOR_32.png'), pointer !important;
 }
