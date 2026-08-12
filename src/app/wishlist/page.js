@@ -6,6 +6,7 @@ import { useWishlist } from "@/context/WishlistContext";
 import AddToCartButton from "@/components/public/AddToCartButton";
 import WishlistButton from "@/components/public/WishlistButton";
 import CartIcon from "@/components/public/CartIcon";
+import WishlistNavIcon from "@/components/public/WishlistNavIcon";
 
 export default function WishlistPage() {
   const { wishlist, isLoaded } = useWishlist();
@@ -36,7 +37,10 @@ export default function WishlistPage() {
               <Link href="/products" className="text-sm font-medium text-neutral-300 hover:text-white transition-colors relative pb-1">Produk</Link>
             </nav>
             <div className="flex items-center space-x-6">
-              <CartIcon />
+              <div className="flex items-center space-x-4">
+                <WishlistNavIcon />
+                <CartIcon />
+              </div>
               <Link href="/login" className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 px-6 py-2.5 rounded-full transition-all duration-300 hidden md:block border border-red-500">
                 Login HIPMORA
               </Link>

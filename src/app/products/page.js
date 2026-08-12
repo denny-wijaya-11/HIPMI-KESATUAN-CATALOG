@@ -6,6 +6,7 @@ import User from "@/models/User";
 import CategoryFilter from "@/components/public/CategoryFilter";
 import AddToCartButton from "@/components/public/AddToCartButton";
 import CartIcon from "@/components/public/CartIcon";
+import WishlistNavIcon from "@/components/public/WishlistNavIcon";
 import WishlistButton from "@/components/public/WishlistButton";
 
 export const dynamic = 'force-dynamic';
@@ -61,7 +62,10 @@ export default async function ProductsPage({ searchParams }) {
               <Link href="/#tentang" className="text-sm font-medium text-neutral-300 hover:text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-red-500 hover:after:w-full after:transition-all after:duration-300 pb-1">Tentang Kami</Link>
             </nav>
             <div className="flex items-center space-x-6">
-              <CartIcon />
+              <div className="flex items-center space-x-4">
+                <WishlistNavIcon />
+                <CartIcon />
+              </div>
               <Link href="/login" className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 px-6 py-2.5 rounded-full transition-all duration-300 hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] border border-red-500 hidden md:block">
                 Login HIPMORA
               </Link>

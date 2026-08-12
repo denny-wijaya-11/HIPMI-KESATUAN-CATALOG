@@ -18,7 +18,7 @@ export const metadata = {
   title: "HIPMORA",
   description: "Platform Katalog Resmi HIPMORA",
   icons: {
-    icon: '/images/MASKOT LOGO.png',
+    icon: '/images/LOGO.png',
   },
 };
 

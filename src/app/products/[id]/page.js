@@ -5,6 +5,7 @@ import Product from "@/models/Product";
 import User from "@/models/User";
 import AddToCartButton from "@/components/public/AddToCartButton";
 import CartIcon from "@/components/public/CartIcon";
+import WishlistNavIcon from "@/components/public/WishlistNavIcon";
 import WishlistButton from "@/components/public/WishlistButton";
 import { notFound } from "next/navigation";
 
@@ -57,7 +58,10 @@ export default async function ProductDetailPage({ params }) {
               <Link href="/products" className="text-sm font-medium text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-px after:bg-red-500 pb-1">Produk</Link>
             </nav>
             <div className="flex items-center space-x-6">
-              <CartIcon />
+              <div className="flex items-center space-x-4">
+                <WishlistNavIcon />
+                <CartIcon />
+              </div>
               <Link href="/login" className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 px-6 py-2.5 rounded-full transition-all duration-300 hidden md:block border border-red-500">
                 Login HIPMORA
               </Link>
