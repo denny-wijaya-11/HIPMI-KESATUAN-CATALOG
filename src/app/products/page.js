@@ -19,7 +19,7 @@ async function getAllProducts(category, sort, region) {
     await mongoose.connect(process.env.MONGODB_URI);
   }
   
-  let query = {};
+  let query = { isHidden: { $ne: true } };
   if (category && category !== 'Semua') {
     query.category = category;
   }

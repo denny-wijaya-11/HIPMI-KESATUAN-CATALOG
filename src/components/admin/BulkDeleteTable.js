@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import DeleteProductButton from '@/components/admin/DeleteProductButton';
 import ToggleFeaturedButton from '@/components/admin/ToggleFeaturedButton';
+import ToggleHiddenButton from '@/components/admin/ToggleHiddenButton';
 
 export default function BulkDeleteTable({ products, userRole }) {
   const [selectedIds, setSelectedIds] = useState([]);
@@ -140,7 +141,7 @@ export default function BulkDeleteTable({ products, userRole }) {
                 {products.map((product) => {
                   const isSelected = selectedIds.includes(product._id);
                   return (
-                    <tr key={product._id} className={isSelected ? 'bg-red-50' : undefined}>
+                    <tr key={product._id} className={`${isSelected ? 'bg-red-50' : ''} ${product.isHidden ? 'opacity-60 bg-gray-50' : ''}`}>
                       {userRole !== 'operator' && (
                         <td className="relative px-7 sm:w-12 sm:px-6">
                           {isSelected && <div className="absolute inset-y-0 left-0 w-0.5 bg-red-600" />}
@@ -201,7 +202,8 @@ export default function BulkDeleteTable({ products, userRole }) {
                         </td>
                       )}
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <div className="flex justify-end gap-3">
+                        <div className="flex items-center justify-end gap-3">
+                          <ToggleHiddenButton productId={product._id} initialIsHidden={product.isHidden} />
                           <Link href={`/admin/products/${product._id}/edit`} className="text-red-600 hover:text-red-900">
                             Edit
                           </Link>

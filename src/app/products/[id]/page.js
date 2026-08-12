@@ -27,7 +27,8 @@ async function getProductAndRelated(id) {
 
   const relatedProducts = await Product.find({
     category: product.category,
-    _id: { $ne: product._id }
+    _id: { $ne: product._id },
+    isHidden: { $ne: true }
   }).populate('owner', 'name').limit(4);
 
   return { product, relatedProducts };

@@ -98,6 +98,10 @@ export async function PUT(request, { params }) {
       product.isFeatured = body.isFeatured;
     }
 
+    if (body.isHidden !== undefined) {
+      product.isHidden = body.isHidden;
+    }
+
     const updatedProduct = await product.save();
 
     // Revalidate the cache so the homepage and products page update instantly

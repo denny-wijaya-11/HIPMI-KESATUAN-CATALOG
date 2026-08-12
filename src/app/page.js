@@ -18,7 +18,7 @@ async function getProducts() {
   if (mongoose.connection.readyState !== 1) {
     await mongoose.connect(process.env.MONGODB_URI);
   }
-  const products = await Product.find({ isFeatured: true }).populate('owner', 'name').sort({ createdAt: -1 }).limit(5);
+  const products = await Product.find({ isFeatured: true, isHidden: { $ne: true } }).populate('owner', 'name').sort({ createdAt: -1 }).limit(5);
   return products;
 }
 
