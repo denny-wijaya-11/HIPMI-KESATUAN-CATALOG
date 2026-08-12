@@ -7,9 +7,21 @@ import AddToCartButton from "@/components/public/AddToCartButton";
 import WishlistButton from "@/components/public/WishlistButton";
 import CartIcon from "@/components/public/CartIcon";
 import WishlistNavIcon from "@/components/public/WishlistNavIcon";
+import UserNavMenu from "@/components/public/UserNavMenu";
+import { getUserPayload } from "@/lib/auth";
+import { useState, useEffect } from "react";
 
 export default function WishlistPage() {
   const { wishlist, isLoaded } = useWishlist();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const payload = await getUserPayload();
+      setUser(payload);
+    };
+    fetchUser();
+  }, []);
 
   if (!isLoaded) {
     return (
@@ -41,9 +53,13 @@ export default function WishlistPage() {
                 <WishlistNavIcon />
                 <CartIcon />
               </div>
-              <Link href="/login" className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 px-6 py-2.5 rounded-full transition-all duration-300 hidden md:block border border-red-500">
-                Login HIPMORA
-              </Link>
+              {user ? (
+                <UserNavMenu user={user} />
+              ) : (
+                <Link href="/login" className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 px-6 py-2.5 rounded-full transition-all duration-300 hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] border border-red-500 hidden md:block">
+                  Login HIPMORA
+                </Link>
+              )}
             </div>
           </div>
         </div>

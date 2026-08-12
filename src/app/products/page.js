@@ -8,6 +8,8 @@ import AddToCartButton from "@/components/public/AddToCartButton";
 import CartIcon from "@/components/public/CartIcon";
 import WishlistNavIcon from "@/components/public/WishlistNavIcon";
 import WishlistButton from "@/components/public/WishlistButton";
+import UserNavMenu from "@/components/public/UserNavMenu";
+import { getUserPayload } from "@/lib/auth";
 
 export const dynamic = 'force-dynamic';
 
@@ -33,6 +35,7 @@ async function getAllProducts(category, sort, region) {
 }
 
 export default async function ProductsPage({ searchParams }) {
+  const user = await getUserPayload();
   const resolvedParams = await searchParams;
   const category = resolvedParams?.category;
   const sort = resolvedParams?.sort;
@@ -70,9 +73,13 @@ export default async function ProductsPage({ searchParams }) {
                 <WishlistNavIcon />
                 <CartIcon />
               </div>
-              <Link href="/login" className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 px-6 py-2.5 rounded-full transition-all duration-300 hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] border border-red-500 hidden md:block">
-                Login HIPMORA
-              </Link>
+              {user ? (
+                <UserNavMenu user={user} />
+              ) : (
+                <Link href="/login" className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 px-6 py-2.5 rounded-full transition-all duration-300 hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] border border-red-500 hidden md:block">
+                  Login HIPMORA
+                </Link>
+              )}
             </div>
           </div>
         </div>

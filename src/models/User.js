@@ -33,7 +33,21 @@ const UserSchema = new mongoose.Schema({
     type: String,
     enum: ['local', 'google'],
     default: 'local'
-  }
+  },
+  wishlist: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product'
+  }],
+  cart: [{
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product'
+    },
+    quantity: {
+      type: Number,
+      default: 1
+    }
+  }]
 }, { timestamps: true });
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);
