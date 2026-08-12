@@ -10,73 +10,148 @@ const navigation = [
   { name: "Akun & Akses", href: "/admin/users", icon: UsersIcon },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isSidebarOpen = false, setIsSidebarOpen = () => {} }) {
   const pathname = usePathname();
 
   return (
-    <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
-      <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
-        <div className="flex items-center h-28 flex-shrink-0 px-4 bg-white border-b border-gray-100">
-          <div className="flex items-center justify-center w-full py-2 h-full">
-            <div className="relative w-56 h-full flex items-center justify-center">
-              <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain" />
-            </div>
+    <>
+      {/* Mobile Sidebar Overlay */}
+      <div 
+        className={`fixed inset-0 z-40 md:hidden transition-opacity duration-300 ${isSidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+      >
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setIsSidebarOpen(false)} />
+        
+        <div className={`fixed inset-y-0 left-0 flex w-full max-w-xs flex-col bg-white transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+          <div className="absolute top-0 right-0 -mr-12 pt-2">
+            <button
+              type="button"
+              className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <span className="sr-only">Close sidebar</span>
+              <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-        </div>
-        <div className="flex-1 flex flex-col overflow-y-auto">
-          <nav className="flex-1 px-3 py-4 space-y-1">
-            {navigation.map((item) => {
-              const isActive = item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href);
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`
-                    group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200
-                    ${
-                      isActive
-                        ? "bg-red-50 text-red-700"
-                        : "text-gray-700 hover:bg-gray-50 hover:text-red-600"
-                    }
-                  `}
-                >
-                  <item.icon
+
+          <div className="flex h-0 flex-1 flex-col overflow-y-auto pt-5 pb-4">
+            <div className="flex flex-shrink-0 items-center px-4 justify-center">
+               <div className="relative w-48 h-12 flex items-center justify-center">
+                 <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain" />
+               </div>
+            </div>
+            <nav className="mt-8 flex-1 space-y-1 px-2">
+              {navigation.map((item) => {
+                const isActive = item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href);
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setIsSidebarOpen(false)}
                     className={`
-                      flex-shrink-0 -ml-1 mr-3 h-5 w-5 transition-colors duration-200
+                      group flex items-center px-3 py-2.5 text-base font-medium rounded-lg transition-all duration-200
                       ${
                         isActive
-                          ? "text-red-700"
-                          : "text-gray-400 group-hover:text-red-600"
+                          ? "bg-red-50 text-red-700"
+                          : "text-gray-700 hover:bg-gray-50 hover:text-red-600"
                       }
                     `}
-                  />
-                  <span className="truncate">{item.name}</span>
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-        <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
-          <Link href="/" className="flex-shrink-0 w-full group block">
-            <div className="flex items-center">
-              <div>
-                <div className="flex h-9 w-9 rounded-full bg-gray-100 items-center justify-center border border-gray-200 group-hover:bg-gray-200 transition-colors">
-                  <ArrowLeftOnRectangleIcon className="h-5 w-5 text-gray-500" />
+                  >
+                    <item.icon className={`flex-shrink-0 mr-4 h-6 w-6 ${isActive ? 'text-red-700' : 'text-gray-400'}`} />
+                    {item.name}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+          <div className="flex-shrink-0 border-t border-gray-200 p-4">
+            <Link href="/" className="flex-shrink-0 w-full group block" onClick={() => setIsSidebarOpen(false)}>
+              <div className="flex items-center">
+                <div>
+                  <div className="flex h-10 w-10 rounded-full bg-gray-100 items-center justify-center border border-gray-200 group-hover:bg-gray-200 transition-colors">
+                    <ArrowLeftOnRectangleIcon className="h-6 w-6 text-gray-500" />
+                  </div>
+                </div>
+                <div className="ml-3">
+                  <p className="text-base font-medium text-gray-700 group-hover:text-gray-900">
+                    Logout
+                  </p>
+                  <p className="text-sm font-medium text-gray-500 group-hover:text-gray-700">
+                    Kembali ke web
+                  </p>
                 </div>
               </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                  Logout
-                </p>
-                <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">
-                  Kembali ke web
-                </p>
-              </div>
-            </div>
-          </Link>
+            </Link>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Desktop Sidebar */}
+      <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
+        <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
+          <div className="flex items-center h-28 flex-shrink-0 px-4 bg-white border-b border-gray-100">
+            <div className="flex items-center justify-center w-full py-2 h-full">
+              <div className="relative w-56 h-full flex items-center justify-center">
+                <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain" />
+              </div>
+            </div>
+          </div>
+          <div className="flex-1 flex flex-col overflow-y-auto">
+            <nav className="flex-1 px-3 py-4 space-y-1">
+              {navigation.map((item) => {
+                const isActive = item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href);
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`
+                      group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200
+                      ${
+                        isActive
+                          ? "bg-red-50 text-red-700"
+                          : "text-gray-700 hover:bg-gray-50 hover:text-red-600"
+                      }
+                    `}
+                  >
+                    <item.icon
+                      className={`
+                        flex-shrink-0 -ml-1 mr-3 h-5 w-5 transition-colors duration-200
+                        ${
+                          isActive
+                            ? "text-red-700"
+                            : "text-gray-400 group-hover:text-red-600"
+                        }
+                      `}
+                    />
+                    <span className="truncate">{item.name}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+          <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
+            <Link href="/" className="flex-shrink-0 w-full group block">
+              <div className="flex items-center">
+                <div>
+                  <div className="flex h-9 w-9 rounded-full bg-gray-100 items-center justify-center border border-gray-200 group-hover:bg-gray-200 transition-colors">
+                    <ArrowLeftOnRectangleIcon className="h-5 w-5 text-gray-500" />
+                  </div>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                    Logout
+                  </p>
+                  <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">
+                    Kembali ke web
+                  </p>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 
