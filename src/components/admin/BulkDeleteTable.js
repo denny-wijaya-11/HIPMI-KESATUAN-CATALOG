@@ -118,6 +118,9 @@ export default function BulkDeleteTable({ products, userRole }) {
                     Kategori
                   </th>
                   <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    Region
+                  </th>
+                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                     Harga
                   </th>
                   <th scope="col" className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
@@ -170,6 +173,9 @@ export default function BulkDeleteTable({ products, userRole }) {
                         <span className="inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800">
                           {product.category || 'Lainnya'}
                         </span>
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        {product.region || '-'}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 font-medium">
                         Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}
