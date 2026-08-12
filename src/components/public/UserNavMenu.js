@@ -50,7 +50,7 @@ export default function UserNavMenu({ user, isMobile = false }) {
     return (
       <div className="w-full text-left space-y-1">
         <div className="px-3 py-2 text-sm font-semibold text-neutral-400">
-          Halo, {user.name}
+          Halo, {user?.name || 'User'}
         </div>
         {(user.role === 'admin' || user.role === 'developer' || user.role === 'operator') && (
           <Link 
@@ -76,7 +76,7 @@ export default function UserNavMenu({ user, isMobile = false }) {
         onClick={() => setIsOpen(!isOpen)}
         className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 px-6 py-2.5 rounded-full transition-all duration-300 hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] border border-red-500 flex items-center gap-2"
       >
-        <span className="truncate max-w-[100px] sm:max-w-[150px]">Halo, {user.name.split(' ')[0]}</span>
+        <span className="truncate max-w-[100px] sm:max-w-[150px]">Halo, {(user?.name || 'User').split(' ')[0]}</span>
         <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
         </svg>
