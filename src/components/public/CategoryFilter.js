@@ -60,8 +60,8 @@ export default function CategoryFilter() {
         })}
       </div>
       
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto mt-6 sm:mt-0">
+        <div className="flex items-center justify-between sm:justify-start gap-2">
           <label htmlFor="region" className="text-sm text-neutral-400 font-medium">Wilayah:</label>
           <select 
             id="region"
@@ -108,7 +108,7 @@ export default function CategoryFilter() {
           </select>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between sm:justify-start gap-2">
           <label htmlFor="sort" className="text-sm text-neutral-400 font-medium">Urutkan:</label>
           <select 
             id="sort"

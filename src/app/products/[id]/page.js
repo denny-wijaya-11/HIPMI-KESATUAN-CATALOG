@@ -5,8 +5,10 @@ import Product from "@/models/Product";
 import User from "@/models/User";
 import AddToCartButton from "@/components/public/AddToCartButton";
 import CartIcon from "@/components/public/CartIcon";
-import WishlistNavIcon from "@/components/public/WishlistNavIcon";
 import WishlistButton from "@/components/public/WishlistButton";
+import UserNavMenu from "@/components/public/UserNavMenu";
+import PublicHeader from "@/components/public/PublicHeader";
+import { getUserPayload } from "@/lib/auth";
 import { notFound } from "next/navigation";
 
 export const dynamic = 'force-dynamic';
@@ -32,6 +34,7 @@ async function getProductAndRelated(id) {
 }
 
 export default async function ProductDetailPage({ params }) {
+  const user = await getUserPayload();
   const resolvedParams = await params;
   const { id } = resolvedParams;
   const { product, relatedProducts } = await getProductAndRelated(id);
@@ -42,33 +45,7 @@ export default async function ProductDetailPage({ params }) {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-300 font-sans selection:bg-red-500/30">
-      {/* Navbar */}
-      <header className="sticky top-0 z-50 bg-neutral-950/40 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-28">
-            <div className="flex items-center group cursor-pointer h-full py-2">
-              <Link href="/">
-                <div className="relative w-64 h-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                  <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain" priority sizes="(max-width: 768px) 100vw, 256px" />
-                </div>
-              </Link>
-            </div>
-            <nav className="hidden md:flex space-x-10">
-              <Link href="/" className="text-sm font-medium text-neutral-300 hover:text-white transition-colors relative pb-1">Beranda</Link>
-              <Link href="/products" className="text-sm font-medium text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-px after:bg-red-500 pb-1">Produk</Link>
-            </nav>
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-4">
-                <WishlistNavIcon />
-                <CartIcon />
-              </div>
-              <Link href="/login" className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 px-6 py-2.5 rounded-full transition-all duration-300 hidden md:block border border-red-500">
-                Login HIPMORA
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <PublicHeader user={user} />
 
       <main className="relative z-10 py-12 md:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
