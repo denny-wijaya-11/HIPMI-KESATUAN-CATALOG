@@ -90,6 +90,7 @@ export async function PUT(request, { params }) {
     if (body.description !== undefined) product.description = body.description;
     if (body.price !== undefined) product.price = body.price;
     if (body.category !== undefined) product.category = body.category;
+    if (body.region !== undefined) product.region = body.region;
     if (body.image !== undefined) product.image = body.image;
     
     // Only admins/developers can alter isFeatured

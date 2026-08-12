@@ -152,7 +152,17 @@ export default async function Home() {
                     </div>
                     <div className="p-8 flex-1 flex flex-col relative -mt-6">
                       <div className="flex-1">
-                        <p className="text-sm text-red-400 font-medium mb-2">{product.owner?.name || 'HIPMORA Tenant'}</p>
+                        <div className="flex items-center gap-2 mb-2">
+                          <p className="text-sm text-red-400 font-medium">{product.owner?.name || 'HIPMORA Tenant'}</p>
+                          {product.region && (
+                            <span className="flex items-center text-xs text-neutral-400">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                              </svg>
+                              {product.region}
+                            </span>
+                          )}
+                        </div>
                         <Link href={`/products/${product._id}`}>
                           <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-red-300 transition-colors cursor-pointer">{product.name || 'Produk Tanpa Nama'}</h3>
                         </Link>

@@ -17,8 +17,18 @@ const ProductSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['Makanan', 'Minuman', 'Fashion', 'Aksesoris', 'Jasa', 'Lainnya'],
+    enum: ['Makanan', 'Minuman', 'Fashion', 'Aksesoris', 'Perlengkapan', 'Jasa', 'Lainnya'],
     default: 'Lainnya'
+  },
+  region: {
+    type: String,
+    required: [true, 'Please provide a region'],
+    enum: [
+      'Jakarta', 'Kota Bogor', 'Kab. Bogor', 'Kota Depok', 'Kota Tangerang', 'Kota Tangerang Selatan', 'Kab. Tangerang', 'Kota Bekasi', 'Kab. Bekasi',
+      'Kota Bandung', 'Kab. Bandung', 'Kab. Bandung Barat', 'Kota Cimahi', 'Kota Sukabumi', 'Kab. Sukabumi', 'Kota Cirebon', 'Kab. Cirebon',
+      'Kota Tasikmalaya', 'Kab. Tasikmalaya', 'Kota Banjar', 'Kab. Ciamis', 'Kab. Cianjur', 'Kab. Garut', 'Kab. Indramayu', 'Kab. Karawang',
+      'Kab. Kuningan', 'Kab. Majalengka', 'Kab. Pangandaran', 'Kab. Purwakarta', 'Kab. Subang', 'Kab. Sumedang'
+    ]
   },
   image: {
     type: String,

@@ -67,10 +67,10 @@ export async function POST(request) {
 
   try {
     await connectDB();
-    const { name, description, price, category, image } = await request.json();
+    const { name, description, price, category, region, image } = await request.json();
 
-    if (!name || !description || !price) {
-      return NextResponse.json({ error: 'Name, description, and price are required' }, { status: 400 });
+    if (!name || !description || !price || !region) {
+      return NextResponse.json({ error: 'Name, description, price, and region are required' }, { status: 400 });
     }
     let finalImage = image || '/images/placeholder.png';
     finalImage = transformImageUrl(finalImage);
@@ -81,6 +81,7 @@ export async function POST(request) {
       description,
       price: Number(price),
       category: category || 'Lainnya',
+      region: region,
       image: finalImage,
       owner: user.id // Tautkan ke ID user yang sedang login
     });

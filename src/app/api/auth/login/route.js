@@ -7,7 +7,7 @@ import { SignJWT } from 'jose';
 export async function POST(req) {
   try {
     await dbConnect();
-    const { email, password } = await req.json();
+    const { email, password, rememberMe } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json(
@@ -39,6 +39,10 @@ export async function POST(req) {
       process.env.JWT_SECRET || 'default_secret_key_change_this_in_production'
     );
     
+    // Define expiration times
+    const jwtExp = rememberMe ? '30d' : '1d';
+    const cookieMaxAge = rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24; // 30 days or 1 day
+
     const token = await new SignJWT({ 
       id: user._id.toString(), 
       email: user.email, 
@@ -47,7 +51,7 @@ export async function POST(req) {
     })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
-      .setExpirationTime('1d')
+      .setExpirationTime(jwtExp)
       .sign(secret);
 
     // Set cookie
@@ -62,7 +66,7 @@ export async function POST(req) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: 60 * 60 * 24, // 1 day
+      maxAge: cookieMaxAge,
       path: '/',
     });
 

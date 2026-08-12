@@ -14,6 +14,7 @@ export default function CreateProductPage() {
     description: '',
     price: '',
     category: 'Lainnya',
+    region: 'Kota Bogor',
     image: ''
   });
 
@@ -127,6 +128,57 @@ export default function CreateProductPage() {
                   <option value="Perlengkapan">Perlengkapan</option>
                   <option value="Jasa">Jasa</option>
                   <option value="Lainnya">Lainnya</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="sm:col-span-3">
+              <label htmlFor="region" className="block text-sm font-medium leading-6 text-gray-900">
+                Wilayah Pengiriman (Region)
+              </label>
+              <div className="mt-2">
+                <select
+                  id="region"
+                  name="region"
+                  value={formData.region}
+                  onChange={handleChange}
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
+                >
+                  <optgroup label="JABODETABEK">
+                    <option value="Jakarta">Jakarta</option>
+                    <option value="Kota Bogor">Kota Bogor</option>
+                    <option value="Kab. Bogor">Kab. Bogor</option>
+                    <option value="Kota Depok">Kota Depok</option>
+                    <option value="Kota Tangerang">Kota Tangerang</option>
+                    <option value="Kota Tangerang Selatan">Kota Tangerang Selatan</option>
+                    <option value="Kab. Tangerang">Kab. Tangerang</option>
+                    <option value="Kota Bekasi">Kota Bekasi</option>
+                    <option value="Kab. Bekasi">Kab. Bekasi</option>
+                  </optgroup>
+                  <optgroup label="Jawa Barat">
+                    <option value="Kota Bandung">Kota Bandung</option>
+                    <option value="Kab. Bandung">Kab. Bandung</option>
+                    <option value="Kab. Bandung Barat">Kab. Bandung Barat</option>
+                    <option value="Kota Cimahi">Kota Cimahi</option>
+                    <option value="Kota Sukabumi">Kota Sukabumi</option>
+                    <option value="Kab. Sukabumi">Kab. Sukabumi</option>
+                    <option value="Kota Cirebon">Kota Cirebon</option>
+                    <option value="Kab. Cirebon">Kab. Cirebon</option>
+                    <option value="Kota Tasikmalaya">Kota Tasikmalaya</option>
+                    <option value="Kab. Tasikmalaya">Kab. Tasikmalaya</option>
+                    <option value="Kota Banjar">Kota Banjar</option>
+                    <option value="Kab. Ciamis">Kab. Ciamis</option>
+                    <option value="Kab. Cianjur">Kab. Cianjur</option>
+                    <option value="Kab. Garut">Kab. Garut</option>
+                    <option value="Kab. Indramayu">Kab. Indramayu</option>
+                    <option value="Kab. Karawang">Kab. Karawang</option>
+                    <option value="Kab. Kuningan">Kab. Kuningan</option>
+                    <option value="Kab. Majalengka">Kab. Majalengka</option>
+                    <option value="Kab. Pangandaran">Kab. Pangandaran</option>
+                    <option value="Kab. Purwakarta">Kab. Purwakarta</option>
+                    <option value="Kab. Subang">Kab. Subang</option>
+                    <option value="Kab. Sumedang">Kab. Sumedang</option>
+                  </optgroup>
                 </select>
               </div>
             </div>
