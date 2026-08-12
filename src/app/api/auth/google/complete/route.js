@@ -54,8 +54,9 @@ export async function POST(request) {
 
     // Create standard auth token
     const jwtToken = await new SignJWT({
-      userId: newUser._id,
+      id: newUser._id.toString(),
       email: newUser.email,
+      name: newUser.name,
       role: newUser.role,
     })
       .setProtectedHeader({ alg: 'HS256' })

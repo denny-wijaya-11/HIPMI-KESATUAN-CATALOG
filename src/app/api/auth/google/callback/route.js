@@ -55,8 +55,9 @@ export async function GET(request) {
     if (existingUser) {
       // User exists, log them in
       const jwtToken = await new SignJWT({
-        userId: existingUser._id,
+        id: existingUser._id.toString(),
         email: existingUser.email,
+        name: existingUser.name,
         role: existingUser.role,
       })
         .setProtectedHeader({ alg: 'HS256' })
