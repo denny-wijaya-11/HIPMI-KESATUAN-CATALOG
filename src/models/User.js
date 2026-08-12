@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['developer', 'admin', 'operator', 'user'], // ditambahkan 'user'
+    enum: ['developer', 'admin', 'operator', 'tenant', 'user'],
     default: 'user',
   },
   city: {

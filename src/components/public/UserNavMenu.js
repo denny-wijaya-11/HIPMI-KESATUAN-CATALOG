@@ -55,9 +55,19 @@ export default function UserNavMenu({ user, isMobile = false }) {
         {(user.role === 'admin' || user.role === 'developer' || user.role === 'operator') && (
           <Link 
             href="/admin" 
-            className="block px-3 py-2 rounded-md text-base font-medium text-white bg-neutral-800 hover:bg-neutral-700"
+            className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-neutral-800"
+            onClick={() => setIsOpen(false)}
           >
             Dashboard Admin
+          </Link>
+        )}
+        {user.role === 'tenant' && (
+          <Link 
+            href="/tenant" 
+            className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-neutral-800"
+            onClick={() => setIsOpen(false)}
+          >
+            Dashboard Penjual
           </Link>
         )}
         <button
@@ -94,6 +104,16 @@ export default function UserNavMenu({ user, isMobile = false }) {
                 onClick={() => setIsOpen(false)}
               >
                 Dashboard Admin
+              </Link>
+            )}
+            {user.role === 'tenant' && (
+              <Link 
+                href="/tenant" 
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors"
+                role="menuitem"
+                onClick={() => setIsOpen(false)}
+              >
+                Dashboard Penjual
               </Link>
             )}
             
