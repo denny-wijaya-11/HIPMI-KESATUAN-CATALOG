@@ -6,10 +6,11 @@ import User from "@/models/User";
 import CategoryFilter from "@/components/public/CategoryFilter";
 import AddToCartButton from "@/components/public/AddToCartButton";
 import CartIcon from "@/components/public/CartIcon";
+import WishlistButton from "@/components/public/WishlistButton";
 
 export const dynamic = 'force-dynamic';
 
-async function getAllProducts(category) {
+async function getAllProducts(category, sort) {
   if (mongoose.connection.readyState !== 1) {
     await mongoose.connect(process.env.MONGODB_URI);
   }
@@ -19,14 +20,19 @@ async function getAllProducts(category) {
     query.category = category;
   }
 
-  const products = await Product.find(query).populate('owner', 'name').sort({ createdAt: -1 });
+  let sortOption = { createdAt: -1 };
+  if (sort === 'price_asc') sortOption = { price: 1 };
+  if (sort === 'price_desc') sortOption = { price: -1 };
+
+  const products = await Product.find(query).populate('owner', 'name').sort(sortOption);
   return products;
 }
 
 export default async function ProductsPage({ searchParams }) {
   const resolvedParams = await searchParams;
   const category = resolvedParams?.category;
-  const products = await getAllProducts(category);
+  const sort = resolvedParams?.sort;
+  const products = await getAllProducts(category, sort);
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-300 font-sans selection:bg-red-500/30">
@@ -89,22 +95,34 @@ export default async function ProductsPage({ searchParams }) {
                 products.map((product) => (
                   <div key={product._id.toString()} className="group rounded-3xl bg-white/5 border border-white/10 hover:border-red-500/50 overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(220,38,38,0.15)] hover:-translate-y-2 flex flex-col">
                     <div className="relative h-72 w-full bg-neutral-800 overflow-hidden">
-                      <Image 
-                        src={product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png'} 
-                        alt={product.name || 'Produk'} 
-                        fill 
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" 
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/40 to-transparent" />
-                      <div className="absolute top-5 right-5 bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold text-white border border-white/10">
-                        {product.category || 'Lainnya'}
+                      <Link href={`/products/${product._id}`}>
+                        <Image 
+                          src={product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png'} 
+                          alt={product.name || 'Produk'} 
+                          fill 
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 cursor-pointer" 
+                        />
+                      </Link>
+                      <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/40 to-transparent pointer-events-none" />
+                      <div className="absolute top-5 right-5 flex flex-col items-end gap-2 pointer-events-none">
+                        <div className="bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold text-white border border-white/10">
+                          {product.category || 'Lainnya'}
+                        </div>
+                        {product.isFeatured && (
+                          <div className="bg-gradient-to-r from-amber-500 to-orange-600 px-4 py-1.5 rounded-full text-xs font-bold text-white shadow-[0_0_15px_rgba(245,158,11,0.5)] border border-amber-300/30">
+                            Unggulan 🔥
+                          </div>
+                        )}
                       </div>
+                      <WishlistButton product={JSON.parse(JSON.stringify(product))} />
                     </div>
                     <div className="p-8 flex-1 flex flex-col relative -mt-6">
                       <div className="flex-1">
                         <p className="text-sm text-red-400 font-medium mb-2">{product.owner?.name || 'HIPMORA Tenant'}</p>
-                        <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-red-300 transition-colors">{product.name || 'Produk Tanpa Nama'}</h3>
+                        <Link href={`/products/${product._id}`}>
+                          <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-red-300 transition-colors cursor-pointer">{product.name || 'Produk Tanpa Nama'}</h3>
+                        </Link>
                         <p className="text-neutral-400 text-sm leading-relaxed line-clamp-2">{product.description || '-'}</p>
                       </div>
                       <div className="mt-8 flex items-center justify-between">
