@@ -16,8 +16,10 @@ export default function CheckoutPage() {
   // Auto-select all items initially when loaded
   useEffect(() => {
     if (isLoaded) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedItems(cart.map(item => item._id));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded, cart.length]);
 
   const toggleSelect = (id) => {

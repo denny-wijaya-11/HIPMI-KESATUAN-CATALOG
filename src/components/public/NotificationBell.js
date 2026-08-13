@@ -12,24 +12,6 @@ export default function NotificationBell() {
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
-  useEffect(() => {
-    fetchNotifications();
-    // Refresh every 1 minute
-    const interval = setInterval(fetchNotifications, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    // Close dropdown on outside click
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   async function fetchNotifications() {
     try {
       const res = await fetch('/api/notifications');
@@ -51,6 +33,26 @@ export default function NotificationBell() {
       console.error('Failed to mark read', error);
     }
   }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchNotifications();
+    // Refresh every 1 minute
+    const interval = setInterval(fetchNotifications, 60000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    // Close dropdown on outside click
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const toggleDropdown = () => {
     if (!isOpen) {

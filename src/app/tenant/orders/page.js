@@ -7,10 +7,6 @@ export default function TenantOrdersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
   async function fetchOrders() {
     try {
       const res = await fetch('/api/tenant/orders');
@@ -23,6 +19,11 @@ export default function TenantOrdersPage() {
       setIsLoading(false);
     }
   }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchOrders();
+  }, []);
 
   async function handleStatusChange(orderId, newStatus) {
     try {
