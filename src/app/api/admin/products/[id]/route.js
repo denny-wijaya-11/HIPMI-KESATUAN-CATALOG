@@ -84,24 +84,24 @@ export async function PUT(request, { params }) {
       body.image = transformImageUrl(body.image);
     }
     
-    // Set fields individually to guarantee schema validation and save
-    if (body.name !== undefined) product.name = body.name;
-    if (body.description !== undefined) product.description = body.description;
-    if (body.price !== undefined) product.price = body.price;
-    if (body.category !== undefined) product.category = body.category;
-    if (body.region !== undefined) product.region = body.region;
-    if (body.image !== undefined) product.image = body.image;
+    const updateData = {};
+    if (body.name !== undefined) updateData.name = body.name;
+    if (body.description !== undefined) updateData.description = body.description;
+    if (body.price !== undefined) updateData.price = body.price;
+    if (body.category !== undefined) updateData.category = body.category;
+    if (body.region !== undefined) updateData.region = body.region;
+    if (body.image !== undefined) updateData.image = body.image;
     
     // Only admins/developers can alter isFeatured
     if (user.role !== 'operator' && body.isFeatured !== undefined) {
-      product.isFeatured = body.isFeatured;
+      updateData.isFeatured = body.isFeatured;
     }
 
     if (body.isHidden !== undefined) {
-      product.isHidden = body.isHidden;
+      updateData.isHidden = body.isHidden;
     }
 
-    const updatedProduct = await product.save();
+    const updatedProduct = await Product.findByIdAndUpdate(id, { $set: updateData }, { new: true });
 
     // Revalidate the cache so the homepage and products page update instantly
     revalidatePath('/', 'layout');
