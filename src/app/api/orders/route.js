@@ -12,7 +12,7 @@ const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy');
 
 export async function POST(request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get('auth_token');
 
     if (!token) {

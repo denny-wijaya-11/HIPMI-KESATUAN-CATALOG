@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 
 export default function CheckoutPage() {
-  const { cart, cartCount, clearCart, isLoaded } = useCart();
+  const { cart, cartCount, clearCart, isLoaded, updateQuantity, removeFromCart } = useCart();
   const router = useRouter();
   const [user, setUser] = useState(null);
   
@@ -91,10 +91,18 @@ export default function CheckoutPage() {
       <header className="sticky top-0 z-50 bg-neutral-950/40 backdrop-blur-md border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
-            <Link href="/" className="relative w-48 h-10">
+            <Link href="/" className="relative w-48 h-10 hover:opacity-80 transition-opacity">
               <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain object-left" />
             </Link>
-            <div className="text-sm font-semibold text-neutral-400">Checkout Aman</div>
+            <div className="flex items-center gap-4">
+              <Link href="/" className="hidden sm:flex text-sm font-medium text-neutral-400 hover:text-white transition-colors items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Kembali ke Beranda
+              </Link>
+              <div className="text-sm font-semibold text-white px-3 py-1 bg-red-600/20 text-red-400 rounded-full border border-red-500/20">Checkout Aman</div>
+            </div>
           </div>
         </div>
       </header>
@@ -165,16 +173,51 @@ export default function CheckoutPage() {
                 
                 <div className="space-y-4 mb-6 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
                   {cart.map((item, idx) => (
-                    <div key={`${item._id}-${idx}`} className="flex gap-4 items-center">
-                      <div className="relative w-16 h-16 rounded-lg bg-neutral-800 overflow-hidden shrink-0">
-                        <Image src={item.image || '/images/placeholder.png'} alt={item.name} fill className="object-cover" />
+                    <div key={`${item._id}-${idx}`} className="flex flex-col gap-3 pb-4 mb-4 border-b border-white/5 last:border-0 last:mb-0 last:pb-0">
+                      <div className="flex gap-4 items-start">
+                        <div className="relative w-16 h-16 rounded-lg bg-neutral-800 overflow-hidden shrink-0">
+                          <Image src={item.image || '/images/placeholder.png'} alt={item.name} fill className="object-cover" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-sm font-medium text-white truncate">{item.name}</h3>
+                          <div className="text-sm font-semibold text-white mt-1">
+                            Rp {Number(item.price).toLocaleString('id-ID')}
+                          </div>
+                        </div>
+                        <button 
+                          type="button" 
+                          onClick={() => removeFromCart(item._id)}
+                          className="text-neutral-500 hover:text-red-400 transition-colors p-1"
+                          title="Hapus Produk"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-medium text-white truncate">{item.name}</h3>
-                        <p className="text-xs text-neutral-400 mt-1">{item.quantity} x Rp {Number(item.price).toLocaleString('id-ID')}</p>
-                      </div>
-                      <div className="text-sm font-semibold text-white">
-                        Rp {(item.price * item.quantity).toLocaleString('id-ID')}
+                      
+                      <div className="flex justify-between items-center pl-20">
+                        <div className="flex items-center gap-3 bg-neutral-800 rounded-lg px-2 py-1">
+                          <button 
+                            type="button"
+                            onClick={() => updateQuantity(item._id, (item.quantity || 1) - 1)}
+                            disabled={(item.quantity || 1) <= 1}
+                            className="text-neutral-400 hover:text-white disabled:opacity-30 disabled:hover:text-neutral-400 transition-colors w-6 h-6 flex items-center justify-center"
+                          >
+                            -
+                          </button>
+                          <span className="text-sm font-medium text-white w-4 text-center">{item.quantity || 1}</span>
+                          <button 
+                            type="button"
+                            onClick={() => updateQuantity(item._id, (item.quantity || 1) + 1)}
+                            className="text-neutral-400 hover:text-white transition-colors w-6 h-6 flex items-center justify-center"
+                          >
+                            +
+                          </button>
+                        </div>
+                        <div className="text-sm font-bold text-white">
+                          Rp {(Number(item.price) * (item.quantity || 1)).toLocaleString('id-ID')}
+                        </div>
                       </div>
                     </div>
                   ))}
