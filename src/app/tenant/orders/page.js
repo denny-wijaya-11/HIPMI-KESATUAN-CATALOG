@@ -11,7 +11,7 @@ export default function TenantOrdersPage() {
     fetchOrders();
   }, []);
 
-  const fetchOrders = async () => {
+  async function fetchOrders() {
     try {
       const res = await fetch('/api/tenant/orders');
       const data = await res.json();
@@ -22,9 +22,9 @@ export default function TenantOrdersPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
-  const handleStatusChange = async (orderId, newStatus) => {
+  async function handleStatusChange(orderId, newStatus) {
     try {
       const res = await fetch(`/api/tenant/orders/${orderId}`, {
         method: 'PATCH',

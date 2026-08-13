@@ -8,7 +8,8 @@ export default function WishlistButton({ product }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
   }, []);
 
   if (!mounted || !isLoaded) return null; // Prevent hydration mismatch

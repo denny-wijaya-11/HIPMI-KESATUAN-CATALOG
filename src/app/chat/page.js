@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useState, useEffect, useRef, Suspense } from 'react';
@@ -32,7 +33,7 @@ function ChatContent() {
     scrollToBottom();
   }, [messages]);
 
-  const fetchContacts = async () => {
+  async function fetchContacts() {
     try {
       const res = await fetch('/api/chat');
       if (res.ok) {
@@ -61,9 +62,9 @@ function ChatContent() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  const fetchMessages = async (userId) => {
+  async function fetchMessages(userId) {
     try {
       const res = await fetch(`/api/chat/${userId}`);
       if (res.ok) {
@@ -77,9 +78,9 @@ function ChatContent() {
     } catch (err) {
       console.error('Failed to fetch messages', err);
     }
-  };
+  }
 
-  const handleSendMessage = async (e) => {
+  async function handleSendMessage(e) {
     e.preventDefault();
     if (!newMessage.trim() || !activeContact) return;
 
@@ -92,6 +93,7 @@ function ChatContent() {
       content,
       sender: 'me', // placeholder, won't match activeContact._id
       createdAt: new Date().toISOString(),
+      productContext: messages.length === 0 && productId ? { _id: productId, name: 'Produk Terkait' } : null
     };
     setMessages(prev => [...prev, optimisticMsg]);
 
@@ -114,11 +116,11 @@ function ChatContent() {
     } catch (err) {
       console.error('Failed to send message', err);
     }
-  };
+  }
 
-  const scrollToBottom = () => {
+  function scrollToBottom() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  }
 
   if (loading) {
     return <div className="flex h-screen items-center justify-center bg-gray-50"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div></div>;
