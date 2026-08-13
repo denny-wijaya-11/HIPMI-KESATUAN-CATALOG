@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import WishlistNavIcon from '@/components/public/WishlistNavIcon';
 import CartIcon from '@/components/public/CartIcon';
 import UserNavMenu from '@/components/public/UserNavMenu';
+import NotificationBell from '@/components/public/NotificationBell';
 
 export default function PublicHeader({ user }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -46,6 +47,7 @@ export default function PublicHeader({ user }) {
             <div className="flex items-center space-x-3 md:space-x-4">
               <WishlistNavIcon />
               <CartIcon />
+              {user && <NotificationBell />}
             </div>
 
             {/* Desktop Auth */}
