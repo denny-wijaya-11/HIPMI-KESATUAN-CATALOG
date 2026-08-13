@@ -256,7 +256,7 @@ function ChatContent() {
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder="Ketik pesan..."
-                  className="flex-1 bg-gray-100 border-transparent focus:bg-white focus:border-red-500 focus:ring-1 focus:ring-red-500 rounded-full px-4 py-2 text-sm outline-none transition-colors"
+                  className="flex-1 bg-gray-100 border-transparent text-gray-900 focus:bg-white focus:border-red-500 focus:ring-1 focus:ring-red-500 rounded-full px-4 py-2 text-sm outline-none transition-colors"
                 />
                 <button
                   type="submit"
