@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 
 export default function LoginPage() {
@@ -13,6 +13,8 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect');
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -36,8 +38,12 @@ export default function LoginPage() {
         return;
       }
 
-      // Successful login, redirect to admin
-      router.push("/admin");
+      // Successful login, redirect to requested url or default based on role (default admin)
+      if (redirectUrl) {
+        router.push(redirectUrl);
+      } else {
+        router.push("/admin");
+      }
     } catch (err) {
       setError("Failed to connect to the server");
       setIsLoading(false);

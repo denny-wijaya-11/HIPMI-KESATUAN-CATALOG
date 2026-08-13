@@ -45,6 +45,7 @@ export async function GET(request) {
       }));
 
     return NextResponse.json({
+      user: { id: payload.id, role: payload.role, email: payload.email, name: user.name, city: user.city },
       wishlist: user.wishlist || [],
       cart: formattedCart || []
     });
