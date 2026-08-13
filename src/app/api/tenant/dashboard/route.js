@@ -8,7 +8,7 @@ import Product from '@/models/Product';
 export async function GET(request) {
   try {
     const user = await getUserPayload();
-    if (!user || user.role !== 'tenant') {
+    if (!user || !['tenant', 'operator', 'admin', 'developer'].includes(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
