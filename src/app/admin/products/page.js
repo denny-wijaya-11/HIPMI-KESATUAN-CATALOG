@@ -1,6 +1,7 @@
 import Product from "@/models/Product";
 import User from "@/models/User";
 import mongoose from "mongoose";
+import dbConnect from "@/lib/mongodb";
 import Link from "next/link";
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
@@ -23,10 +24,8 @@ async function getUserPayload() {
   }
 }
 
-async function getProducts(user, search, region, sort) {
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGODB_URI);
-  }
+async function getProducts(user, search, region, sort, featured) {
+  await dbConnect();
   
   let query = {};
   if (user.role === 'operator') {
@@ -47,6 +46,9 @@ async function getProducts(user, search, region, sort) {
   if (region && region !== 'Semua') {
     query.region = region;
   }
+  if (featured === 'unggulan') {
+    query.isFeatured = true;
+  }
 
   let sortOption = { createdAt: -1 };
   if (sort === 'price_asc') sortOption = { price: 1 };
@@ -64,11 +66,12 @@ export default async function ProductsPage({ searchParams }) {
   const search = resolvedParams?.search || '';
   const region = resolvedParams?.region || 'Semua';
   const sort = resolvedParams?.sort || 'newest';
+  const featured = resolvedParams?.featured || 'semua';
   
   const user = await getUserPayload();
   if (!user) return <div>Unauthorized</div>;
 
-  const products = await getProducts(user, search, region, sort);
+  const products = await getProducts(user, search, region, sort, featured);
 
   return (
     <div>

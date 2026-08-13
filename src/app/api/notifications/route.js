@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import { getUserPayload } from '@/lib/auth';
 import Notification from '@/models/Notification';
+import dbConnect from '@/lib/mongodb';
 
 export async function GET(request) {
   try {
@@ -10,9 +11,7 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (mongoose.connection.readyState !== 1) {
-      await mongoose.connect(process.env.MONGODB_URI);
-    }
+    await dbConnect();
 
     const notifications = await Notification.find({ recipient: user.id })
       .sort({ createdAt: -1 })
@@ -32,9 +31,7 @@ export async function PATCH(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (mongoose.connection.readyState !== 1) {
-      await mongoose.connect(process.env.MONGODB_URI);
-    }
+    await dbConnect();
 
     // Mark all as read
     await Notification.updateMany(

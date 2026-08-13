@@ -4,12 +4,11 @@ import { jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import Product from '@/models/Product';
+import dbConnect from '@/lib/mongodb';
 
 // Helper to ensure DB connection
 async function connectDB() {
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGODB_URI);
-  }
+  await dbConnect();
 }
 
 // Helper to transform Google Drive URLs to direct image links

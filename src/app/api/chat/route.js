@@ -5,11 +5,10 @@ import { cookies } from 'next/headers';
 import Message from '@/models/Message';
 import User from '@/models/User';
 import Product from '@/models/Product';
+import dbConnect from '@/lib/mongodb';
 
 async function connectDB() {
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGODB_URI);
-  }
+  await dbConnect();
 }
 
 async function getUserPayload() {

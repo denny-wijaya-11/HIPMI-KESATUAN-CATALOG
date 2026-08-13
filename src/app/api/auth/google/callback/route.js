@@ -2,11 +2,10 @@ import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import User from '@/models/User';
 import { SignJWT } from 'jose';
+import dbConnect from '@/lib/mongodb';
 
 async function connectDB() {
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGODB_URI);
-  }
+  await dbConnect();
 }
 
 export async function GET(request) {

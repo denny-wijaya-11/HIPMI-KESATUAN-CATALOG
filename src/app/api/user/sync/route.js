@@ -4,11 +4,10 @@ import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 import User from '@/models/User';
 import Product from '@/models/Product'; // needed for population
+import dbConnect from '@/lib/mongodb';
 
 async function connectDB() {
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGODB_URI);
-  }
+  await dbConnect();
 }
 
 async function getUserPayload() {

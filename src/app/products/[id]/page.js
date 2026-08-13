@@ -10,13 +10,12 @@ import UserNavMenu from "@/components/public/UserNavMenu";
 import PublicHeader from "@/components/public/PublicHeader";
 import { getUserPayload } from "@/lib/auth";
 import { notFound } from "next/navigation";
+import dbConnect from '@/lib/mongodb';
 
 export const dynamic = 'force-dynamic';
 
 async function getProductAndRelated(id) {
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGODB_URI);
-  }
+  await dbConnect();
   
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return { product: null, relatedProducts: [] };

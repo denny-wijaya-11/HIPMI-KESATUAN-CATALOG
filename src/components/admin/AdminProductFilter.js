@@ -10,11 +10,14 @@ export default function AdminProductFilter() {
   const currentSort = searchParams.get('sort') || 'newest';
   const currentSearch = searchParams.get('search') || '';
 
-  const updateFilters = (newRegion, newSort) => {
+  const currentFeatured = searchParams.get('featured') || 'semua';
+
+  const updateFilters = (newRegion, newSort, newFeatured) => {
     const params = new URLSearchParams();
     if (currentSearch) params.set('search', currentSearch);
     if (newRegion && newRegion !== 'Semua') params.set('region', newRegion);
     if (newSort && newSort !== 'newest') params.set('sort', newSort);
+    if (newFeatured && newFeatured !== 'semua') params.set('featured', newFeatured);
     
     const queryString = params.toString();
     router.push(queryString ? `/admin/products?${queryString}` : '/admin/products');
@@ -27,7 +30,7 @@ export default function AdminProductFilter() {
         <select 
           id="admin-region"
           value={currentRegion}
-          onChange={(e) => updateFilters(e.target.value, currentSort)}
+          onChange={(e) => updateFilters(e.target.value, currentSort, currentFeatured)}
           className="block w-full sm:w-auto rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-red-600 sm:text-sm sm:leading-6"
         >
           <option value="Semua">Semua Wilayah</option>
@@ -74,12 +77,25 @@ export default function AdminProductFilter() {
         <select 
           id="admin-sort"
           value={currentSort}
-          onChange={(e) => updateFilters(currentRegion, e.target.value)}
+          onChange={(e) => updateFilters(currentRegion, e.target.value, currentFeatured)}
           className="block w-full sm:w-auto rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-red-600 sm:text-sm sm:leading-6"
         >
           <option value="newest">Terbaru</option>
           <option value="price_asc">Termurah (Rendah - Tinggi)</option>
           <option value="price_desc">Termahal (Tinggi - Rendah)</option>
+        </select>
+      </div>
+
+      <div className="flex items-center gap-2 w-full sm:w-auto">
+        <label htmlFor="admin-featured" className="text-sm font-medium text-gray-700 whitespace-nowrap">Status:</label>
+        <select 
+          id="admin-featured"
+          value={currentFeatured}
+          onChange={(e) => updateFilters(currentRegion, currentSort, e.target.value)}
+          className="block w-full sm:w-auto rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-red-600 sm:text-sm sm:leading-6"
+        >
+          <option value="semua">Semua Produk</option>
+          <option value="unggulan">Unggulan Saja (Bintang)</option>
         </select>
       </div>
     </div>

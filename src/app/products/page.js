@@ -11,13 +11,12 @@ import WishlistButton from "@/components/public/WishlistButton";
 import UserNavMenu from "@/components/public/UserNavMenu";
 import PublicHeader from "@/components/public/PublicHeader";
 import { getUserPayload } from "@/lib/auth";
+import dbConnect from '@/lib/mongodb';
 
 export const dynamic = 'force-dynamic';
 
 async function getAllProducts(category, sort, region) {
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGODB_URI);
-  }
+  await dbConnect();
   
   let query = { isHidden: { $ne: true } };
   if (category && category !== 'Semua') {

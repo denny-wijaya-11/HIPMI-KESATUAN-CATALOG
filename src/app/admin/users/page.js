@@ -2,13 +2,12 @@ import User from "@/models/User";
 import mongoose from "mongoose";
 import Link from "next/link";
 import DeleteUserButton from "@/components/admin/DeleteUserButton";
+import dbConnect from '@/lib/mongodb';
 
 export const dynamic = 'force-dynamic'; // Prevent static caching
 
 async function getUsers() {
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGODB_URI);
-  }
+  await dbConnect();
   const users = await User.find({}).select('-password').sort({ createdAt: -1 });
   return users;
 }

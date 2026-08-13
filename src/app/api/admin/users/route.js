@@ -4,12 +4,11 @@ import bcrypt from 'bcryptjs';
 import { jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import User from '@/models/User';
+import dbConnect from '@/lib/mongodb';
 
 // Helper to ensure DB connection
 async function connectDB() {
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGODB_URI);
-  }
+  await dbConnect();
 }
 
 // Helper to check if user is an admin or developer

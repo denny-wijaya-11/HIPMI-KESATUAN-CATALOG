@@ -3,11 +3,10 @@ import mongoose from 'mongoose';
 import User from '@/models/User';
 import { jwtVerify, SignJWT } from 'jose';
 import { cookies } from 'next/headers';
+import dbConnect from '@/lib/mongodb';
 
 async function connectDB() {
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGODB_URI);
-  }
+  await dbConnect();
 }
 
 export async function POST(request) {
