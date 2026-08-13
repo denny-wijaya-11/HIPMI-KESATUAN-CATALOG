@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 import dbConnect from '@/lib/mongodb';
 import { getUserPayload } from '@/lib/auth';
 import Order from '@/models/Order';
@@ -13,7 +14,7 @@ export async function GET(request) {
 
     await dbConnect();
 
-    const tenantId = user.id;
+    const tenantId = new mongoose.Types.ObjectId(user.id);
 
     // 1. Total Products
     const totalProducts = await Product.countDocuments({ owner: tenantId, isHidden: { $ne: true } });
