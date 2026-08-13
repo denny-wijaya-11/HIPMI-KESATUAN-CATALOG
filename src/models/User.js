@@ -44,6 +44,10 @@ const UserSchema = new mongoose.Schema({
     enum: ['local', 'google'],
     default: 'local'
   },
+  avatar: {
+    type: String,
+    default: ''
+  },
   wishlist: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product'

@@ -147,9 +147,13 @@ function ChatContent() {
                 onClick={() => setActiveContact(contact)}
                 className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors flex items-center gap-3 ${activeContact?._id === contact._id ? 'bg-red-50' : ''}`}
               >
-                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold shrink-0">
-                  {contact.name.charAt(0).toUpperCase()}
-                </div>
+                {contact.avatar ? (
+                  <img src={contact.avatar} alt={contact.name} className="w-12 h-12 rounded-full object-cover shrink-0 border border-gray-200" />
+                ) : (
+                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-800 font-bold shrink-0">
+                    {contact.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-baseline mb-1">
                     <h3 className="text-sm font-semibold text-gray-900 truncate">{contact.name}</h3>
@@ -159,7 +163,7 @@ function ChatContent() {
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-500 truncate">
+                  <p className="text-sm text-gray-700 truncate">
                     {lastMessage?.content || 'Mulai obrolan baru...'}
                   </p>
                 </div>
@@ -186,12 +190,16 @@ function ChatContent() {
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
               </button>
-              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-bold mr-3">
-                {activeContact.name.charAt(0).toUpperCase()}
-              </div>
+              {activeContact.avatar ? (
+                <img src={activeContact.avatar} alt={activeContact.name} className="w-10 h-10 rounded-full object-cover mr-3 border border-gray-200" />
+              ) : (
+                <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-800 font-bold mr-3">
+                  {activeContact.name.charAt(0).toUpperCase()}
+                </div>
+              )}
               <div>
-                <h2 className="text-base font-semibold text-gray-800">{activeContact.name}</h2>
-                <p className="text-xs text-gray-500">Penjual</p>
+                <h2 className="text-base font-semibold text-gray-900">{activeContact.name}</h2>
+                <p className="text-xs text-gray-600">Penjual</p>
               </div>
             </div>
 
@@ -199,7 +207,7 @@ function ChatContent() {
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.length === 0 && (
                 <div className="text-center py-10">
-                  <div className="inline-block bg-gray-100 rounded-lg px-4 py-2 text-sm text-gray-500">
+                  <div className="inline-block bg-white border border-gray-200 rounded-lg px-4 py-2 text-sm text-gray-700 shadow-sm">
                     Mulai obrolan dengan {activeContact.name}
                   </div>
                 </div>
@@ -210,11 +218,11 @@ function ChatContent() {
                 
                 return (
                   <div key={msg._id || index} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] rounded-2xl px-4 py-2 ${isMe ? 'bg-red-600 text-white rounded-tr-sm' : 'bg-white text-gray-800 rounded-tl-sm border border-gray-100 shadow-sm'}`}>
+                    <div className={`max-w-[80%] rounded-2xl px-4 py-2 shadow-sm ${isMe ? 'bg-red-600 text-white rounded-tr-sm' : 'bg-white text-gray-900 rounded-tl-sm border border-gray-200'}`}>
                       
                       {/* Optional Product Context */}
                       {msg.productContext && !isMe && (
-                        <div className="mb-2 p-2 bg-gray-50 rounded text-xs border border-gray-200 text-gray-600 flex items-center gap-2">
+                        <div className="mb-2 p-2 bg-gray-50 rounded text-xs border border-gray-200 text-gray-700 flex items-center gap-2">
                           <div className="w-8 h-8 bg-gray-200 rounded overflow-hidden relative shrink-0">
                              {/* Product Image could go here */}
                              <div className="w-full h-full bg-gray-300"></div>
@@ -227,7 +235,7 @@ function ChatContent() {
                       )}
 
                       <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
-                      <div className={`text-[10px] mt-1 text-right ${isMe ? 'text-red-200' : 'text-gray-400'}`}>
+                      <div className={`text-[10px] mt-1 text-right ${isMe ? 'text-red-100' : 'text-gray-500'}`}>
                         {new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                       </div>
                     </div>
@@ -260,10 +268,10 @@ function ChatContent() {
         ) : (
           <div className="flex-1 flex items-center justify-center bg-gray-50">
             <div className="text-center">
-              <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+              <div className="w-20 h-20 bg-white border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                <svg className="w-10 h-10 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
               </div>
-              <h2 className="text-xl font-medium text-gray-600">Pilih pesan untuk mulai mengobrol</h2>
+              <h2 className="text-xl font-semibold text-gray-800">Pilih pesan untuk mulai mengobrol</h2>
             </div>
           </div>
         )}
