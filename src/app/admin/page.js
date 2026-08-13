@@ -1,23 +1,26 @@
 import User from "@/models/User";
 import Product from "@/models/Product";
 import SiteStat from "@/models/SiteStat";
-import mongoose from "mongoose";
+import dbConnect from "@/lib/mongodb";
 import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 
 // Connect to DB helper (since Server Components in App Router need to ensure connection)
 async function getStats() {
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGODB_URI);
-  }
+  await dbConnect();
 
   const totalUsers = await User.countDocuments();
   const totalProducts = await Product.countDocuments();
   
   const siteStat = await SiteStat.findOne({ id: 'global' });
   const totalVisitors = siteStat ? siteStat.totalVisitors.toLocaleString() : "0";
-  const newProducts = "0"; 
+  
+  // Realtime new products this week
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const newProductsCount = await Product.countDocuments({ createdAt: { $gte: sevenDaysAgo } });
+  const newProducts = newProductsCount.toString();
 
   return { totalUsers, totalProducts, totalVisitors, newProducts };
 }
@@ -29,7 +32,7 @@ export default async function AdminDashboard() {
     { name: "Total Produk", stat: data.totalProducts, change: "Data Real", changeType: "increase" },
     { name: "Total Akun (Admin/Operator)", stat: data.totalUsers, change: "Data Real", changeType: "increase" },
     { name: "Total Pengunjung", stat: data.totalVisitors, change: "Data Real", changeType: "increase" },
-    { name: "Produk Baru (Minggu Ini)", stat: data.newProducts, change: "Dummy", changeType: "decrease" },
+    { name: "Produk Baru (Minggu Ini)", stat: data.newProducts, change: "Data Real", changeType: "increase" },
   ];
 
   return (

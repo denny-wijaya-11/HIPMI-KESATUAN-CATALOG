@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import mongoose from 'mongoose';
+import dbConnect from '@/lib/mongodb';
 import { getUserPayload } from '@/lib/auth';
 import Order from '@/models/Order';
 import Product from '@/models/Product';
@@ -11,11 +11,9 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (mongoose.connection.readyState !== 1) {
-      await mongoose.connect(process.env.MONGODB_URI);
-    }
+    await dbConnect();
 
-    const tenantId = new mongoose.Types.ObjectId(user.id);
+    const tenantId = user.id;
 
     // 1. Total Products
     const totalProducts = await Product.countDocuments({ owner: tenantId, isHidden: { $ne: true } });

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import mongoose from "mongoose";
+import dbConnect from "@/lib/mongodb";
 import Product from "@/models/Product";
 import User from "@/models/User";
 import SiteStat from "@/models/SiteStat";
@@ -15,9 +15,7 @@ import { getUserPayload } from "@/lib/auth";
 export const dynamic = 'force-dynamic';
 
 async function getProducts() {
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGODB_URI);
-  }
+  await dbConnect();
   const products = await Product.find({ isFeatured: true, isHidden: { $ne: true } }).populate('owner', 'name').sort({ createdAt: -1 }).limit(5);
   return products;
 }
@@ -26,9 +24,7 @@ export default async function Home() {
   const user = await getUserPayload();
 
   // Increment total visitors in background without awaiting (to not slow down render)
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGODB_URI);
-  }
+  await dbConnect();
   SiteStat.findOneAndUpdate(
     { id: 'global' },
     { $inc: { totalVisitors: 1 } },
