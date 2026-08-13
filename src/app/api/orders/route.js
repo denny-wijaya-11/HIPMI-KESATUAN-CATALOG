@@ -43,6 +43,9 @@ export async function POST(request) {
       if (!product) {
         return NextResponse.json({ error: `Produk tidak ditemukan` }, { status: 404 });
       }
+      if (!product.owner) {
+        return NextResponse.json({ error: `Produk ${product.name} tidak memiliki data toko (tenant) yang valid.` }, { status: 400 });
+      }
 
       const tenantId = product.owner.toString();
       
@@ -116,6 +119,6 @@ export async function POST(request) {
     return NextResponse.json({ success: true, message: 'Pesanan berhasil dibuat' });
   } catch (error) {
     console.error('Checkout error:', error);
-    return NextResponse.json({ error: 'Gagal memproses pesanan' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Gagal memproses pesanan' }, { status: 500 });
   }
 }
