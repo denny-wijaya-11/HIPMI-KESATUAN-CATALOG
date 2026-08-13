@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.2",
     "bcryptjs": "^3.0.3",
     "jose": "^6.2.4",
     "jsonwebtoken": "^9.0.3",

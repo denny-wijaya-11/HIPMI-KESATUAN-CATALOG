@@ -1,8 +1,34 @@
 import { NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
+import { checkRateLimit } from '@/lib/rateLimit';
 
 export async function middleware(request) {
-  // Check if it's the admin path, but NOT the login page or API routes
+  // --- 1. RATE LIMITING (Terbatas pada rute API) ---
+  if (request.nextUrl.pathname.startsWith('/api')) {
+    // Gunakan IP pengunjung sebagai identifier (jika tidak ada, gunakan default)
+    const ip = request.ip ?? '127.0.0.1';
+    
+    // Periksa batas request
+    const { success, limit, reset, remaining } = await checkRateLimit(ip);
+
+    // Jika melebihi batas, tolak request
+    if (!success) {
+      return new NextResponse(
+        JSON.stringify({ error: 'Too Many Requests' }),
+        { 
+          status: 429, 
+          headers: {
+            'Content-Type': 'application/json',
+            'X-RateLimit-Limit': limit.toString(),
+            'X-RateLimit-Remaining': remaining.toString(),
+            'X-RateLimit-Reset': reset.toString()
+          }
+        }
+      );
+    }
+  }
+
+  // --- 2. AUTHENTICATION & RBAC (Terbatas pada rute Admin) ---
   if (request.nextUrl.pathname.startsWith('/admin')) {
     const token = request.cookies.get('auth_token')?.value;
 
@@ -40,5 +66,5 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/admin'],
+  matcher: ['/admin/:path*', '/admin', '/api/:path*'],
 };

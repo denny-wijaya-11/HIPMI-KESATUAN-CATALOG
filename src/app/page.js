@@ -12,7 +12,7 @@ import UserNavMenu from "@/components/public/UserNavMenu";
 import PublicHeader from "@/components/public/PublicHeader";
 import { getUserPayload } from "@/lib/auth";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Cache on Vercel CDN for 60 seconds (ISR)
 
 async function getProducts() {
   if (mongoose.connection.readyState !== 1) {
