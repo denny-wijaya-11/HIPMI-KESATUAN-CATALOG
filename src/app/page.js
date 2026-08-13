@@ -12,28 +12,37 @@ import UserNavMenu from "@/components/public/UserNavMenu";
 import PublicHeader from "@/components/public/PublicHeader";
 import { getUserPayload } from "@/lib/auth";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Cache on Vercel CDN for 60 seconds (ISR)
 
 async function getProducts() {
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGODB_URI);
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(process.env.MONGODB_URI, { serverSelectionTimeoutMS: 3000 });
+    }
+    const products = await Product.find({ isFeatured: true, isHidden: { $ne: true } }).populate('owner', 'name').sort({ createdAt: -1 }).limit(5);
+    return products;
+  } catch (err) {
+    console.error('Failed to fetch products during build:', err);
+    return [];
   }
-  const products = await Product.find({ isFeatured: true, isHidden: { $ne: true } }).populate('owner', 'name').sort({ createdAt: -1 }).limit(5);
-  return products;
 }
 
 export default async function Home() {
   const user = await getUserPayload();
 
-  // Increment total visitors in background without awaiting (to not slow down render)
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGODB_URI);
+  try {
+    // Increment total visitors in background without awaiting (to not slow down render)
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(process.env.MONGODB_URI, { serverSelectionTimeoutMS: 3000 });
+    }
+    SiteStat.findOneAndUpdate(
+      { id: 'global' },
+      { $inc: { totalVisitors: 1 } },
+      { upsert: true, returnDocument: 'after' }
+    ).exec().catch(err => console.error("Failed to update visitor count:", err));
+  } catch (err) {
+    console.error('Failed to connect to MongoDB during visitor increment:', err);
   }
-  SiteStat.findOneAndUpdate(
-    { id: 'global' },
-    { $inc: { totalVisitors: 1 } },
-    { upsert: true, returnDocument: 'after' }
-  ).exec().catch(err => console.error("Failed to update visitor count:", err));
 
   const products = await getProducts();
 

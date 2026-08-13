@@ -16,6 +16,7 @@ export default function CheckoutPage() {
   // Auto-select all items initially when loaded
   useEffect(() => {
     if (isLoaded) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedItems(cart.map(item => item._id));
     }
   }, [isLoaded, cart.length]);
