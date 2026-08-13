@@ -10,6 +10,7 @@ import WishlistNavIcon from "@/components/public/WishlistNavIcon";
 import WishlistButton from "@/components/public/WishlistButton";
 import UserNavMenu from "@/components/public/UserNavMenu";
 import PublicHeader from "@/components/public/PublicHeader";
+import { FadeInUp, FadeInScale, StaggerContainer, FadeInItem, HoverScale } from "@/components/public/MotionWrappers";
 import { getUserPayload } from "@/lib/auth";
 
 export const dynamic = 'force-dynamic';
@@ -51,27 +52,39 @@ export default async function Home() {
         <section className="relative pt-20 pb-32 lg:pt-32 lg:pb-40 overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
             <div className="text-center max-w-4xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold uppercase tracking-wider mb-8">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                Platform Katalog Resmi
-              </div>
-              <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight leading-tight mb-8">
-                Mendukung Ekosistem <br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-500 animate-gradient">
-                  Pengusaha Muda
-                </span>
-              </h1>
-              <p className="mt-4 text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto leading-relaxed mb-10">
-                Temukan dan dukung produk-produk kreatif hasil karya mahasiswa pengusaha dari HIPMORA. Inovasi berawal dari sini.
-              </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Link href="/products" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-white bg-red-600 hover:bg-red-500 shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:shadow-[0_0_40px_rgba(220,38,38,0.5)] transition-all duration-300 hover:-translate-y-1">
-                  Eksplorasi Katalog
-                </Link>
-                <Link href="#tentang" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-white bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300">
-                  Pelajari Lebih Lanjut
-                </Link>
-              </div>
+              <FadeInUp delay={0.1}>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold uppercase tracking-wider mb-8">
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                  Platform Katalog Resmi
+                </div>
+              </FadeInUp>
+              <FadeInUp delay={0.2}>
+                <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight leading-tight mb-8">
+                  Mendukung Ekosistem <br/>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-500 animate-gradient">
+                    Pengusaha Muda
+                  </span>
+                </h1>
+              </FadeInUp>
+              <FadeInUp delay={0.3}>
+                <p className="mt-4 text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto leading-relaxed mb-10">
+                  Temukan dan dukung produk-produk kreatif hasil karya mahasiswa pengusaha dari HIPMORA. Inovasi berawal dari sini.
+                </p>
+              </FadeInUp>
+              <FadeInUp delay={0.4}>
+                <div className="flex flex-col sm:flex-row justify-center gap-4">
+                  <HoverScale>
+                    <Link href="/products" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-white bg-red-600 hover:bg-red-500 shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:shadow-[0_0_40px_rgba(220,38,38,0.5)] transition-all duration-300">
+                      Eksplorasi Katalog
+                    </Link>
+                  </HoverScale>
+                  <HoverScale>
+                    <Link href="#tentang" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-white bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300">
+                      Pelajari Lebih Lanjut
+                    </Link>
+                  </HoverScale>
+                </div>
+              </FadeInUp>
             </div>
           </div>
         </section>
@@ -95,14 +108,14 @@ export default async function Home() {
               </button>
             </div>
 
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <StaggerContainer className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {products.length === 0 ? (
                 <div className="col-span-full text-center py-12 text-neutral-500">
                   Belum ada produk unggulan saat ini.
                 </div>
               ) : (
                 products.map((product) => (
-                  <div key={product._id.toString()} className="group rounded-3xl bg-white/5 border border-white/10 hover:border-red-500/50 overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(220,38,38,0.15)] hover:-translate-y-2 flex flex-col">
+                  <FadeInItem key={product._id.toString()} className="group rounded-3xl bg-white/5 border border-white/10 hover:border-red-500/50 overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(220,38,38,0.15)] flex flex-col">
                     <div className="relative h-72 w-full bg-neutral-800 overflow-hidden">
                       <Link href={`/products/${product._id}`}>
                         <Image 
@@ -152,10 +165,10 @@ export default async function Home() {
                         <AddToCartButton product={JSON.parse(JSON.stringify(product))} />
                       </div>
                     </div>
-                  </div>
+                  </FadeInItem>
                 ))
               )}
-            </div>
+            </StaggerContainer>
           </div>
         </section>
 
@@ -163,22 +176,28 @@ export default async function Home() {
         <section className="py-24 relative overflow-hidden">
           <div className="absolute inset-0 bg-red-900/20" />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="bg-gradient-to-br from-red-900/50 to-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-10 md:p-16 text-center shadow-2xl">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-                Punya Bisnis Inovatif?
-              </h2>
-              <p className="text-lg text-red-200 max-w-2xl mx-auto mb-10">
-                Bergabunglah dengan ratusan mahasiswa pengusaha lainnya. Dapatkan akses ke pasar yang lebih luas dan komunitas yang suportif.
-              </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Link href="/login" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-neutral-900 bg-white hover:bg-gray-100 shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all duration-300">
-                  Daftar Sebagai Tenant
-                </Link>
-                <Link href="#tentang" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all duration-300">
-                  Hubungi Admin
-                </Link>
+            <FadeInScale>
+              <div className="bg-gradient-to-br from-red-900/50 to-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-10 md:p-16 text-center shadow-2xl">
+                <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+                  Punya Bisnis Inovatif?
+                </h2>
+                <p className="text-lg text-red-200 max-w-2xl mx-auto mb-10">
+                  Bergabunglah dengan ratusan mahasiswa pengusaha lainnya. Dapatkan akses ke pasar yang lebih luas dan komunitas yang suportif.
+                </p>
+                <div className="flex flex-col sm:flex-row justify-center gap-4">
+                  <HoverScale>
+                    <Link href="/login" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-neutral-900 bg-white hover:bg-gray-100 shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all duration-300">
+                      Daftar Sebagai Tenant
+                    </Link>
+                  </HoverScale>
+                  <HoverScale>
+                    <Link href="#tentang" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all duration-300">
+                      Hubungi Admin
+                    </Link>
+                  </HoverScale>
+                </div>
               </div>
-            </div>
+            </FadeInScale>
           </div>
         </section>
       </main>
