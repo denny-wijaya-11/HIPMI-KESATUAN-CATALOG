@@ -20,17 +20,15 @@ export default function PublicHeader({ user }) {
           
           {/* Logo */}
           <div className="flex items-center group cursor-pointer h-full py-2">
-            <Link href="/">
-              <div className="relative w-40 md:w-64 h-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                <Image 
-                  src="/images/MASKOT LOGO.png" 
-                  alt="HIPMORA Logo" 
-                  fill 
-                  className="object-contain" 
-                  priority 
-                  sizes="(max-width: 768px) 160px, 256px" 
-                />
-              </div>
+            <Link href="/" className="block h-full relative w-40 md:w-64 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+              <Image 
+                src="/images/MASKOT LOGO.png" 
+                alt="HIPMORA Logo" 
+                fill 
+                className="object-contain" 
+                priority 
+                sizes="(max-width: 768px) 160px, 256px" 
+              />
             </Link>
           </div>
 
