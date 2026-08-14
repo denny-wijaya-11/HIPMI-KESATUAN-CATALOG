@@ -17,8 +17,8 @@ export async function PATCH(request, { params }) {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback_secret');
     const { payload } = await jose.jwtVerify(token.value, secret);
 
-    if (payload.role !== 'tenant' && payload.role !== 'admin' && payload.role !== 'developer') {
-      return NextResponse.json({ error: 'Anda bukan penjual' }, { status: 403 });
+    if (!['tenant', 'operator', 'admin', 'developer'].includes(payload.role)) {
+      return NextResponse.json({ error: 'Anda tidak memiliki akses' }, { status: 403 });
     }
 
     const { status } = await request.json();
@@ -30,8 +30,22 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ error: 'Pesanan tidak ditemukan' }, { status: 404 });
     }
 
-    // Ensure tenant is updating their own order
-    if (order.tenant.toString() !== payload.id && payload.role !== 'admin' && payload.role !== 'developer') {
+    // Ensure tenant/operator is updating their own order
+    let isAuthorized = false;
+    
+    if (payload.role === 'admin' || payload.role === 'developer') {
+      isAuthorized = true;
+    } else if (payload.role === 'operator') {
+      const User = mongoose.models.User || mongoose.model('User');
+      const tenantDoc = await User.findById(order.tenant);
+      if (tenantDoc && tenantDoc.university === payload.university) {
+        isAuthorized = true;
+      }
+    } else if (order.tenant.toString() === payload.id) {
+      isAuthorized = true;
+    }
+
+    if (!isAuthorized) {
       return NextResponse.json({ error: 'Anda tidak berhak mengubah pesanan ini' }, { status: 403 });
     }
 

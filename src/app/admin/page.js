@@ -3,15 +3,39 @@ import Product from "@/models/Product";
 import SiteStat from "@/models/SiteStat";
 import dbConnect from "@/lib/mongodb";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { jwtVerify } from "jose";
 
 export const dynamic = 'force-dynamic';
 
 // Connect to DB helper (since Server Components in App Router need to ensure connection)
-async function getStats() {
+// Helper to get current user payload
+async function getUserPayload() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('auth_token')?.value;
+  if (!token) return null;
+  try {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const { payload } = await jwtVerify(token, secret);
+    return payload;
+  } catch (err) {
+    return null;
+  }
+}
+
+async function getStats(user) {
   await dbConnect();
 
-  const totalUsers = await User.countDocuments();
-  const totalProducts = await Product.countDocuments();
+  let userQuery = {};
+  let productQuery = {};
+
+  if (user && user.role === 'operator') {
+    userQuery = { role: 'tenant', university: user.university };
+    productQuery = { university: user.university };
+  }
+
+  const totalUsers = await User.countDocuments(userQuery);
+  const totalProducts = await Product.countDocuments(productQuery);
   
   const siteStat = await SiteStat.findOne({ id: 'global' });
   const totalVisitors = siteStat ? siteStat.totalVisitors.toLocaleString() : "0";
@@ -19,18 +43,30 @@ async function getStats() {
   // Realtime new products this week
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  const newProductsCount = await Product.countDocuments({ createdAt: { $gte: sevenDaysAgo } });
+  
+  const newProductQuery = { ...productQuery, createdAt: { $gte: sevenDaysAgo } };
+  const newProductsCount = await Product.countDocuments(newProductQuery);
   const newProducts = newProductsCount.toString();
 
   return { totalUsers, totalProducts, totalVisitors, newProducts };
 }
 
 export default async function AdminDashboard() {
-  const data = await getStats();
+  const user = await getUserPayload();
+  if (!user) {
+    return <div>Unauthorized</div>;
+  }
+
+  const data = await getStats(user);
 
   const stats = [
     { name: "Total Produk", stat: data.totalProducts, change: "Data Real", changeType: "increase" },
-    { name: "Total Akun (Admin/Operator)", stat: data.totalUsers, change: "Data Real", changeType: "increase" },
+    { 
+      name: user.role === 'operator' ? "Total Akun (Tenant Kampus)" : "Total Akun (Semua Pengguna)", 
+      stat: data.totalUsers, 
+      change: "Data Real", 
+      changeType: "increase" 
+    },
     { name: "Total Pengunjung", stat: data.totalVisitors, change: "Data Real", changeType: "increase" },
     { name: "Produk Baru (Minggu Ini)", stat: data.newProducts, change: "Data Real", changeType: "increase" },
   ];

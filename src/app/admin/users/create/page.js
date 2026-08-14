@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { REGIONS, UNIVERSITIES } from '@/lib/constants';
@@ -11,6 +11,7 @@ export default function CreateUserPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -26,6 +27,21 @@ export default function CreateUserPage() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  useEffect(() => {
+    fetch('/api/profile')
+      .then(res => res.json())
+      .then(data => {
+        // The API returns the user object directly, not wrapped in a { user: ... } object
+        if (data._id) {
+          setCurrentUser(data);
+          if (data.role === 'operator') {
+            setFormData(prev => ({ ...prev, role: 'tenant', university: data.university }));
+          }
+        }
+      })
+      .catch(err => console.error(err));
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -152,106 +168,62 @@ export default function CreateUserPage() {
               </div>
             </div>
 
-            <div className="sm:col-span-3">
-              <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
-                Peran (Role)
-              </label>
-              <div className="mt-2">
-                <select
-                  id="role"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
-                >
-                  <option value="operator">Operator</option>
-                  <option value="admin">Admin</option>
-                  <option value="developer">Developer</option>
-                </select>
+            {currentUser?.role === 'operator' ? (
+              <div className="sm:col-span-6 border-t border-gray-900/10 pt-6 mt-2">
+                <div className="bg-red-50 text-red-700 p-4 rounded-md text-sm border border-red-100">
+                  <p className="font-semibold">Perhatian:</p>
+                  <p>Anda sedang membuat akun Tenant yang akan otomatis terdaftar di kampus <strong>{currentUser.university}</strong>.</p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="sm:col-span-3">
+                <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
+                  Peran (Role)
+                </label>
+                <div className="mt-2">
+                  <select
+                    id="role"
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
+                  >
+                    <option value="operator">Operator (Admin Kampus)</option>
+                    <option value="tenant">Tenant (Penjual)</option>
+                    <option value="admin">Admin Pusat</option>
+                    <option value="developer">Developer</option>
+                  </select>
+                </div>
+              </div>
+            )}
 
-            {formData.role === 'operator' && (
+            {currentUser?.role !== 'operator' && (formData.role === 'operator' || formData.role === 'tenant') && (
               <>
                 <div className="sm:col-span-6 border-t border-gray-900/10 pt-6 mt-2">
-                  <h3 className="text-base font-semibold leading-7 text-gray-900">Detail Operator</h3>
+                  <h3 className="text-base font-semibold leading-7 text-gray-900">Detail Kampus</h3>
                   <p className="mt-1 text-sm leading-6 text-gray-600">
-                    Informasi tambahan untuk membatasi akses visibilitas produk operator.
+                    Pilih kampus untuk {formData.role === 'operator' ? 'operator' : 'tenant'} ini.
                   </p>
                 </div>
 
-                <div className="sm:col-span-6 flex items-center">
-                  <input
-                    id="isStudent"
-                    name="isStudent"
-                    type="checkbox"
-                    checked={formData.isStudent}
-                    onChange={(e) => setFormData({ ...formData, isStudent: e.target.checked })}
-                    className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
-                  />
-                  <label htmlFor="isStudent" className="ml-3 block text-sm font-medium leading-6 text-gray-900">
-                    Operator ini adalah Mahasiswa / Bagian dari UKM Kampus?
+                <div className="sm:col-span-4">
+                  <label htmlFor="university" className="block text-sm font-medium leading-6 text-gray-900">
+                    Pilih Universitas
                   </label>
-                </div>
-
-                {formData.isStudent ? (
-                  <div className="sm:col-span-4">
-                    <label htmlFor="university" className="block text-sm font-medium leading-6 text-gray-900">
-                      Pilih Universitas
-                    </label>
-                    <div className="mt-2">
-                      <select
-                        id="university"
-                        name="university"
-                        value={formData.university}
-                        onChange={handleChange}
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
-                      >
-                        {UNIVERSITIES.map((univ) => (
-                          <option key={univ} value={univ}>{univ}</option>
-                        ))}
-                      </select>
-                    </div>
+                  <div className="mt-2">
+                    <select
+                      id="university"
+                      name="university"
+                      value={formData.university}
+                      onChange={handleChange}
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
+                    >
+                      {UNIVERSITIES.map((univ) => (
+                        <option key={univ} value={univ}>{univ}</option>
+                      ))}
+                    </select>
                   </div>
-                ) : (
-                  <>
-                    <div className="sm:col-span-3">
-                      <label htmlFor="city" className="block text-sm font-medium leading-6 text-gray-900">
-                        Region / Kota
-                      </label>
-                      <div className="mt-2">
-                        <select
-                          id="city"
-                          name="city"
-                          value={formData.city}
-                          onChange={handleChange}
-                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
-                        >
-                          {REGIONS.map((region) => (
-                            <option key={region} value={region}>{region}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                    
-                    <div className="sm:col-span-6">
-                      <label htmlFor="address" className="block text-sm font-medium leading-6 text-gray-900">
-                        Alamat Lengkap (Untuk Operator Umum)
-                      </label>
-                      <div className="mt-2">
-                        <textarea
-                          id="address"
-                          name="address"
-                          rows={3}
-                          value={formData.address}
-                          onChange={handleChange}
-                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
-                          placeholder="Jalan Sudirman No. 123..."
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
+                </div>
               </>
             )}
 

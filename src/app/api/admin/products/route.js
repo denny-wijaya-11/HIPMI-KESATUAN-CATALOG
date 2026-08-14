@@ -44,9 +44,9 @@ export async function GET(request) {
     await connectDB();
     let query = {};
     
-    // Jika role operator, hanya ambil produk miliknya sendiri
+    // Jika role operator, ambil semua produk dari kampusnya
     if (user.role === 'operator') {
-      query = { owner: user.id };
+      query = { university: user.university };
     }
 
     // Ambil data produk dan relasi ke nama pemiliknya

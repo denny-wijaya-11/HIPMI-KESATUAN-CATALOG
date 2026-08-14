@@ -21,7 +21,7 @@ export async function middleware(request) {
       const path = request.nextUrl.pathname;
       
       // If operator tries to access Admin/Developer-only settings
-      if (userRole === 'operator' && (path.startsWith('/admin/settings') || path.startsWith('/admin/users'))) {
+      if (userRole === 'operator' && path.startsWith('/admin/settings')) {
          return NextResponse.redirect(new URL('/admin', request.url));
       }
       

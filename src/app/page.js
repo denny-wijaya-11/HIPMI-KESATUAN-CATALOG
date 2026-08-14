@@ -10,7 +10,8 @@ import WishlistNavIcon from "@/components/public/WishlistNavIcon";
 import WishlistButton from "@/components/public/WishlistButton";
 import UserNavMenu from "@/components/public/UserNavMenu";
 import PublicHeader from "@/components/public/PublicHeader";
-import { FadeInUp, FadeInScale, StaggerContainer, FadeInItem, HoverScale } from "@/components/public/MotionWrappers";
+import { FadeInUp, FadeInScale, StaggerContainer, HoverScale } from "@/components/public/MotionWrappers";
+import { SpotlightBackground, TiltCard, GlowingButton, TextReveal, ParticleBackground } from "@/components/public/Web3Components";
 import { getUserPayload } from "@/lib/auth";
 
 export const dynamic = 'force-dynamic';
@@ -36,13 +37,8 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-300 font-sans selection:bg-red-500/30">
-      {/* Abstract Background Elements (Optimized for performance) */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(220,38,38,0.15)_0,transparent_50%)] animate-pulse" />
-        <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(234,88,12,0.15)_0,transparent_50%)] animate-pulse animation-delay-2000" />
-        <div className="absolute -bottom-32 left-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(202,138,4,0.15)_0,transparent_50%)] animate-pulse animation-delay-4000" />
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
-      </div>
+      {/* Abstract Background Elements (Web3 Style) */}
+      <ParticleBackground />
 
       {/* Navbar */}
       <PublicHeader user={user} />
@@ -61,9 +57,7 @@ export default async function Home() {
               <FadeInUp delay={0.2}>
                 <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight leading-tight mb-8">
                   Mendukung Ekosistem <br/>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-500 animate-gradient">
-                    Pengusaha Muda
-                  </span>
+                  <TextReveal text="Pengusaha Muda" className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-400 to-amber-500 animate-gradient inline-flex" />
                 </h1>
               </FadeInUp>
               <FadeInUp delay={0.3}>
@@ -72,12 +66,10 @@ export default async function Home() {
                 </p>
               </FadeInUp>
               <FadeInUp delay={0.4}>
-                <div className="flex flex-col sm:flex-row justify-center gap-4">
-                  <HoverScale>
-                    <Link href="/products" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-white bg-red-600 hover:bg-red-500 shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:shadow-[0_0_40px_rgba(220,38,38,0.5)] transition-all duration-300">
-                      Eksplorasi Katalog
-                    </Link>
-                  </HoverScale>
+                <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+                  <GlowingButton href="/products">
+                    Eksplorasi Katalog
+                  </GlowingButton>
                   <HoverScale>
                     <Link href="#tentang" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-white bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300">
                       Pelajari Lebih Lanjut
@@ -115,7 +107,7 @@ export default async function Home() {
                 </div>
               ) : (
                 products.map((product) => (
-                  <FadeInItem key={product._id.toString()} className="group rounded-3xl bg-white/5 border border-white/10 hover:border-red-500/50 overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(220,38,38,0.15)] flex flex-col">
+                  <TiltCard key={product._id.toString()} className="group flex flex-col h-full">
                     <div className="relative h-72 w-full bg-neutral-800 overflow-hidden">
                       <Link href={`/products/${product._id}`}>
                         <Image 
@@ -123,12 +115,12 @@ export default async function Home() {
                           alt={product.name || 'Produk'} 
                           fill 
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 cursor-pointer" 
+                          className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 cursor-pointer" 
                         />
                       </Link>
                       <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/40 to-transparent pointer-events-none" />
                       <div className="absolute top-5 right-5 flex flex-col items-end gap-2 pointer-events-none">
-                        <div className="bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold text-white border border-white/10">
+                        <div className="bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold text-white border border-white/10 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
                           {product.category || 'Lainnya'}
                         </div>
                         {product.isFeatured && (
@@ -139,10 +131,10 @@ export default async function Home() {
                       </div>
                       <WishlistButton product={JSON.parse(JSON.stringify(product))} />
                     </div>
-                    <div className="p-8 flex-1 flex flex-col relative -mt-6">
+                    <div className="p-8 flex-1 flex flex-col relative -mt-6 bg-gradient-to-t from-neutral-950/80 to-transparent">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <p className="text-sm text-red-400 font-medium">{product.owner?.name || 'HIPMORA Tenant'}</p>
+                          <p className="text-sm text-red-400 font-medium group-hover:text-red-300 transition-colors">{product.owner?.name || 'HIPMORA Tenant'}</p>
                           {product.region && (
                             <span className="flex items-center text-xs text-neutral-400">
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -153,7 +145,7 @@ export default async function Home() {
                           )}
                         </div>
                         <Link href={`/products/${product._id}`}>
-                          <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-red-300 transition-colors cursor-pointer">{product.name || 'Produk Tanpa Nama'}</h3>
+                          <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-red-400 transition-colors cursor-pointer">{product.name || 'Produk Tanpa Nama'}</h3>
                         </Link>
                         <p className="text-neutral-400 text-sm leading-relaxed line-clamp-2">{product.description || '-'}</p>
                       </div>
@@ -165,7 +157,7 @@ export default async function Home() {
                         <AddToCartButton product={JSON.parse(JSON.stringify(product))} />
                       </div>
                     </div>
-                  </FadeInItem>
+                  </TiltCard>
                 ))
               )}
             </StaggerContainer>
@@ -176,8 +168,8 @@ export default async function Home() {
         <section className="py-24 relative overflow-hidden">
           <div className="absolute inset-0 bg-red-900/20" />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <FadeInScale>
-              <div className="bg-gradient-to-br from-red-900/50 to-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-10 md:p-16 text-center shadow-2xl">
+            <SpotlightBackground className="rounded-3xl">
+              <div className="bg-gradient-to-br from-red-900/40 to-neutral-900/90 border border-white/10 rounded-3xl p-10 md:p-16 text-center shadow-[0_0_50px_rgba(0,0,0,0.5)]">
                 <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
                   Punya Bisnis Inovatif?
                 </h2>
@@ -185,11 +177,9 @@ export default async function Home() {
                   Bergabunglah dengan ratusan mahasiswa pengusaha lainnya. Dapatkan akses ke pasar yang lebih luas dan komunitas yang suportif.
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center gap-4">
-                  <HoverScale>
-                    <Link href="/login" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-neutral-900 bg-white hover:bg-gray-100 shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all duration-300">
-                      Daftar Sebagai Tenant
-                    </Link>
-                  </HoverScale>
+                  <GlowingButton href="/login">
+                    Daftar Sebagai Tenant
+                  </GlowingButton>
                   <HoverScale>
                     <Link href="#tentang" className="inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-semibold text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all duration-300">
                       Hubungi Admin
@@ -197,7 +187,7 @@ export default async function Home() {
                   </HoverScale>
                 </div>
               </div>
-            </FadeInScale>
+            </SpotlightBackground>
           </div>
         </section>
       </main>

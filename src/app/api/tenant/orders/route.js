@@ -18,15 +18,27 @@ export async function GET(request) {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback_secret');
     const { payload } = await jose.jwtVerify(token.value, secret);
 
-    // Ensure user has tenant privileges
-    if (payload.role !== 'tenant' && payload.role !== 'admin' && payload.role !== 'developer') {
-      return NextResponse.json({ error: 'Anda bukan penjual' }, { status: 403 });
+    // Ensure user has privileges
+    if (!['tenant', 'operator', 'admin', 'developer'].includes(payload.role)) {
+      return NextResponse.json({ error: 'Anda tidak memiliki akses' }, { status: 403 });
     }
 
     await dbConnect();
 
-    // Fetch orders where tenant matches payload.id
-    const orders = await Order.find({ tenant: payload.id })
+    // Fetch orders based on role
+    let query = {};
+    if (payload.role === 'operator') {
+      const User = mongoose.models.User || mongoose.model('User');
+      const tenants = await User.find({ role: 'tenant', university: payload.university }).select('_id');
+      const tenantIds = tenants.map(t => t._id);
+      query = { tenant: { $in: tenantIds } };
+    } else if (payload.role === 'admin' || payload.role === 'developer') {
+      query = {}; // Admin sees all
+    } else {
+      query = { tenant: payload.id }; // Tenant sees their own
+    }
+
+    const orders = await Order.find(query)
       .populate({
         path: 'items.product',
         select: 'name image price'

@@ -94,7 +94,7 @@ export default async function ProductsPage({ searchParams }) {
         </div>
       </div>
       
-      <AdminProductFilter />
+              <AdminProductFilter userRole={user.role} />
       
       <div className="mt-8 flex flex-col">
         <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">

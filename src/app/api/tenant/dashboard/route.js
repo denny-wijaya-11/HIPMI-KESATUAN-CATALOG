@@ -14,13 +14,34 @@ export async function GET(request) {
 
     await dbConnect();
 
-    const tenantId = new mongoose.Types.ObjectId(user.id);
+    // 1. Determine Queries based on Role
+    let orderQuery = {};
+    let productQuery = {};
 
-    // 1. Total Products
-    const totalProducts = await Product.countDocuments({ owner: tenantId, isHidden: { $ne: true } });
+    if (user.role === 'operator') {
+      // Operator: get all tenants in their university
+      const User = mongoose.models.User || mongoose.model('User');
+      const tenants = await User.find({ role: 'tenant', university: user.university }).select('_id');
+      const tenantIds = tenants.map(t => t._id);
+      
+      orderQuery = { tenant: { $in: tenantIds } };
+      productQuery = { university: user.university, isHidden: { $ne: true } };
+    } else if (user.role === 'admin' || user.role === 'developer') {
+      // Admin: see all
+      orderQuery = {};
+      productQuery = { isHidden: { $ne: true } };
+    } else {
+      // Tenant: see only their own
+      const tenantId = new mongoose.Types.ObjectId(user.id);
+      orderQuery = { tenant: tenantId };
+      productQuery = { owner: tenantId, isHidden: { $ne: true } };
+    }
 
-    // 2. All Orders for this tenant
-    const orders = await Order.find({ tenant: tenantId });
+    // 2. Total Products
+    const totalProducts = await Product.countDocuments(productQuery);
+
+    // 3. All Orders
+    const orders = await Order.find(orderQuery);
 
     const totalOrders = orders.length;
     let totalRevenue = 0;
@@ -35,19 +56,21 @@ export async function GET(request) {
       }
     });
 
-    // 3. Sales for last 7 days
+    // 4. Sales for last 7 days
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
     sevenDaysAgo.setHours(0, 0, 0, 0);
 
+    const aggregateMatch = {
+      ...orderQuery,
+      status: 'Selesai',
+      createdAt: { $gte: sevenDaysAgo }
+    };
+
     // Aggregate daily sales
     const salesDataRaw = await Order.aggregate([
       {
-        $match: {
-          tenant: tenantId,
-          status: 'Selesai',
-          createdAt: { $gte: sevenDaysAgo }
-        }
+        $match: aggregateMatch
       },
       {
         $group: {

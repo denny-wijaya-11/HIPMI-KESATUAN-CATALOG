@@ -11,29 +11,39 @@ async function connectDB() {
   await dbConnect();
 }
 
-// Helper to check if user is an admin or developer
-async function isAdminOrDev() {
+// Helper to check if user is an admin, developer, or operator
+async function getAuthorizedPayload() {
   const cookieStore = await cookies();
   const token = cookieStore.get('auth_token')?.value;
-  if (!token) return false;
+  if (!token) return null;
   try {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
     const { payload } = await jwtVerify(token, secret);
-    return payload.role === 'admin' || payload.role === 'developer';
+    if (payload.role === 'admin' || payload.role === 'developer' || payload.role === 'operator') {
+      return payload;
+    }
+    return null;
   } catch (err) {
-    return false;
+    return null;
   }
 }
 
 export async function GET() {
-  if (!(await isAdminOrDev())) {
+  const payload = await getAuthorizedPayload();
+  if (!payload) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }
 
   try {
     await connectDB();
+    
+    let query = {};
+    if (payload.role === 'operator') {
+      query = { role: 'tenant', university: payload.university };
+    }
+    
     // Exclude password from results
-    const users = await User.find({}).select('-password').sort({ createdAt: -1 });
+    const users = await User.find(query).select('-password').sort({ createdAt: -1 });
     return NextResponse.json(users);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 });
@@ -41,7 +51,8 @@ export async function GET() {
 }
 
 export async function POST(request) {
-  if (!(await isAdminOrDev())) {
+  const payload = await getAuthorizedPayload();
+  if (!payload) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
   }
 
@@ -63,22 +74,33 @@ export async function POST(request) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Set forced data if the creator is an operator
+    let finalRole = role;
+    let finalUniversity = university;
+    
+    if (payload.role === 'operator') {
+      finalRole = 'tenant';
+      finalUniversity = payload.university;
+    }
+
     // Create user object
     const userData = {
       email,
       password: hashedPassword,
       name,
-      role
+      role: finalRole
     };
 
-    if (role === 'operator') {
+    if (finalRole === 'operator') {
       userData.isStudent = isStudent;
       if (isStudent) {
-        userData.university = university;
+        userData.university = finalUniversity;
       } else {
         userData.city = city;
         userData.address = address;
       }
+    } else if (finalRole === 'tenant') {
+      userData.university = finalUniversity;
     }
 
     // Create user

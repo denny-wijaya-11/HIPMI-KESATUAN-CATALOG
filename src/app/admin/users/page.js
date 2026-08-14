@@ -4,16 +4,41 @@ import Link from "next/link";
 import DeleteUserButton from "@/components/admin/DeleteUserButton";
 import dbConnect from '@/lib/mongodb';
 
+import { cookies } from 'next/headers';
+import { jwtVerify } from 'jose';
+
 export const dynamic = 'force-dynamic'; // Prevent static caching
 
-async function getUsers() {
+async function getUserPayload() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('auth_token')?.value;
+  if (!token) return null;
+  try {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const { payload } = await jwtVerify(token, secret);
+    return payload;
+  } catch (err) {
+    return null;
+  }
+}
+
+async function getUsers(user) {
   await dbConnect();
-  const users = await User.find({}).select('-password').sort({ createdAt: -1 });
+  
+  let query = {};
+  if (user && user.role === 'operator') {
+    query = { role: 'tenant', university: user.university };
+  }
+  
+  const users = await User.find(query).select('-password').sort({ createdAt: -1 });
   return users;
 }
 
 export default async function UsersPage() {
-  const users = await getUsers();
+  const user = await getUserPayload();
+  if (!user) return <div>Unauthorized</div>;
+
+  const users = await getUsers(user);
 
   return (
     <div>

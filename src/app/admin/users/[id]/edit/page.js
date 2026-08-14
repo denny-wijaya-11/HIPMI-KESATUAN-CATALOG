@@ -12,6 +12,7 @@ export default function EditUserPage() {
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [currentUser, setCurrentUser] = useState(null);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -34,6 +35,14 @@ export default function EditUserPage() {
           email: data.user.email,
           role: data.user.role
         });
+
+        // Also fetch current user profile
+        const profileRes = await fetch('/api/profile');
+        const profileData = await profileRes.json();
+        // The API returns the user object directly
+        if (profileData._id) {
+          setCurrentUser(profileData);
+        }
       } catch (err) {
         setError(err.message);
       } finally {
@@ -140,24 +149,34 @@ export default function EditUserPage() {
               </div>
             </div>
 
-            <div className="sm:col-span-3">
-              <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
-                Peran (Role)
-              </label>
-              <div className="mt-2">
-                <select
-                  id="role"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
-                >
-                  <option value="operator">Operator (UKM)</option>
-                  <option value="admin">Admin</option>
-                  <option value="developer">Developer</option>
-                </select>
+            {currentUser?.role === 'operator' ? (
+              <div className="sm:col-span-6 border-t border-gray-900/10 pt-6 mt-2">
+                <div className="bg-red-50 text-red-700 p-4 rounded-md text-sm border border-red-100">
+                  <p className="font-semibold">Perhatian:</p>
+                  <p>Anda hanya diizinkan untuk mengubah nama dan email dari akun Tenant ini.</p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="sm:col-span-3">
+                <label htmlFor="role" className="block text-sm font-medium leading-6 text-gray-900">
+                  Peran (Role)
+                </label>
+                <div className="mt-2">
+                  <select
+                    id="role"
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
+                  >
+                    <option value="operator">Operator (Admin Kampus)</option>
+                    <option value="tenant">Tenant (Penjual)</option>
+                    <option value="admin">Admin Pusat</option>
+                    <option value="developer">Developer</option>
+                  </select>
+                </div>
+              </div>
+            )}
 
           </div>
         </div>

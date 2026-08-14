@@ -24,14 +24,14 @@ async function getUserPayload() {
   }
 }
 
-// Ensure the request is coming from Admin or Developer
-function isAdminOrDev(user) {
-  return user && (user.role === 'admin' || user.role === 'developer');
+// Ensure the request is coming from Admin, Developer, or Operator
+function isAuthorized(user) {
+  return user && (user.role === 'admin' || user.role === 'developer' || user.role === 'operator');
 }
 
 export async function GET(request, { params }) {
   const user = await getUserPayload();
-  if (!isAdminOrDev(user)) {
+  if (!isAuthorized(user)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -44,6 +44,12 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
+    if (user.role === 'operator') {
+      if (userToFetch.role !== 'tenant' || userToFetch.university !== user.university) {
+        return NextResponse.json({ error: 'Forbidden. You can only view tenants from your campus.' }, { status: 403 });
+      }
+    }
+
     return NextResponse.json({ user: userToFetch });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch user' }, { status: 500 });
@@ -52,7 +58,7 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   const user = await getUserPayload();
-  if (!isAdminOrDev(user)) {
+  if (!isAuthorized(user)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -67,16 +73,27 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
+    if (user.role === 'operator') {
+      if (userToUpdate.role !== 'tenant' || userToUpdate.university !== user.university) {
+        return NextResponse.json({ error: 'Forbidden. You can only edit tenants from your campus.' }, { status: 403 });
+      }
+    }
+
     // Only developers can change another developer's role/details
     if (userToUpdate.role === 'developer' && user.role !== 'developer') {
       return NextResponse.json({ error: 'Forbidden. Only developers can edit developer accounts.' }, { status: 403 });
     }
 
     // Prepare update data (do not update password through this route)
+    let finalRole = body.role;
+    if (user.role === 'operator') {
+      finalRole = 'tenant';
+    }
+
     const updateData = {
       name: body.name,
       email: body.email,
-      role: body.role
+      role: finalRole
     };
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -94,7 +111,7 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   const user = await getUserPayload();
-  if (!isAdminOrDev(user)) {
+  if (!isAuthorized(user)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -111,6 +128,12 @@ export async function DELETE(request, { params }) {
     const userToDelete = await User.findById(id);
     if (!userToDelete) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    if (user.role === 'operator') {
+      if (userToDelete.role !== 'tenant' || userToDelete.university !== user.university) {
+        return NextResponse.json({ error: 'Forbidden. You can only delete tenants from your campus.' }, { status: 403 });
+      }
     }
 
     // Only developers can delete developers
