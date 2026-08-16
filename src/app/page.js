@@ -100,15 +100,15 @@ export default async function Home() {
               </button>
             </div>
 
-            <StaggerContainer className="grid gap-4 md:gap-8 grid-cols-2 lg:grid-cols-3">
+            <StaggerContainer className="grid gap-3 md:gap-8 grid-cols-2 lg:grid-cols-3">
               {products.length === 0 ? (
                 <div className="col-span-full text-center py-12 text-neutral-500">
                   Belum ada produk unggulan saat ini.
                 </div>
               ) : (
                 products.map((product) => (
-                  <TiltCard key={product._id.toString()} className="group flex flex-col h-full">
-                    <div className="relative h-40 md:h-72 w-full bg-neutral-800 overflow-hidden">
+                  <TiltCard key={product._id.toString()} className="group flex flex-col h-full shadow-lg rounded-2xl overflow-hidden">
+                    <div className="relative h-36 sm:h-48 md:h-72 w-full bg-neutral-800 overflow-hidden">
                       <Link href={`/products/${product._id}`}>
                         <Image 
                           src={product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png'} 
@@ -131,7 +131,7 @@ export default async function Home() {
                       </div>
                       <WishlistButton product={JSON.parse(JSON.stringify(product))} />
                     </div>
-                    <div className="p-4 md:p-8 flex-1 flex flex-col relative -mt-4 md:-mt-6 bg-gradient-to-t from-neutral-950/80 to-transparent">
+                    <div className="p-3 sm:p-5 md:p-8 flex-1 flex flex-col relative -mt-4 md:-mt-6 bg-gradient-to-t from-neutral-950/90 to-transparent">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <p className="text-sm text-red-400 font-medium group-hover:text-red-300 transition-colors">{product.owner?.name || 'HIPMORA Tenant'}</p>
@@ -145,14 +145,14 @@ export default async function Home() {
                           )}
                         </div>
                         <Link href={`/products/${product._id}`}>
-                          <h3 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-3 group-hover:text-red-400 transition-colors cursor-pointer line-clamp-1">{product.name || 'Produk Tanpa Nama'}</h3>
+                          <h3 className="text-sm sm:text-lg md:text-2xl font-bold text-white mb-1.5 md:mb-3 group-hover:text-red-400 transition-colors cursor-pointer line-clamp-2 leading-tight">{product.name || 'Produk Tanpa Nama'}</h3>
                         </Link>
-                        <p className="text-neutral-400 text-xs md:text-sm leading-relaxed line-clamp-2">{product.description || '-'}</p>
+                        <p className="text-neutral-400 text-[10px] sm:text-xs md:text-sm leading-relaxed line-clamp-2 mt-1">{product.description || '-'}</p>
                       </div>
-                      <div className="mt-4 md:mt-8 flex items-center justify-between">
+                      <div className="mt-3 md:mt-8 flex items-center justify-between">
                         <div className="flex flex-col">
-                          <span className="text-[10px] md:text-xs text-neutral-500 mb-1">Harga</span>
-                          <span className="text-sm md:text-2xl font-bold text-white">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
+                          <span className="text-[9px] sm:text-[10px] md:text-xs text-neutral-500 mb-0.5">Harga</span>
+                          <span className="text-xs sm:text-sm md:text-2xl font-bold text-white tracking-tight">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
                         </div>
                         <AddToCartButton product={JSON.parse(JSON.stringify(product))} />
                       </div>
