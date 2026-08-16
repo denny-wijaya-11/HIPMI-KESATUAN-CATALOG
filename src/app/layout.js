@@ -17,9 +17,15 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "HIPMORA",
   description: "Platform Katalog Resmi HIPMORA",
+  manifest: "/manifest.json",
   icons: {
     icon: '/images/LOGO.png',
+    apple: '/images/LOGO.png',
   },
+};
+
+export const viewport = {
+  themeColor: '#dc2626',
 };
 
 export default function RootLayout({ children }) {

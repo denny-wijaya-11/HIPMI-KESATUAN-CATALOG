@@ -1,0 +1,16 @@
+{
+  "name": "HIPMORA (HIPMI Kesatuan)",
+  "short_name": "HIPMORA",
+  "description": "Ekosistem Pengusaha Muda HIPMORA Kesatuan",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#dc2626",
+  "icons": [
+    {
+      "src": "/images/LOGO.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

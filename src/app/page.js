@@ -100,7 +100,7 @@ export default async function Home() {
               </button>
             </div>
 
-            <StaggerContainer className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <StaggerContainer className="grid gap-4 md:gap-8 grid-cols-2 lg:grid-cols-3">
               {products.length === 0 ? (
                 <div className="col-span-full text-center py-12 text-neutral-500">
                   Belum ada produk unggulan saat ini.
@@ -108,13 +108,13 @@ export default async function Home() {
               ) : (
                 products.map((product) => (
                   <TiltCard key={product._id.toString()} className="group flex flex-col h-full">
-                    <div className="relative h-72 w-full bg-neutral-800 overflow-hidden">
+                    <div className="relative h-40 md:h-72 w-full bg-neutral-800 overflow-hidden">
                       <Link href={`/products/${product._id}`}>
                         <Image 
                           src={product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png'} 
                           alt={product.name || 'Produk'} 
                           fill 
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          sizes="(max-width: 768px) 50vw, 33vw"
                           className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 cursor-pointer" 
                         />
                       </Link>
@@ -131,7 +131,7 @@ export default async function Home() {
                       </div>
                       <WishlistButton product={JSON.parse(JSON.stringify(product))} />
                     </div>
-                    <div className="p-8 flex-1 flex flex-col relative -mt-6 bg-gradient-to-t from-neutral-950/80 to-transparent">
+                    <div className="p-4 md:p-8 flex-1 flex flex-col relative -mt-4 md:-mt-6 bg-gradient-to-t from-neutral-950/80 to-transparent">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <p className="text-sm text-red-400 font-medium group-hover:text-red-300 transition-colors">{product.owner?.name || 'HIPMORA Tenant'}</p>
@@ -145,14 +145,14 @@ export default async function Home() {
                           )}
                         </div>
                         <Link href={`/products/${product._id}`}>
-                          <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-red-400 transition-colors cursor-pointer">{product.name || 'Produk Tanpa Nama'}</h3>
+                          <h3 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-3 group-hover:text-red-400 transition-colors cursor-pointer line-clamp-1">{product.name || 'Produk Tanpa Nama'}</h3>
                         </Link>
-                        <p className="text-neutral-400 text-sm leading-relaxed line-clamp-2">{product.description || '-'}</p>
+                        <p className="text-neutral-400 text-xs md:text-sm leading-relaxed line-clamp-2">{product.description || '-'}</p>
                       </div>
-                      <div className="mt-8 flex items-center justify-between">
+                      <div className="mt-4 md:mt-8 flex items-center justify-between">
                         <div className="flex flex-col">
-                          <span className="text-xs text-neutral-500 mb-1">Harga</span>
-                          <span className="text-2xl font-bold text-white">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
+                          <span className="text-[10px] md:text-xs text-neutral-500 mb-1">Harga</span>
+                          <span className="text-sm md:text-2xl font-bold text-white">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
                         </div>
                         <AddToCartButton product={JSON.parse(JSON.stringify(product))} />
                       </div>

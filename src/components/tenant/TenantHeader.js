@@ -28,16 +28,16 @@ export default function TenantHeader({ setIsSidebarOpen = () => {} }) {
         <span className="sr-only">Open sidebar</span>
         <Bars3Icon className="h-6 w-6" aria-hidden="true" />
       </button>
-      <div className="flex-1 px-4 flex justify-between">
-        <div className="flex-1 flex items-center">
+      <div className="flex-1 px-4 flex justify-between items-center">
+        <div className="flex-1 flex items-center min-w-0">
           <form onSubmit={handleSearch} className="w-full max-w-xs relative text-gray-400 focus-within:text-gray-600">
             <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
-              <MagnifyingGlassIcon className="h-5 w-5" aria-hidden="true" />
+              <MagnifyingGlassIcon className="h-4 w-4 md:h-5 md:w-5" aria-hidden="true" />
             </div>
             <input
               id="search"
-              className="block w-full h-full pl-8 pr-3 py-2 border-transparent text-gray-900 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-0 focus:border-transparent sm:text-sm transition-colors bg-transparent"
-              placeholder="Cari Produk..."
+              className="block w-full h-full pl-7 pr-2 md:pl-8 md:pr-3 py-2 border-transparent text-gray-900 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-0 focus:border-transparent text-xs sm:text-sm transition-colors bg-transparent"
+              placeholder="Cari..."
               type="search"
               name="search"
               value={searchQuery}
@@ -45,7 +45,7 @@ export default function TenantHeader({ setIsSidebarOpen = () => {} }) {
             />
           </form>
         </div>
-        <div className="ml-4 flex items-center md:ml-6 space-x-4">
+        <div className="ml-2 md:ml-4 flex items-center space-x-2 md:space-x-4 flex-shrink-0">
           <button
             type="button"
             className="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
@@ -56,12 +56,12 @@ export default function TenantHeader({ setIsSidebarOpen = () => {} }) {
 
           {/* Profile dropdown Placeholder */}
           <div className="relative">
-            <button className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 p-1 border border-gray-200 hover:bg-gray-50 transition-colors">
+            <button className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 p-1 border border-gray-200 hover:bg-gray-50 transition-colors">
               <span className="sr-only">Open user menu</span>
-              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden border border-blue-200">
-                 <span className="text-blue-700 font-bold text-sm">AD</span>
+              <div className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-red-100 flex items-center justify-center overflow-hidden border border-red-200">
+                 <span className="text-red-700 font-bold text-xs md:text-sm">TN</span>
               </div>
-              <span className="ml-2 pr-2 font-medium text-gray-700 hidden sm:block">Admin HIPMI</span>
+              <span className="ml-2 pr-2 font-medium text-gray-700 hidden sm:block">Tenant User</span>
             </button>
           </div>
         </div>

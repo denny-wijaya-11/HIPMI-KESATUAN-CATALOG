@@ -28,7 +28,7 @@ export default function PublicHeader({ user }) {
                 fill 
                 className="object-contain" 
                 priority 
-                sizes="(max-width: 768px) 160px, 256px" 
+                sizes="(max-width: 768px) 140px, 256px" 
               />
             </Link>
           </div>
@@ -42,8 +42,8 @@ export default function PublicHeader({ user }) {
           </nav>
 
           {/* Right Section (Icons & Auth) */}
-          <div className="flex items-center space-x-4 md:space-x-6">
-            <div className="flex items-center space-x-3 md:space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-6">
+            <div className="flex items-center space-x-1 md:space-x-4">
               <WishlistNavIcon />
               <CartIcon />
               {user && (
@@ -68,7 +68,7 @@ export default function PublicHeader({ user }) {
             {/* Mobile Menu Button */}
             <button 
               type="button"
-              className="md:hidden p-2 rounded-md text-gray-400 hover:text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-500"
+              className="md:hidden p-1.5 rounded-md text-gray-400 hover:text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-500"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               <span className="sr-only">Buka menu utama</span>
