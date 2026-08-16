@@ -107,8 +107,8 @@ export default async function Home() {
                 </div>
               ) : (
                 products.map((product) => (
-                  <TiltCard key={product._id.toString()} className="group flex flex-col h-full shadow-lg rounded-2xl overflow-hidden">
-                    <div className="relative h-36 sm:h-48 md:h-72 w-full bg-neutral-800 overflow-hidden">
+                  <TiltCard key={product._id.toString()} className="group flex flex-col h-full shadow-lg rounded-xl md:rounded-2xl overflow-hidden">
+                    <div className="relative h-28 sm:h-36 md:h-72 w-full bg-neutral-800 overflow-hidden">
                       <Link href={`/products/${product._id}`}>
                         <Image 
                           src={product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png'} 
@@ -119,25 +119,25 @@ export default async function Home() {
                         />
                       </Link>
                       <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/40 to-transparent pointer-events-none" />
-                      <div className="absolute top-5 right-5 flex flex-col items-end gap-2 pointer-events-none">
-                        <div className="bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold text-white border border-white/10 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                      <div className="absolute top-2 right-2 md:top-5 md:right-5 flex flex-col items-end gap-1 md:gap-2 pointer-events-none">
+                        <div className="bg-black/40 backdrop-blur-md px-2 py-0.5 md:px-4 md:py-1.5 rounded-full text-[8px] md:text-xs font-semibold text-white border border-white/10 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
                           {product.category || 'Lainnya'}
                         </div>
                         {product.isFeatured && (
-                          <div className="bg-gradient-to-r from-amber-500 to-orange-600 px-4 py-1.5 rounded-full text-xs font-bold text-white shadow-[0_0_15px_rgba(245,158,11,0.5)] border border-amber-300/30">
+                          <div className="bg-gradient-to-r from-amber-500 to-orange-600 px-2 py-0.5 md:px-4 md:py-1.5 rounded-full text-[8px] md:text-xs font-bold text-white shadow-[0_0_15px_rgba(245,158,11,0.5)] border border-amber-300/30">
                             Unggulan 🔥
                           </div>
                         )}
                       </div>
                       <WishlistButton product={JSON.parse(JSON.stringify(product))} />
                     </div>
-                    <div className="p-3 sm:p-5 md:p-8 flex-1 flex flex-col relative -mt-4 md:-mt-6 bg-gradient-to-t from-neutral-950/90 to-transparent">
+                    <div className="p-2.5 sm:p-4 md:p-8 flex-1 flex flex-col relative -mt-3 md:-mt-6 bg-gradient-to-t from-neutral-950/90 to-transparent">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <p className="text-sm text-red-400 font-medium group-hover:text-red-300 transition-colors">{product.owner?.name || 'HIPMORA Tenant'}</p>
+                        <div className="flex items-center gap-1.5 md:gap-2 mb-1 md:mb-2">
+                          <p className="text-[10px] md:text-sm text-red-400 font-medium group-hover:text-red-300 transition-colors line-clamp-1">{product.owner?.name || 'HIPMORA Tenant'}</p>
                           {product.region && (
-                            <span className="flex items-center text-xs text-neutral-400">
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <span className="flex items-center text-[9px] md:text-xs text-neutral-400 line-clamp-1">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2 md:h-3 md:w-3 mr-0.5 md:mr-1" viewBox="0 0 20 20" fill="currentColor">
                                 <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                               </svg>
                               {product.region}
@@ -145,14 +145,14 @@ export default async function Home() {
                           )}
                         </div>
                         <Link href={`/products/${product._id}`}>
-                          <h3 className="text-sm sm:text-lg md:text-2xl font-bold text-white mb-1.5 md:mb-3 group-hover:text-red-400 transition-colors cursor-pointer line-clamp-2 leading-tight">{product.name || 'Produk Tanpa Nama'}</h3>
+                          <h3 className="text-xs sm:text-sm md:text-2xl font-bold text-white mb-1 md:mb-3 group-hover:text-red-400 transition-colors cursor-pointer line-clamp-2 leading-tight">{product.name || 'Produk Tanpa Nama'}</h3>
                         </Link>
-                        <p className="text-neutral-400 text-[10px] sm:text-xs md:text-sm leading-relaxed line-clamp-2 mt-1">{product.description || '-'}</p>
+                        <p className="text-neutral-400 text-[9px] sm:text-[10px] md:text-sm leading-relaxed line-clamp-2 mt-0.5">{product.description || '-'}</p>
                       </div>
-                      <div className="mt-3 md:mt-8 flex items-center justify-between">
+                      <div className="mt-2 md:mt-8 flex items-center justify-between">
                         <div className="flex flex-col">
-                          <span className="text-[9px] sm:text-[10px] md:text-xs text-neutral-500 mb-0.5">Harga</span>
-                          <span className="text-xs sm:text-sm md:text-2xl font-bold text-white tracking-tight">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
+                          <span className="text-[8px] sm:text-[9px] md:text-xs text-neutral-500 mb-0.5">Harga</span>
+                          <span className="text-[11px] sm:text-xs md:text-2xl font-bold text-white tracking-tight">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
                         </div>
                         <AddToCartButton product={JSON.parse(JSON.stringify(product))} />
                       </div>
