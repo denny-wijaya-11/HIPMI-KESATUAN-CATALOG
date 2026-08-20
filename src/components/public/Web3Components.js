@@ -1,141 +1,60 @@
 'use client';
 
-import { motion, useMotionTemplate, useMotionValue } from 'framer-motion';
-import { useState, useRef } from 'react';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
 
-// Spotlight Background Effect (Optimized - removed JS mouse tracking to fix lag)
-export function SpotlightBackground({ children, className = '' }) {
-  return (
-    <div className={`relative group overflow-hidden ${className}`}>
-      <div className="pointer-events-none absolute inset-0 rounded-xl opacity-0 transition duration-500 group-hover:opacity-100 bg-[radial-gradient(circle_at_center,rgba(220,38,38,0.1),transparent_70%)]" />
-      {children}
-    </div>
-  );
-}
-
-// Tilt Card Effect (Glassmorphism + 3D Tilt)
-export function TiltCard({ children, className = '' }) {
-  const ref = useRef(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-
-  const handleMouse = (e) => {
-    if (!ref.current) return;
-    const { clientX, clientY } = e;
-    const { height, width, left, top } = ref.current.getBoundingClientRect();
-    const middleX = clientX - (left + width / 2);
-    const middleY = clientY - (top + height / 2);
-    setPosition({ x: middleX, y: middleY });
-  };
-
-  const reset = () => {
-    setPosition({ x: 0, y: 0 });
-  };
-
+// Simple hover lift card — replaces TiltCard 3D effect
+export function SimpleCard({ children, className = '' }) {
   return (
     <motion.div
-      ref={ref}
-      onMouseMove={handleMouse}
-      onMouseLeave={reset}
-      animate={{
-        rotateX: position.y * -0.05,
-        rotateY: position.x * 0.05,
-      }}
-      transition={{
-        type: 'spring',
-        stiffness: 100,
-        damping: 30,
-        mass: 0.5,
-      }}
-      className={`relative bg-neutral-900/40 border border-white/10 overflow-hidden shadow-2xl rounded-3xl will-change-transform ${className}`}
-      style={{ transformStyle: 'preserve-3d', transform: 'translateZ(0)' }}
+      whileHover={{ y: -4 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      className={`bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden ${className}`}
     >
       {children}
     </motion.div>
   );
 }
 
-// Glowing Button (Web3 Style)
-export function GlowingButton({ children, href, onClick, className = '' }) {
-  const Component = href ? 'a' : 'button';
+// Clean solid button — replaces GlowingButton
+export function SolidButton({ children, href, onClick, variant = 'primary', className = '' }) {
+  const Component = href ? Link : 'button';
   
+  const variants = {
+    primary: 'bg-[#C62828] hover:bg-[#8E0000] text-white shadow-sm hover:shadow-md',
+    secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-800',
+    outline: 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 hover:border-gray-300',
+  };
+
   return (
     <Component
-      href={href}
+      href={href || undefined}
       onClick={onClick}
-      className={`relative inline-flex items-center justify-center p-[1px] overflow-hidden text-sm font-medium rounded-full group bg-gradient-to-br from-red-500 via-orange-400 to-amber-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-red-200 dark:focus:ring-red-800 ${className}`}
+      className={`inline-flex items-center justify-center px-7 py-3.5 rounded-full text-sm font-semibold transition-all duration-200 ${variants[variant]} ${className}`}
     >
-      <span className="relative px-8 py-4 transition-all ease-in duration-300 bg-neutral-950 rounded-full group-hover:bg-opacity-0 font-semibold tracking-wide">
-        {children}
-      </span>
-      {/* Glow Behind - Optimized */}
-      <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-orange-400 to-amber-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none -z-10" />
+      {children}
     </Component>
   );
 }
 
-// Animated Text Reveal
-export function TextReveal({ text, className = '' }) {
-  const words = text.split(' ');
-
-  const container = {
-    hidden: { opacity: 0 },
-    visible: (i = 1) => ({
-      opacity: 1,
-      transition: { staggerChildren: 0.1, delayChildren: 0.1 * i },
-    }),
-  };
-
-  const child = {
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: 'spring',
-        damping: 12,
-        stiffness: 100,
-      },
-    },
-    hidden: {
-      opacity: 0,
-      y: 20,
-      transition: {
-        type: 'spring',
-        damping: 12,
-        stiffness: 100,
-      },
-    },
-  };
-
+// Warm background section — replaces ParticleBackground
+export function WarmBackground() {
   return (
-    <motion.div
-      className={`flex flex-wrap justify-center ${className}`}
-      variants={container}
-      initial="hidden"
-      animate="visible"
-    >
-      {words.map((word, index) => (
-        <motion.span variants={child} key={index} className="mr-3 mb-2">
-          {word}
-        </motion.span>
-      ))}
-    </motion.div>
+    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+      {/* Subtle warm gradient blobs */}
+      <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full opacity-30" style={{ background: 'radial-gradient(circle, rgba(198,40,40,0.08) 0%, transparent 70%)' }} />
+      <div className="absolute top-1/3 -left-20 w-[400px] h-[400px] rounded-full opacity-30" style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.06) 0%, transparent 70%)' }} />
+      <div className="absolute -bottom-40 right-1/4 w-[500px] h-[500px] rounded-full opacity-20" style={{ background: 'radial-gradient(circle, rgba(198,40,40,0.05) 0%, transparent 70%)' }} />
+    </div>
   );
 }
 
-// Particle Background (Optimized for performance and full screen)
-export function ParticleBackground() {
+// Stat counter for hero
+export function StatItem({ value, label }) {
   return (
-    <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-      {/* 100% CSS Gradients instead of heavy CSS blurs and mix-blend modes */}
-      <div className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] rounded-full" style={{ background: 'radial-gradient(circle, rgba(220,38,38,0.06) 0%, transparent 60%)', transform: 'translateZ(0)' }} />
-      <div className="absolute top-[10%] right-[-10%] w-[50vw] h-[50vw] rounded-full" style={{ background: 'radial-gradient(circle, rgba(234,88,12,0.05) 0%, transparent 60%)', transform: 'translateZ(0)' }} />
-      <div className="absolute bottom-[-20%] left-[20%] w-[70vw] h-[70vw] rounded-full" style={{ background: 'radial-gradient(circle, rgba(217,119,6,0.05) 0%, transparent 60%)', transform: 'translateZ(0)' }} />
-      
-      {/* Grid overlay for texture */}
-      <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-20 [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
-      
-      {/* Scanline effect */}
-      <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px]" />
+    <div className="text-center">
+      <div className="text-2xl md:text-3xl font-bold text-[#C62828]">{value}</div>
+      <div className="text-xs md:text-sm text-gray-500 mt-1">{label}</div>
     </div>
   );
 }
