@@ -247,7 +247,7 @@ export default async function Home() {
             <p>&copy; {new Date().getFullYear()} HIPMORA. All rights reserved.</p>
             <div className="flex gap-6">
               <Link href="#" className="hover:text-gray-600 transition-colors">Kebijakan Privasi</Link>
-              <Link href="#" className="hover:text-gray-600 transition-colors">Syarat & Ketentuan</Link>
+              <Link href="/syarat-ketentuan" className="hover:text-gray-600 transition-colors">Syarat & Ketentuan</Link>
             </div>
           </div>
         </div>
