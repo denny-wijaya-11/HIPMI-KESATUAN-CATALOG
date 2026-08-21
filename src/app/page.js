@@ -9,6 +9,7 @@ import WishlistButton from "@/components/public/WishlistButton";
 import PublicHeader from "@/components/public/PublicHeader";
 import { FadeInUp, StaggerContainer, HoverScale } from "@/components/public/MotionWrappers";
 import { SimpleCard, SolidButton, WarmBackground, StatItem } from "@/components/public/Web3Components";
+import MascotWithQuote from "@/components/public/MascotWithQuote";
 import { getUserPayload } from "@/lib/auth";
 
 export const dynamic = 'force-dynamic';
@@ -53,12 +54,7 @@ export default async function Home() {
             <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
               {/* Left — Text Content */}
               <div className="flex-1 text-center md:text-left">
-                <FadeInUp delay={0.1}>
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 text-[#C62828] text-xs font-semibold uppercase tracking-wider mb-6">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#C62828]" />
-                    Platform Katalog Resmi
-                  </div>
-                </FadeInUp>
+
                 <FadeInUp delay={0.2}>
                   <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-[1.15] mb-6">
                     Mendukung Ekosistem{' '}
@@ -94,29 +90,10 @@ export default async function Home() {
                 </FadeInUp>
               </div>
 
-              {/* Right — Visual */}
-              <div className="flex-1 relative w-full max-w-md md:max-w-none">
+              {/* Right — Mascot with Quote */}
+              <div className="flex-1 flex justify-center items-center">
                 <FadeInUp delay={0.3}>
-                  <div className="relative">
-                    {/* Decorative blobs behind the image */}
-                    <div className="absolute -top-6 -right-6 w-48 h-48 bg-red-100 rounded-full opacity-60 blur-2xl" />
-                    <div className="absolute -bottom-6 -left-6 w-40 h-40 bg-amber-100 rounded-full opacity-60 blur-2xl" />
-                    <div className="relative bg-white rounded-3xl shadow-lg border border-gray-100 p-4 md:p-6">
-                      <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-gray-50">
-                        <Image 
-                          src="/images/LOGO.png" 
-                          alt="HIPMORA" 
-                          fill 
-                          className="object-contain p-8" 
-                          priority 
-                        />
-                      </div>
-                      <div className="mt-4 text-center">
-                        <p className="text-sm font-semibold text-gray-800">HIPMORA Kesatuan</p>
-                        <p className="text-xs text-gray-400 mt-1">Himpunan Pengusaha Muda</p>
-                      </div>
-                    </div>
-                  </div>
+                  <MascotWithQuote />
                 </FadeInUp>
               </div>
             </div>
@@ -259,13 +236,9 @@ export default async function Home() {
             <div>
               <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Kontak</h3>
               <ul className="space-y-3 text-sm text-gray-500">
-                <li className="flex items-start gap-2.5">
-                  <svg className="h-4 w-4 text-[#C62828] shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                  <span>Kampus Utama</span>
-                </li>
                 <li className="flex items-center gap-2.5">
                   <svg className="h-4 w-4 text-[#C62828] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                  <span>info@hipmora.org</span>
+                  <span>hipmikatalog@gmail.com</span>
                 </li>
               </ul>
             </div>

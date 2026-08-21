@@ -26,63 +26,62 @@ export default function WishlistPage() {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-neutral-950 flex items-center justify-center text-white">
+      <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center text-gray-500">
         Memuat...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-300 font-sans selection:bg-red-500/30">
+    <div className="min-h-screen bg-[#FAFAF8] text-gray-800 font-sans">
       {/* Navbar */}
       <PublicHeader user={user} />
 
       <main className="relative z-10 py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Produk Favorit</h1>
-            <p className="text-neutral-400 max-w-xl text-lg">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Produk Favorit</h1>
+            <p className="text-gray-500 max-w-xl text-lg">
               Daftar produk yang telah Anda simpan.
             </p>
           </div>
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {wishlist.length === 0 ? (
-              <div className="col-span-full text-center py-12 text-neutral-500">
+              <div className="col-span-full text-center py-12 text-gray-400">
                 Belum ada produk favorit yang disimpan.
               </div>
             ) : (
               wishlist.map((product) => (
-                <div key={product._id} className="group rounded-3xl bg-white/5 border border-white/10 hover:border-red-500/50 overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(220,38,38,0.15)] hover:-translate-y-2 flex flex-col">
-                  <div className="relative h-72 w-full bg-neutral-800 overflow-hidden">
+                <div key={product._id} className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col">
+                  <div className="relative h-48 md:h-64 w-full bg-gray-50 overflow-hidden">
                     <Link href={`/products/${product._id}`}>
                       <Image 
                         src={product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png'} 
                         alt={product.name || 'Produk'} 
                         fill 
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 cursor-pointer" 
+                        className="object-cover group-hover:scale-105 transition-transform duration-500 cursor-pointer" 
                       />
                     </Link>
-                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/40 to-transparent pointer-events-none" />
-                    <div className="absolute top-5 right-5 flex flex-col items-end gap-2 pointer-events-none">
-                      <div className="bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-semibold text-white border border-white/10">
+                    <div className="absolute top-3 left-3 flex flex-col items-start gap-2">
+                      <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] md:text-xs font-medium text-gray-700 shadow-sm">
                         {product.category || 'Lainnya'}
-                      </div>
+                      </span>
                       {product.isFeatured && (
-                        <div className="bg-gradient-to-r from-amber-500 to-orange-600 px-4 py-1.5 rounded-full text-xs font-bold text-white shadow-[0_0_15px_rgba(245,158,11,0.5)] border border-amber-300/30">
-                          Unggulan 🔥
-                        </div>
+                        <span className="bg-amber-400 px-3 py-1 rounded-full text-[10px] md:text-xs font-semibold text-amber-900 shadow-sm">
+                          ⭐ Unggulan
+                        </span>
                       )}
                     </div>
                     <WishlistButton product={product} />
                   </div>
-                  <div className="p-8 flex-1 flex flex-col relative -mt-6">
+                  <div className="p-4 md:p-5 flex-1 flex flex-col">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <p className="text-sm text-red-400 font-medium">{product.owner?.name || 'HIPMORA Tenant'}</p>
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <p className="text-xs md:text-sm text-gray-400 font-medium">{product.owner?.name || 'HIPMORA Tenant'}</p>
                         {product.region && (
-                          <span className="flex items-center text-xs text-neutral-400">
+                          <span className="flex items-center text-xs text-gray-400">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
                               <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                             </svg>
@@ -91,14 +90,14 @@ export default function WishlistPage() {
                         )}
                       </div>
                       <Link href={`/products/${product._id}`}>
-                        <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-red-300 transition-colors cursor-pointer">{product.name || 'Produk Tanpa Nama'}</h3>
+                        <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2 group-hover:text-[#C62828] transition-colors cursor-pointer">{product.name || 'Produk Tanpa Nama'}</h3>
                       </Link>
-                      <p className="text-neutral-400 text-sm leading-relaxed line-clamp-2">{product.description || '-'}</p>
+                      <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">{product.description || '-'}</p>
                     </div>
-                    <div className="mt-8 flex items-center justify-between">
+                    <div className="mt-4 flex items-center justify-between">
                       <div className="flex flex-col">
-                        <span className="text-xs text-neutral-500 mb-1">Harga</span>
-                        <span className="text-2xl font-bold text-white">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
+                        <span className="text-xs text-gray-400 mb-0.5">Harga</span>
+                        <span className="text-lg md:text-xl font-bold text-[#C62828]">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
                       </div>
                       <AddToCartButton product={product} />
                     </div>

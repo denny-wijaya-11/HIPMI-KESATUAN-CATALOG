@@ -67,32 +67,27 @@ export default function CheckoutPage() {
   };
 
   if (!isLoaded) {
-    return <div className="min-h-screen bg-neutral-950 flex items-center justify-center text-white">Memuat...</div>;
+    return <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center text-gray-500">Memuat...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-300 font-sans selection:bg-red-500/30 flex flex-col">
-      {/* Background Elements */}
-      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(220,38,38,0.1)_0,transparent_50%)] animate-pulse" />
-      </div>
-
+    <div className="min-h-screen bg-[#FAFAF8] text-gray-800 font-sans flex flex-col">
       {/* Navbar */}
-      <header className="sticky top-0 z-50 bg-neutral-950/40 backdrop-blur-md border-b border-white/5">
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-28">
-            <div className="flex items-center group cursor-pointer h-full py-2">
+          <div className="flex justify-between items-center h-16 md:h-20">
+            <div className="flex items-center h-full py-2">
               <Link href="/">
-                <div className="relative w-64 h-full flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                  <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain" priority sizes="(max-width: 768px) 100vw, 256px" />
+                <div className="relative w-32 md:w-48 h-full min-h-[40px] flex items-center justify-center">
+                  <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain" priority sizes="(max-width: 768px) 128px, 192px" />
                 </div>
               </Link>
             </div>
-            <nav className="hidden md:flex space-x-10">
-              <Link href="/" className="text-sm font-medium text-neutral-300 hover:text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-red-500 hover:after:w-full after:transition-all after:duration-300 pb-1">Beranda</Link>
-              <Link href="/products" className="text-sm font-medium text-neutral-300 hover:text-white transition-colors relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-red-500 hover:after:w-full after:transition-all after:duration-300 pb-1">Produk</Link>
+            <nav className="hidden md:flex space-x-8">
+              <Link href="/" className="text-sm font-medium text-gray-600 hover:text-[#C62828] transition-colors">Beranda</Link>
+              <Link href="/products" className="text-sm font-medium text-gray-600 hover:text-[#C62828] transition-colors">Produk</Link>
             </nav>
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-4">
               <CartIcon />
             </div>
           </div>
@@ -100,46 +95,46 @@ export default function CheckoutPage() {
       </header>
 
       <main className="relative z-10 flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12">
-        <h1 className="text-3xl font-bold text-white mb-8">Keranjang Belanja</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">Keranjang Belanja</h1>
 
         {cart.length === 0 ? (
-          <div className="text-center py-20 bg-white/5 rounded-3xl border border-white/10">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-neutral-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="text-center py-16 bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
-            <h2 className="text-xl font-semibold text-white mb-2">Keranjang Anda kosong</h2>
-            <p className="text-neutral-500 mb-6">Ayo temukan produk menarik di katalog kami!</p>
-            <Link href="/products" className="bg-red-600 text-white px-8 py-3 rounded-full hover:bg-red-700 transition-colors">
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">Keranjang Anda kosong</h2>
+            <p className="text-gray-400 text-sm mb-6">Ayo temukan produk menarik di katalog kami!</p>
+            <Link href="/products" className="bg-[#C62828] text-white px-6 py-2.5 rounded-full hover:bg-[#8E0000] transition-colors text-sm font-semibold">
               Mulai Belanja
             </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-4">
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between">
+              <div className="bg-white border border-gray-100 rounded-xl p-4 flex items-center justify-between shadow-sm">
                 <div className="flex items-center gap-3">
                   <input 
                     type="checkbox" 
                     checked={selectedItems.length === cart.length && cart.length > 0}
                     onChange={toggleSelectAll}
-                    className="w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-600 cursor-pointer"
+                    className="w-4 h-4 rounded border-gray-300 text-[#C62828] focus:ring-[#C62828] cursor-pointer"
                   />
-                  <span className="font-medium text-white">Pilih Semua ({cart.length})</span>
+                  <span className="font-medium text-gray-900 text-sm">Pilih Semua ({cart.length})</span>
                 </div>
-                <button onClick={clearCart} className="text-sm text-red-400 hover:text-red-300">
+                <button onClick={clearCart} className="text-sm text-red-500 hover:text-red-700">
                   Hapus Semua
                 </button>
               </div>
 
               {cart.map((item) => (
-                <div key={item._id} className="bg-white/5 border border-white/10 rounded-2xl p-4 flex gap-4 items-center">
+                <div key={item._id} className="bg-white border border-gray-100 rounded-xl p-4 flex gap-4 items-center shadow-sm">
                   <input 
                     type="checkbox" 
                     checked={selectedItems.includes(item._id)}
                     onChange={() => toggleSelect(item._id)}
-                    className="w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-600 cursor-pointer"
+                    className="w-4 h-4 rounded border-gray-300 text-[#C62828] focus:ring-[#C62828] cursor-pointer"
                   />
-                  <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-neutral-800 shrink-0">
+                  <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-50 shrink-0">
                     <Image 
                       src={item.image || '/images/placeholder.png'} 
                       alt={item.name} 
@@ -148,20 +143,20 @@ export default function CheckoutPage() {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-neutral-500 mb-1">{item.ownerName || 'Kategori'}</p>
-                    <h3 className="text-lg font-semibold text-white truncate">{item.name}</h3>
-                    <p className="text-red-400 font-bold mt-1">Rp {Number(item.price).toLocaleString('id-ID')}</p>
+                    <p className="text-xs text-gray-400 mb-0.5">{item.ownerName || 'Kategori'}</p>
+                    <h3 className="text-sm font-semibold text-gray-900 truncate">{item.name}</h3>
+                    <p className="text-[#C62828] font-bold text-sm mt-0.5">Rp {Number(item.price).toLocaleString('id-ID')}</p>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <button 
                       onClick={() => updateQuantity(item._id, item.quantity - 1)}
                       disabled={item.quantity <= 1}
-                      className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-800 text-white hover:bg-neutral-700 disabled:opacity-50"
+                      className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 text-sm"
                     >-</button>
-                    <span className="w-6 text-center font-medium text-white">{item.quantity}</span>
+                    <span className="w-5 text-center font-medium text-gray-900 text-sm">{item.quantity}</span>
                     <button 
                       onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                      className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-800 text-white hover:bg-neutral-700"
+                      className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm"
                     >+</button>
                   </div>
                 </div>
@@ -169,27 +164,27 @@ export default function CheckoutPage() {
             </div>
 
             <div className="lg:col-span-1">
-              <div className="bg-white/5 border border-white/10 rounded-3xl p-6 sticky top-36">
-                <h3 className="text-xl font-bold text-white mb-6">Ringkasan Belanja</h3>
-                <div className="space-y-4 mb-6">
-                  <div className="flex justify-between text-neutral-400">
+              <div className="bg-white border border-gray-100 rounded-2xl p-6 sticky top-24 shadow-sm">
+                <h3 className="text-lg font-bold text-gray-900 mb-5">Ringkasan Belanja</h3>
+                <div className="space-y-3 mb-5">
+                  <div className="flex justify-between text-gray-500 text-sm">
                     <span>Total Harga ({selectedItems.length} barang)</span>
                     <span>Rp {calculateTotal().toLocaleString('id-ID')}</span>
                   </div>
-                  <div className="flex justify-between text-neutral-400">
+                  <div className="flex justify-between text-gray-500 text-sm">
                     <span>Biaya Layanan</span>
                     <span>Rp 0</span>
                   </div>
-                  <hr className="border-white/10" />
-                  <div className="flex justify-between text-white font-bold text-lg">
+                  <hr className="border-gray-100" />
+                  <div className="flex justify-between text-gray-900 font-bold text-base">
                     <span>Total Tagihan</span>
-                    <span className="text-red-400">Rp {calculateTotal().toLocaleString('id-ID')}</span>
+                    <span className="text-[#C62828]">Rp {calculateTotal().toLocaleString('id-ID')}</span>
                   </div>
                 </div>
                 <button 
                   onClick={handleCheckout}
                   disabled={selectedItems.length === 0 || isCheckingOut}
-                  className="w-full bg-red-600 text-white font-bold py-4 rounded-2xl hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(220,38,38,0.3)]"
+                  className="w-full bg-[#C62828] text-white font-semibold py-3 rounded-xl hover:bg-[#8E0000] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm text-sm"
                 >
                   {isCheckingOut ? 'Memproses...' : 'Beli Sekarang'}
                 </button>
@@ -201,10 +196,10 @@ export default function CheckoutPage() {
 
       {/* Success Modal Simulation */}
       {showSuccessModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="bg-neutral-900 border border-white/10 p-6 sm:p-8 rounded-3xl max-w-md w-full text-center animate-in zoom-in duration-300 my-8">
-            <h2 className="text-2xl font-bold text-white mb-2">Selesaikan Pembayaran</h2>
-            <p className="text-neutral-400 mb-6 text-sm">Silakan scan QRIS di bawah ini menggunakan aplikasi M-Banking atau e-Wallet pilihan Anda.</p>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-white border border-gray-100 p-6 sm:p-8 rounded-2xl max-w-md w-full text-center shadow-xl my-8">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Selesaikan Pembayaran</h2>
+            <p className="text-gray-500 mb-5 text-sm">Silakan scan QRIS di bawah ini menggunakan aplikasi M-Banking atau e-Wallet pilihan Anda.</p>
             
             <div className="bg-white p-4 rounded-2xl inline-block mb-6 shadow-xl relative w-64 h-64 mx-auto">
               <Image 
@@ -215,9 +210,9 @@ export default function CheckoutPage() {
               />
             </div>
             
-            <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-8">
-              <p className="text-sm text-neutral-400 mb-1">Total Tagihan:</p>
-              <p className="text-2xl font-bold text-red-400">Rp {calculateTotal().toLocaleString('id-ID')}</p>
+            <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 mb-6">
+              <p className="text-sm text-gray-500 mb-1">Total Tagihan:</p>
+              <p className="text-2xl font-bold text-[#C62828]">Rp {calculateTotal().toLocaleString('id-ID')}</p>
             </div>
 
             <div className="space-y-3">
@@ -240,7 +235,7 @@ export default function CheckoutPage() {
               </a>
               <button 
                 onClick={() => setShowSuccessModal(false)}
-                className="w-full bg-white/10 hover:bg-white/20 text-white font-semibold py-3.5 rounded-xl transition-colors"
+                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-colors text-sm"
               >
                 Tutup
               </button>

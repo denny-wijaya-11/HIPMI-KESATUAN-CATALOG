@@ -44,24 +44,24 @@ export default async function ProductDetailPage({ params }) {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-300 font-sans selection:bg-red-500/30">
+    <div className="min-h-screen bg-[#FAFAF8] text-gray-800 font-sans">
       <PublicHeader user={user} />
 
-      <main className="relative z-10 py-12 md:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <main className="py-6 md:py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="mb-8">
-            <Link href="/products" className="inline-flex items-center text-sm text-neutral-400 hover:text-white transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="mb-6">
+            <Link href="/products" className="inline-flex items-center text-sm text-gray-500 hover:text-[#C62828] transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
               Kembali ke Katalog
             </Link>
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden backdrop-blur-sm">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="grid md:grid-cols-2 gap-0">
-              <div className="relative h-96 md:h-full min-h-[400px] w-full bg-neutral-800">
+              <div className="relative h-72 sm:h-96 md:h-full md:min-h-[450px] w-full bg-gray-50">
                 <Image 
                   src={product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png'} 
                   alt={product.name} 
@@ -71,73 +71,71 @@ export default async function ProductDetailPage({ params }) {
                 />
                 <WishlistButton product={JSON.parse(JSON.stringify(product))} />
               </div>
-              <div className="p-8 md:p-12 flex flex-col justify-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-800/50 border border-white/10 text-neutral-300 text-xs font-semibold uppercase tracking-wider mb-6 w-fit">
+              <div className="p-6 sm:p-8 md:p-10 flex flex-col justify-center">
+                <span className="inline-block bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-medium mb-4 w-fit">
                   {product.category || 'Lainnya'}
-                </div>
-                <h1 className="text-4xl font-bold text-white mb-4">{product.name}</h1>
-                <p className="text-red-400 font-medium mb-8">Oleh: {product.owner?.name || 'HIPMORA Tenant'}</p>
+                </span>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">{product.name}</h1>
+                <p className="text-[#C62828] text-sm font-medium mb-6">Oleh: {product.owner?.name || 'HIPMORA Tenant'}</p>
                 
-                <div className="mb-8">
-                  <h3 className="text-sm font-semibold text-neutral-500 uppercase tracking-wider mb-3">Deskripsi Produk</h3>
-                  <p className="text-neutral-300 leading-relaxed whitespace-pre-wrap">
+                <div className="mb-6">
+                  <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Deskripsi Produk</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-wrap">
                     {product.description || 'Tidak ada deskripsi.'}
                   </p>
                 </div>
                 
-                <div className="mt-auto pt-8 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div className="mt-auto pt-6 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <span className="block text-sm text-neutral-500 mb-1">Harga</span>
-                    <span className="text-3xl font-bold text-white">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
+                    <span className="block text-xs text-gray-400 mb-0.5">Harga</span>
+                    <span className="text-2xl sm:text-3xl font-bold text-[#C62828]">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
                   </div>
-                  <div className="flex flex-col sm:flex-row items-center gap-3">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
                     <Link
                       href={`/chat?userId=${product.owner?._id}&userName=${product.owner?.name}&productId=${product._id}`}
-                      className="inline-flex items-center justify-center rounded-full bg-white/10 px-6 py-3 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white/20 hover:bg-white/20 transition-all sm:w-auto w-full whitespace-nowrap"
+                      className="inline-flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-700 transition-colors"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                       </svg>
                       Chat Penjual
                     </Link>
-                    <div className="transform origin-center sm:scale-110 w-full sm:w-auto">
-                      <AddToCartButton product={JSON.parse(JSON.stringify(product))} />
-                    </div>
+                    <AddToCartButton product={JSON.parse(JSON.stringify(product))} />
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Related Products Section */}
+          {/* Related Products */}
           {relatedProducts.length > 0 && (
-            <div className="mt-24">
-              <div className="flex items-center justify-between mb-10">
-                <h2 className="text-3xl font-bold text-white">Mungkin Anda Suka</h2>
-                <Link href={`/products?category=${product.category}`} className="text-red-400 hover:text-red-300 text-sm font-medium transition-colors hidden sm:block">
+            <div className="mt-12 md:mt-16">
+              <div className="flex items-center justify-between mb-6 md:mb-8">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900">Mungkin Anda Suka</h2>
+                <Link href={`/products?category=${product.category}`} className="text-[#C62828] hover:text-[#8E0000] text-sm font-medium transition-colors hidden sm:block">
                   Lihat Lebih Banyak &rarr;
                 </Link>
               </div>
-              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-3 md:gap-6 grid-cols-2 lg:grid-cols-4">
                 {relatedProducts.map((relProduct) => (
-                  <div key={relProduct._id.toString()} className="group rounded-3xl bg-white/5 border border-white/10 hover:border-red-500/50 overflow-hidden transition-all duration-500 hover:shadow-[0_0_40px_rgba(220,38,38,0.15)] flex flex-col">
-                    <div className="relative h-56 w-full bg-neutral-800 overflow-hidden">
+                  <div key={relProduct._id.toString()} className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col">
+                    <div className="relative h-28 sm:h-36 md:h-48 w-full bg-gray-50 overflow-hidden">
                       <Link href={`/products/${relProduct._id}`}>
                         <Image 
                           src={relProduct.image && relProduct.image.startsWith('http') ? relProduct.image : '/images/placeholder.png'} 
                           alt={relProduct.name || 'Produk'} 
                           fill 
-                          sizes="(max-width: 768px) 100vw, 25vw"
-                          className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 cursor-pointer" 
+                          sizes="(max-width: 768px) 50vw, 25vw"
+                          className="object-cover group-hover:scale-105 transition-transform duration-500 cursor-pointer" 
                         />
                       </Link>
                       <WishlistButton product={JSON.parse(JSON.stringify(relProduct))} />
                     </div>
-                    <div className="p-5 flex-1 flex flex-col">
+                    <div className="p-3 md:p-4 flex-1 flex flex-col">
                       <Link href={`/products/${relProduct._id}`}>
-                        <h3 className="text-lg font-bold text-white mb-1 group-hover:text-red-300 transition-colors cursor-pointer line-clamp-1">{relProduct.name}</h3>
+                        <h3 className="text-xs sm:text-sm font-semibold text-gray-900 mb-1 group-hover:text-[#C62828] transition-colors cursor-pointer line-clamp-2 leading-snug">{relProduct.name}</h3>
                       </Link>
-                      <span className="text-lg font-bold text-white mt-auto">Rp {relProduct.price ? Number(relProduct.price).toLocaleString('id-ID') : '0'}</span>
+                      <span className="text-xs sm:text-sm font-bold text-[#C62828] mt-auto">Rp {relProduct.price ? Number(relProduct.price).toLocaleString('id-ID') : '0'}</span>
                     </div>
                   </div>
                 ))}
