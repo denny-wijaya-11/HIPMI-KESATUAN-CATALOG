@@ -79,12 +79,15 @@ export async function POST(request) {
 
     const savedOrders = await Promise.all(orderPromises);
 
+    // Ambil data pembeli
+    const buyerUser = await User.findById(payload.id);
+
     // Send notifications and emails
     for (const order of savedOrders) {
       try {
         const tenantUser = await User.findById(order.tenant);
         
-        // 1. Create In-App Notification
+        // 1. Create In-App Notification untuk tenant
         await Notification.create({
           recipient: order.tenant,
           title: 'Pesanan Baru!',
@@ -93,10 +96,10 @@ export async function POST(request) {
           link: '/tenant/orders'
         });
 
-        // 2. Send Email via Resend
+        // 2. Kirim Email ke Tenant (Notifikasi pesanan baru)
         if (tenantUser && tenantUser.email && process.env.RESEND_API_KEY) {
           await resend.emails.send({
-            from: 'HIPMORA <onboarding@resend.dev>',
+            from: 'HIPMORA <onboarding@resend.dev>', // Nanti ganti dengan domain sendiri
             to: tenantUser.email,
             subject: 'Ada Pesanan Baru di Toko Anda! 🎉',
             html: `
@@ -110,6 +113,29 @@ export async function POST(request) {
         }
       } catch (notifErr) {
         console.error('Failed to send notification for order', order._id, notifErr);
+      }
+    }
+
+    // 3. Kirim Email Konfirmasi ke Pembeli menggunakan Template "hipmora-order-confirm"
+    if (buyerUser && buyerUser.email && process.env.RESEND_API_KEY) {
+      const totalSemuaPesanan = savedOrders.reduce((total, order) => total + order.totalAmount, 0);
+      
+      try {
+        const { sendTemplateEmail } = await import('@/lib/email');
+        await sendTemplateEmail(
+          buyerUser.email,
+          'hipmora-order-confirm',
+          'Pesanan Anda Sedang Diproses - HIPMORA',
+          {
+            name: buyerUser.name || 'Pelanggan',
+            // Kita kumpulkan nama produk yang dibeli
+            nama_produk: items.length === 1 ? '1 Produk' : `${items.length} Produk`,
+            total_harga: `Rp ${totalSemuaPesanan.toLocaleString('id-ID')}`,
+            id_invoice: savedOrders[0]._id.toString().substring(0, 8).toUpperCase()
+          }
+        );
+      } catch (buyerEmailErr) {
+        console.error('Gagal mengirim email template ke pembeli', buyerEmailErr);
       }
     }
 
