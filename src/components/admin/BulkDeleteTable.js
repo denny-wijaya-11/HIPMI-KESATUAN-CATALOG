@@ -150,23 +150,23 @@ export default function BulkDeleteTable({ products, userRole }) {
         </div>
       )}
 
-      <div className="-my-2 -mx-4 sm:-mx-6 lg:-mx-8">
+      <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
           <div className="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-300">
               <thead className="bg-gray-50">
                 <tr>
                   {userRole !== 'operator' && (
-                    <th scope="col" className="relative px-4 sm:px-6 sm:w-12">
+                    <th scope="col" className="relative px-2 sm:px-6 sm:w-12">
                       <input
                         type="checkbox"
-                        className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
+                        className="absolute left-2 sm:left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
                         checked={selectedIds.length === products.length && products.length > 0}
                         onChange={handleSelectAll}
                       />
                     </th>
                   )}
-                  <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                  <th scope="col" className="py-3.5 pl-2 pr-2 text-left text-sm font-semibold text-gray-900 sm:pl-6">
                     Produk
                   </th>
                   <th scope="col" className="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
@@ -186,7 +186,7 @@ export default function BulkDeleteTable({ products, userRole }) {
                       Pemilik (UKM)
                     </th>
                   )}
-                  <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6 w-20">
+                  <th scope="col" className="relative py-3.5 pl-1 pr-2 sm:pr-6 w-16">
                     <span className="sr-only">Aksi</span>
                   </th>
                 </tr>
@@ -197,18 +197,18 @@ export default function BulkDeleteTable({ products, userRole }) {
                   return (
                     <tr key={product._id} className={`${isSelected ? 'bg-red-50' : ''} ${product.isHidden ? 'opacity-60 bg-gray-50' : ''}`}>
                       {userRole !== 'operator' && (
-                        <td className="relative px-4 sm:px-6 sm:w-12">
+                        <td className="relative px-2 sm:px-6 sm:w-12">
                           {isSelected && <div className="absolute inset-y-0 left-0 w-0.5 bg-red-600" />}
                           <input
                             type="checkbox"
-                            className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
+                            className="absolute left-2 sm:left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
                             value={product._id}
                             checked={isSelected}
                             onChange={(e) => handleSelectOne(e, product._id)}
                           />
                         </td>
                       )}
-                      <td className={`whitespace-nowrap py-3 sm:py-4 pr-1 sm:pr-3 text-sm ${userRole !== 'operator' ? 'pl-1 sm:pl-6' : 'pl-2 sm:pl-6'}`}>
+                      <td className={`whitespace-nowrap py-3 sm:py-4 pr-1 sm:pr-3 text-sm pl-0 sm:pl-6`}>
                         <div className="flex items-center">
                           <div className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0 relative rounded bg-gray-100 overflow-hidden border border-gray-200">
                             <Image 
@@ -218,12 +218,12 @@ export default function BulkDeleteTable({ products, userRole }) {
                               className="object-cover"
                             />
                           </div>
-                          <div className="ml-2 sm:ml-4 flex-1 min-w-0 max-w-[120px] sm:max-w-xs">
-                            <div className="font-semibold sm:font-medium text-gray-900 truncate text-[13px] sm:text-sm">{product.name || 'Produk Tanpa Nama'}</div>
+                          <div className="ml-2 sm:ml-4 flex-1 min-w-0 max-w-[110px] sm:max-w-xs">
+                            <div className="font-semibold sm:font-medium text-gray-900 truncate text-[12px] sm:text-sm">{product.name || 'Produk Tanpa Nama'}</div>
                             
                             {/* Mobile info */}
                             <div className="sm:hidden mt-0 flex flex-col">
-                              <span className="text-gray-900 font-bold text-[11px]">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
+                              <span className="text-gray-900 font-bold text-[10px]">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
                               <span className="text-gray-500 text-[9px] truncate">{product.category || 'Lainnya'}</span>
                             </div>
 
@@ -263,16 +263,16 @@ export default function BulkDeleteTable({ products, userRole }) {
                           {product.owner?.name || 'Unknown'}
                         </td>
                       )}
-                      <td className="relative whitespace-nowrap py-3 sm:py-4 pl-1 sm:pl-2 pr-2 sm:pr-6 text-right text-sm font-medium">
+                      <td className="relative whitespace-nowrap py-3 sm:py-4 pl-0 pr-2 sm:pr-6 text-right text-sm font-medium">
                         <div className="flex flex-col sm:flex-row items-end sm:items-center justify-end gap-1.5 sm:gap-3">
-                          <div className="flex items-center gap-1.5 sm:gap-3">
+                          <div className="flex items-center gap-1 sm:gap-3">
                             <ToggleHiddenButton productId={product._id} initialIsHidden={product.isHidden} />
-                            <Link href={`/admin/products/${product._id}/edit`} className="text-blue-600 hover:text-blue-900 text-[10px] sm:text-xs bg-blue-50 px-2 py-0.5 sm:py-1 rounded font-semibold border border-blue-100">
+                            <Link href={`/admin/products/${product._id}/edit`} className="text-blue-600 hover:text-blue-900 text-[10px] sm:text-xs bg-blue-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded font-semibold border border-blue-100">
                               Edit
                             </Link>
                           </div>
                           {userRole !== 'operator' && (
-                            <div className="transform scale-90 sm:scale-100 origin-right">
+                            <div className="sm:scale-100 origin-right text-[10px] sm:text-sm">
                               <DeleteProductButton productId={product._id} />
                             </div>
                           )}
