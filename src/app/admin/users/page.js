@@ -69,7 +69,7 @@ export default async function UsersPage() {
                     <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
                       Nama
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th scope="col" className="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Email
                     </th>
                     <th scope="col" className="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
@@ -81,7 +81,7 @@ export default async function UsersPage() {
                     <th scope="col" className="hidden xl:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Terdaftar Pada
                     </th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6 w-24">
                       <span className="sr-only">Aksi</span>
                     </th>
                   </tr>
@@ -89,19 +89,22 @@ export default async function UsersPage() {
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {users.map((user) => (
                     <tr key={user._id.toString()}>
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 max-w-[150px] truncate">
                         {user.name}
-                        {/* Mobile view metadata (Role) */}
-                        <div className="sm:hidden mt-1">
-                          <span className={`inline-flex rounded-full px-2 text-[10px] font-semibold leading-5 
-                            ${user.role === 'developer' ? 'bg-purple-100 text-purple-800' : 
-                              user.role === 'admin' ? 'bg-green-100 text-green-800' : 
-                              'bg-red-100 text-red-800'}`}>
-                            {user.role}
-                          </span>
+                        {/* Mobile view metadata (Role and Email) */}
+                        <div className="sm:hidden mt-1 flex flex-col gap-1">
+                          <span className="text-gray-500 text-xs truncate font-normal">{user.email}</span>
+                          <div>
+                            <span className={`inline-flex rounded-full px-2 text-[10px] font-semibold leading-5 
+                              ${user.role === 'developer' ? 'bg-purple-100 text-purple-800' : 
+                                user.role === 'admin' ? 'bg-green-100 text-green-800' : 
+                                'bg-red-100 text-red-800'}`}>
+                              {user.role}
+                            </span>
+                          </div>
                         </div>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{user.email}</td>
+                      <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500">{user.email}</td>
                       <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         <span className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 
                           ${user.role === 'developer' ? 'bg-purple-100 text-purple-800' : 
@@ -117,9 +120,9 @@ export default async function UsersPage() {
                         {new Date(user.createdAt).toLocaleDateString('id-ID')}
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <div className="flex justify-end gap-2 md:gap-3">
-                          <Link href={`/admin/users/${user._id.toString()}/edit`} className="text-red-600 hover:text-red-900">
-                            Edit<span className="sr-only">, {user.name}</span>
+                        <div className="flex justify-end gap-3 items-center">
+                          <Link href={`/admin/users/${user._id.toString()}/edit`} className="text-blue-600 hover:text-blue-900 text-xs bg-blue-50 px-2 py-1 rounded">
+                            Edit
                           </Link>
                           <DeleteUserButton userId={user._id.toString()} />
                         </div>
