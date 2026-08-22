@@ -128,50 +128,54 @@ function ChatContent() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-64px)] bg-gray-100 overflow-hidden pt-16">
+    <div className="flex h-[calc(100vh-64px)] bg-[#f0f2f5] overflow-hidden pt-16 font-sans">
       {/* Sidebar - Contacts (Hidden on mobile if a chat is active) */}
-      <div className={`w-full md:w-80 bg-white border-r border-gray-200 flex flex-col ${activeContact ? 'hidden md:flex' : 'flex'}`}>
-        <div className="p-4 border-b border-gray-200 flex items-center justify-between bg-white">
+      <div className={`w-full md:w-[350px] lg:w-[400px] bg-white border-r border-gray-200 flex flex-col ${activeContact ? 'hidden md:flex' : 'flex'}`}>
+        <div className="h-16 px-4 border-b border-gray-200 flex items-center justify-between bg-white shrink-0 z-10">
           <h2 className="text-xl font-bold text-gray-800">Pesan</h2>
-          <Link href="/" className="text-sm text-gray-500 hover:text-red-600">
-            Tutup
+          <Link href="/" className="text-sm font-medium text-gray-500 hover:text-[#C62828] transition-colors">
+            Kembali
           </Link>
         </div>
         
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto custom-scrollbar bg-white">
           {contacts.length === 0 && !presetUserId ? (
-            <div className="p-6 text-center text-gray-500 text-sm">
-              Belum ada pesan. Mulai obrolan dengan penjual dari halaman produk.
+            <div className="p-8 flex flex-col items-center justify-center text-center h-full text-gray-500">
+              <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+              </div>
+              <p className="text-sm">Belum ada percakapan.</p>
+              <p className="text-xs mt-1 text-gray-400">Mulai obrolan dari halaman detail produk.</p>
             </div>
           ) : (
             contacts.map(({ contact, lastMessage, unreadCount }) => (
               <div 
                 key={contact._id} 
                 onClick={() => setActiveContact(contact)}
-                className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors flex items-center gap-3 ${activeContact?._id === contact._id ? 'bg-red-50' : ''}`}
+                className={`px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors flex items-center gap-3 border-b border-gray-100 ${activeContact?._id === contact._id ? 'bg-gray-100/60' : ''}`}
               >
                 {contact.avatar ? (
-                  <img src={contact.avatar} alt={contact.name} className="w-12 h-12 rounded-full object-cover shrink-0 border border-gray-200" />
+                  <img src={contact.avatar} alt={contact.name} className="w-12 h-12 rounded-full object-cover shrink-0 border border-gray-100 shadow-sm" />
                 ) : (
-                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-800 font-bold shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-red-50 rounded-full flex items-center justify-center text-[#C62828] font-bold shrink-0 border border-red-100">
                     {contact.name.charAt(0).toUpperCase()}
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-baseline mb-1">
-                    <h3 className="text-sm font-semibold text-gray-900 truncate">{contact.name}</h3>
+                  <div className="flex justify-between items-baseline mb-0.5">
+                    <h3 className="text-[15px] font-semibold text-gray-900 truncate">{contact.name}</h3>
                     {lastMessage && (
-                      <span className="text-xs text-gray-400 shrink-0">
+                      <span className={`text-[11px] shrink-0 ${unreadCount > 0 ? 'text-[#C62828] font-semibold' : 'text-gray-400'}`}>
                         {new Date(lastMessage.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-700 truncate">
+                  <p className={`text-sm truncate ${unreadCount > 0 ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
                     {lastMessage?.content || 'Mulai obrolan baru...'}
                   </p>
                 </div>
                 {unreadCount > 0 && (
-                  <div className="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0">
+                  <div className="w-5 h-5 bg-[#C62828] rounded-full flex items-center justify-center text-white text-[11px] font-bold shrink-0 shadow-sm">
                     {unreadCount}
                   </div>
                 )}
@@ -182,36 +186,49 @@ function ChatContent() {
       </div>
 
       {/* Chat Area (Hidden on mobile if no chat is active) */}
-      <div className={`flex-1 flex flex-col bg-gray-50 ${!activeContact ? 'hidden md:flex' : 'flex'}`}>
+      <div className={`flex-1 flex flex-col bg-[#efeae2] relative ${!activeContact ? 'hidden md:flex' : 'flex animate-in slide-in-from-right-2 md:animate-none duration-200'}`}>
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")' }}></div>
+        
         {activeContact ? (
           <>
             {/* Chat Header */}
-            <div className="h-16 border-b border-gray-200 bg-white flex items-center px-4 shrink-0 shadow-sm z-10">
+            <div className="h-16 bg-white flex items-center px-4 shrink-0 shadow-sm z-10 sticky top-0 border-b border-gray-200">
               <button 
                 onClick={() => setActiveContact(null)}
-                className="md:hidden mr-3 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+                className="md:hidden mr-2 p-2 -ml-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors flex items-center"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
               </button>
-              {activeContact.avatar ? (
-                <img src={activeContact.avatar} alt={activeContact.name} className="w-10 h-10 rounded-full object-cover mr-3 border border-gray-200" />
-              ) : (
-                <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-800 font-bold mr-3">
-                  {activeContact.name.charAt(0).toUpperCase()}
-                </div>
-              )}
-              <div>
-                <h2 className="text-base font-semibold text-gray-900">{activeContact.name}</h2>
-                <p className="text-xs text-gray-600">Penjual</p>
+              
+              <div className="relative mr-3">
+                {activeContact.avatar ? (
+                  <img src={activeContact.avatar} alt={activeContact.name} className="w-10 h-10 rounded-full object-cover border border-gray-200" />
+                ) : (
+                  <div className="w-10 h-10 bg-gradient-to-br from-red-100 to-red-50 rounded-full flex items-center justify-center text-[#C62828] font-bold">
+                    {activeContact.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+              </div>
+              
+              <div className="flex-1 min-w-0">
+                <h2 className="text-[15px] font-semibold text-gray-900 truncate leading-tight">{activeContact.name}</h2>
+                <p className="text-[12px] text-green-600 font-medium">Sedang Online</p>
+              </div>
+              
+              <div className="flex items-center gap-1 text-gray-400">
+                <button className="p-2 hover:bg-gray-100 rounded-full transition-colors"><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></button>
+                <button className="p-2 hover:bg-gray-100 rounded-full transition-colors"><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg></button>
               </div>
             </div>
 
             {/* Chat Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 z-10 custom-scrollbar">
               {messages.length === 0 && (
-                <div className="text-center py-10">
-                  <div className="inline-block bg-white border border-gray-200 rounded-lg px-4 py-2 text-sm text-gray-700 shadow-sm">
-                    Mulai obrolan dengan {activeContact.name}
+                <div className="flex justify-center mb-6 mt-4">
+                  <div className="bg-[#fff3c4] text-[#856404] px-4 py-2 rounded-lg text-xs md:text-sm text-center shadow-sm max-w-sm">
+                    Mulai obrolan dengan {activeContact.name}. Pesan Anda dienkripsi secara end-to-end.
                   </div>
                 </div>
               )}
@@ -220,61 +237,90 @@ function ChatContent() {
                 const isMe = msg.sender !== activeContact._id;
                 
                 return (
-                  <div key={msg._id || index} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] rounded-2xl px-4 py-2 shadow-sm ${isMe ? 'bg-red-600 text-white rounded-tr-sm' : 'bg-white text-gray-900 rounded-tl-sm border border-gray-200'}`}>
+                  <div key={msg._id || index} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-1 duration-200`}>
+                    <div className={`max-w-[85%] md:max-w-[70%] rounded-2xl px-3 pt-2 pb-1.5 shadow-sm relative ${isMe ? 'bg-[#d9fdd3] text-gray-900 rounded-tr-none' : 'bg-white text-gray-900 rounded-tl-none border border-gray-100'}`}>
+                      
+                      {/* Tail styling */}
+                      <div className={`absolute top-0 w-3 h-3 ${isMe ? '-right-2 bg-[#d9fdd3]' : '-left-2 bg-white border-l border-t border-gray-100'}`} style={{ clipPath: isMe ? 'polygon(0 0, 0% 100%, 100% 0)' : 'polygon(100% 0, 0 0, 100% 100%)' }}></div>
                       
                       {/* Optional Product Context */}
                       {msg.productContext && !isMe && (
-                        <div className="mb-2 p-2 bg-gray-50 rounded text-xs border border-gray-200 text-gray-700 flex items-center gap-2">
-                          <div className="w-8 h-8 bg-gray-200 rounded overflow-hidden relative shrink-0">
-                             {/* Product Image could go here */}
-                             <div className="w-full h-full bg-gray-300"></div>
+                        <div className="mb-2 p-2 bg-gray-50/80 rounded-xl border border-gray-200 text-gray-800 flex items-center gap-3 cursor-pointer hover:bg-gray-100 transition-colors">
+                          <div className="w-10 h-10 bg-gray-200 rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
+                             <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                           </div>
-                          <div>
-                            <p className="font-semibold line-clamp-1">{msg.productContext.name}</p>
-                            <p>Terkait produk ini</p>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-gray-500 mb-0.5">Terkait produk:</p>
+                            <p className="font-semibold text-sm line-clamp-1 leading-none">{msg.productContext.name}</p>
                           </div>
                         </div>
                       )}
 
-                      <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
-                      <div className={`text-[10px] mt-1 text-right ${isMe ? 'text-red-100' : 'text-gray-500'}`}>
+                      <p className="text-[14.5px] whitespace-pre-wrap break-words leading-relaxed pr-10">{msg.content}</p>
+                      
+                      <div className={`float-right -mb-1 ml-2 text-[10px] font-medium flex items-center gap-1 ${isMe ? 'text-green-700' : 'text-gray-400'}`}>
                         {new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        {isMe && (
+                          <svg className="w-3.5 h-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7M5 13l4 4L19 7" /></svg>
+                        )}
                       </div>
+                      <div className="clear-both"></div>
                     </div>
                   </div>
                 );
               })}
-              <div ref={messagesEndRef} />
+              <div ref={messagesEndRef} className="h-2" />
             </div>
 
             {/* Chat Input */}
-            <div className="p-3 bg-white border-t border-gray-200">
-              <form onSubmit={handleSendMessage} className="flex gap-2 max-w-4xl mx-auto">
-                <input
-                  type="text"
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Ketik pesan..."
-                  className="flex-1 bg-gray-100 border-transparent text-gray-900 focus:bg-white focus:border-red-500 focus:ring-1 focus:ring-red-500 rounded-full px-4 py-2 text-sm outline-none transition-colors"
-                />
+            <div className="p-3 md:p-4 bg-[#f0f2f5] z-10 shrink-0">
+              <form onSubmit={handleSendMessage} className="flex gap-2 max-w-4xl mx-auto items-end">
+                <button type="button" className="p-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors shrink-0">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </button>
+                <button type="button" className="p-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors shrink-0">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
+                </button>
+                
+                <div className="flex-1 bg-white rounded-3xl border border-transparent focus-within:border-gray-300 shadow-sm flex items-end">
+                  <textarea
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage(e);
+                      }
+                    }}
+                    placeholder="Ketik pesan..."
+                    className="flex-1 bg-transparent text-gray-900 border-none focus:ring-0 px-4 py-3 min-h-[44px] max-h-32 text-[15px] resize-none outline-none custom-scrollbar"
+                    rows={1}
+                    style={{ height: '44px' }}
+                  />
+                </div>
+                
                 <button
                   type="submit"
                   disabled={!newMessage.trim()}
-                  className="bg-red-600 hover:bg-red-700 text-white rounded-full p-2 w-10 h-10 flex items-center justify-center shrink-0 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className={`rounded-full p-2.5 w-[44px] h-[44px] flex items-center justify-center shrink-0 transition-colors ${newMessage.trim() ? 'bg-[#C62828] text-white hover:bg-[#8E0000] shadow-sm' : 'bg-gray-200 text-gray-400'}`}
                 >
-                  <svg className="w-5 h-5 -ml-1 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                  <svg className="w-5 h-5 -ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" /></svg>
                 </button>
               </form>
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center bg-gray-50">
-            <div className="text-center">
-              <div className="w-20 h-20 bg-white border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
-                <svg className="w-10 h-10 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-              </div>
-              <h2 className="text-xl font-semibold text-gray-800">Pilih pesan untuk mulai mengobrol</h2>
+          <div className="flex-1 flex flex-col items-center justify-center bg-[#f0f2f5] z-10 px-4 text-center">
+            <div className="w-64 h-64 md:w-80 md:h-80 relative mb-6">
+              <img src="/images/MASKOT LOGO.png" alt="HIPMORA Chat" className="w-full h-full object-contain opacity-40 grayscale" />
+            </div>
+            <h2 className="text-2xl font-light text-gray-600 mb-2">HIPMORA Web Chat</h2>
+            <p className="text-sm text-gray-400 max-w-sm">
+              Kirim dan terima pesan dari pembeli atau penjual secara real-time. Pesan dilindungi dengan enkripsi end-to-end.
+            </p>
+            <div className="mt-8 flex items-center gap-2 text-xs text-gray-400">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+              Terenkripsi secara End-to-end
             </div>
           </div>
         )}

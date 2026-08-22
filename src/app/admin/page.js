@@ -83,11 +83,11 @@ export default async function AdminDashboard() {
         {stats.map((item) => (
           <div
             key={item.name}
-            className="relative bg-white pt-5 px-4 pb-12 sm:pt-6 sm:px-6 shadow-sm rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
+            className="relative bg-white pt-4 px-4 pb-10 sm:pt-6 sm:px-6 sm:pb-12 shadow-sm rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
           >
             <dt>
-              <div className="absolute bg-red-500 rounded-lg p-3">
-                <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="absolute bg-red-500 rounded-lg p-2 sm:p-3">
+                <svg className="h-5 w-5 sm:h-6 sm:w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   {item.name.includes("Produk") ? (
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                   ) : item.name.includes("Akun") ? (
@@ -97,20 +97,20 @@ export default async function AdminDashboard() {
                   )}
                 </svg>
               </div>
-              <p className="ml-16 text-sm font-medium text-gray-500 truncate">{item.name}</p>
+              <p className="ml-12 sm:ml-16 text-xs sm:text-sm font-medium text-gray-500 truncate">{item.name}</p>
             </dt>
-            <dd className="ml-16 pb-6 flex items-baseline sm:pb-7">
-              <p className="text-2xl font-semibold text-gray-900">{item.stat}</p>
+            <dd className="ml-12 sm:ml-16 pb-4 sm:pb-7 flex items-baseline">
+              <p className="text-xl sm:text-2xl font-semibold text-gray-900">{item.stat}</p>
               <p
-                className={`ml-2 flex items-baseline text-sm font-semibold
+                className={`ml-2 flex items-baseline text-xs sm:text-sm font-semibold
                   ${item.changeType === "increase" ? "text-green-600" : "text-red-600"}
                 `}
               >
                 <span className="sr-only">{item.changeType === "increase" ? "Increased by" : "Decreased by"}</span>
                 {item.change}
               </p>
-              <div className="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-4 sm:px-6">
-                <div className="text-sm">
+              <div className="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
+                <div className="text-xs sm:text-sm">
                   <a href="#" className="font-medium text-red-600 hover:text-red-500 transition-colors">
                     Lihat detail <span className="sr-only">{item.name} stats</span>
                   </a>
@@ -169,17 +169,17 @@ export default async function AdminDashboard() {
         <div className="bg-white shadow-sm rounded-xl border border-gray-100 p-6">
           <h2 className="text-lg font-medium text-gray-900 mb-4">Aksi Cepat</h2>
           <div className="grid grid-cols-2 gap-4">
-            <Link href="/admin/products/create" className="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-xl border border-dashed border-gray-300 hover:border-red-500 hover:bg-red-50 transition-colors group">
-              <svg className="h-8 w-8 text-gray-400 group-hover:text-red-500 mb-3 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <Link href="/admin/products/create" className="flex flex-col items-center justify-center p-4 sm:p-6 bg-gray-50 rounded-xl border border-dashed border-gray-300 hover:border-red-500 hover:bg-red-50 transition-colors group">
+              <svg className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 group-hover:text-red-500 mb-2 sm:mb-3 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              <span className="text-sm font-medium text-gray-900 group-hover:text-red-700">Tambah Produk</span>
+              <span className="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-red-700">Tambah Produk</span>
             </Link>
-            <Link href="/admin/users" className="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-xl border border-dashed border-gray-300 hover:border-red-500 hover:bg-red-50 transition-colors group">
-              <svg className="h-8 w-8 text-gray-400 group-hover:text-red-500 mb-3 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <Link href="/admin/users" className="flex flex-col items-center justify-center p-4 sm:p-6 bg-gray-50 rounded-xl border border-dashed border-gray-300 hover:border-red-500 hover:bg-red-50 transition-colors group">
+              <svg className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 group-hover:text-red-500 mb-2 sm:mb-3 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
               </svg>
-              <span className="text-sm font-medium text-gray-900 group-hover:text-red-700">Kelola Akun</span>
+              <span className="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-red-700">Kelola Akun</span>
             </Link>
           </div>
         </div>
