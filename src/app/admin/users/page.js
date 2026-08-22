@@ -62,7 +62,7 @@ export default async function UsersPage() {
       <div className="mt-8 flex flex-col">
         <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+            <div className="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
@@ -72,13 +72,13 @@ export default async function UsersPage() {
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Email
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th scope="col" className="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Peran (Role)
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th scope="col" className="hidden lg:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Region/Kota
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th scope="col" className="hidden xl:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Terdaftar Pada
                     </th>
                     <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
@@ -91,9 +91,18 @@ export default async function UsersPage() {
                     <tr key={user._id.toString()}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                         {user.name}
+                        {/* Mobile view metadata (Role) */}
+                        <div className="sm:hidden mt-1">
+                          <span className={`inline-flex rounded-full px-2 text-[10px] font-semibold leading-5 
+                            ${user.role === 'developer' ? 'bg-purple-100 text-purple-800' : 
+                              user.role === 'admin' ? 'bg-green-100 text-green-800' : 
+                              'bg-red-100 text-red-800'}`}>
+                            {user.role}
+                          </span>
+                        </div>
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{user.email}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         <span className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 
                           ${user.role === 'developer' ? 'bg-purple-100 text-purple-800' : 
                             user.role === 'admin' ? 'bg-green-100 text-green-800' : 
@@ -101,14 +110,14 @@ export default async function UsersPage() {
                           {user.role}
                         </span>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      <td className="hidden lg:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         {user.city || '-'}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      <td className="hidden xl:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         {new Date(user.createdAt).toLocaleDateString('id-ID')}
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <div className="flex justify-end gap-3">
+                        <div className="flex justify-end gap-2 md:gap-3">
                           <Link href={`/admin/users/${user._id.toString()}/edit`} className="text-red-600 hover:text-red-900">
                             Edit<span className="sr-only">, {user.name}</span>
                           </Link>
