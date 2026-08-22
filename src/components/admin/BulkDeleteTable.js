@@ -150,14 +150,14 @@ export default function BulkDeleteTable({ products, userRole }) {
         </div>
       )}
 
-      <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div className="-my-2 -mx-4 sm:-mx-6 lg:-mx-8">
         <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-          <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+          <div className="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-300">
               <thead className="bg-gray-50">
                 <tr>
                   {userRole !== 'operator' && (
-                    <th scope="col" className="relative px-7 sm:w-12 sm:px-6">
+                    <th scope="col" className="relative px-4 sm:px-6 sm:w-12">
                       <input
                         type="checkbox"
                         className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
@@ -169,24 +169,24 @@ export default function BulkDeleteTable({ products, userRole }) {
                   <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
                     Produk
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  <th scope="col" className="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                     Kategori
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  <th scope="col" className="hidden lg:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                     Region
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  <th scope="col" className="hidden sm:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                     Harga
                   </th>
-                  <th scope="col" className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
+                  <th scope="col" className="hidden md:table-cell px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
                     Unggulan
                   </th>
                   {userRole !== 'operator' && (
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th scope="col" className="hidden lg:table-cell px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                       Pemilik (UKM)
                     </th>
                   )}
-                  <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                  <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6 w-20">
                     <span className="sr-only">Aksi</span>
                   </th>
                 </tr>
@@ -197,7 +197,7 @@ export default function BulkDeleteTable({ products, userRole }) {
                   return (
                     <tr key={product._id} className={`${isSelected ? 'bg-red-50' : ''} ${product.isHidden ? 'opacity-60 bg-gray-50' : ''}`}>
                       {userRole !== 'operator' && (
-                        <td className="relative px-7 sm:w-12 sm:px-6">
+                        <td className="relative px-4 sm:px-6 sm:w-12">
                           {isSelected && <div className="absolute inset-y-0 left-0 w-0.5 bg-red-600" />}
                           <input
                             type="checkbox"
@@ -208,7 +208,7 @@ export default function BulkDeleteTable({ products, userRole }) {
                           />
                         </td>
                       )}
-                      <td className={`whitespace-nowrap py-4 pr-3 text-sm ${userRole !== 'operator' ? 'pl-4 sm:pl-6' : 'pl-4 sm:pl-6'}`}>
+                      <td className={`whitespace-nowrap py-4 pr-3 text-sm ${userRole !== 'operator' ? 'pl-2 sm:pl-6' : 'pl-4 sm:pl-6'}`}>
                         <div className="flex items-center">
                           <div className="h-10 w-10 flex-shrink-0 relative rounded bg-gray-100 overflow-hidden border border-gray-200">
                             <Image 
@@ -218,24 +218,32 @@ export default function BulkDeleteTable({ products, userRole }) {
                               className="object-cover"
                             />
                           </div>
-                          <div className="ml-4">
-                            <div className="font-medium text-gray-900 truncate max-w-[200px]">{product.name || 'Produk Tanpa Nama'}</div>
-                            <div className="text-gray-500 text-xs truncate max-w-[200px]">{product.description || '-'}</div>
+                          <div className="ml-3 sm:ml-4 flex-1 min-w-0 max-w-[140px] sm:max-w-xs">
+                            <div className="font-medium text-gray-900 truncate">{product.name || 'Produk Tanpa Nama'}</div>
+                            
+                            {/* Mobile info */}
+                            <div className="sm:hidden mt-0.5 flex flex-col gap-0.5">
+                              <span className="text-gray-900 font-semibold text-xs">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
+                              <span className="text-gray-500 text-[10px] truncate">{product.category || 'Lainnya'}</span>
+                            </div>
+
+                            {/* Desktop info */}
+                            <div className="hidden sm:block text-gray-500 text-xs truncate">{product.description || '-'}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         <span className="inline-flex rounded-full bg-red-100 px-2 text-xs font-semibold leading-5 text-red-800">
                           {product.category || 'Lainnya'}
                         </span>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      <td className="hidden lg:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         {product.region || '-'}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 font-medium">
+                      <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500 font-medium">
                         Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-center">
+                      <td className="hidden md:table-cell whitespace-nowrap px-3 py-4 text-sm text-center">
                         {userRole === 'operator' ? (
                           product.isFeatured ? (
                             <span className="inline-flex rounded-full bg-yellow-100 px-2 text-xs font-semibold leading-5 text-yellow-800">
@@ -251,14 +259,14 @@ export default function BulkDeleteTable({ products, userRole }) {
                         )}
                       </td>
                       {userRole !== 'operator' && (
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        <td className="hidden lg:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           {product.owner?.name || 'Unknown'}
                         </td>
                       )}
-                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <div className="flex items-center justify-end gap-3">
+                      <td className="relative whitespace-nowrap py-4 pl-2 pr-4 text-right text-sm font-medium sm:pr-6">
+                        <div className="flex items-center justify-end gap-2 md:gap-3">
                           <ToggleHiddenButton productId={product._id} initialIsHidden={product.isHidden} />
-                          <Link href={`/admin/products/${product._id}/edit`} className="text-red-600 hover:text-red-900">
+                          <Link href={`/admin/products/${product._id}/edit`} className="text-blue-600 hover:text-blue-900 text-xs bg-blue-50 px-2 py-1 rounded">
                             Edit
                           </Link>
                           {userRole !== 'operator' && (
