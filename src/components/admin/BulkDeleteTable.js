@@ -208,9 +208,9 @@ export default function BulkDeleteTable({ products, userRole }) {
                           />
                         </td>
                       )}
-                      <td className={`whitespace-nowrap py-4 pr-3 text-sm ${userRole !== 'operator' ? 'pl-2 sm:pl-6' : 'pl-4 sm:pl-6'}`}>
+                      <td className={`whitespace-nowrap py-3 sm:py-4 pr-1 sm:pr-3 text-sm ${userRole !== 'operator' ? 'pl-1 sm:pl-6' : 'pl-2 sm:pl-6'}`}>
                         <div className="flex items-center">
-                          <div className="h-10 w-10 flex-shrink-0 relative rounded bg-gray-100 overflow-hidden border border-gray-200">
+                          <div className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0 relative rounded bg-gray-100 overflow-hidden border border-gray-200">
                             <Image 
                               src={product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png'} 
                               alt={product.name || 'Product'} 
@@ -218,13 +218,13 @@ export default function BulkDeleteTable({ products, userRole }) {
                               className="object-cover"
                             />
                           </div>
-                          <div className="ml-3 sm:ml-4 flex-1 min-w-0 max-w-[140px] sm:max-w-xs">
-                            <div className="font-medium text-gray-900 truncate">{product.name || 'Produk Tanpa Nama'}</div>
+                          <div className="ml-2 sm:ml-4 flex-1 min-w-0 max-w-[120px] sm:max-w-xs">
+                            <div className="font-semibold sm:font-medium text-gray-900 truncate text-[13px] sm:text-sm">{product.name || 'Produk Tanpa Nama'}</div>
                             
                             {/* Mobile info */}
-                            <div className="sm:hidden mt-0.5 flex flex-col gap-0.5">
-                              <span className="text-gray-900 font-semibold text-xs">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
-                              <span className="text-gray-500 text-[10px] truncate">{product.category || 'Lainnya'}</span>
+                            <div className="sm:hidden mt-0 flex flex-col">
+                              <span className="text-gray-900 font-bold text-[11px]">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
+                              <span className="text-gray-500 text-[9px] truncate">{product.category || 'Lainnya'}</span>
                             </div>
 
                             {/* Desktop info */}
@@ -263,14 +263,18 @@ export default function BulkDeleteTable({ products, userRole }) {
                           {product.owner?.name || 'Unknown'}
                         </td>
                       )}
-                      <td className="relative whitespace-nowrap py-4 pl-2 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <div className="flex items-center justify-end gap-2 md:gap-3">
-                          <ToggleHiddenButton productId={product._id} initialIsHidden={product.isHidden} />
-                          <Link href={`/admin/products/${product._id}/edit`} className="text-blue-600 hover:text-blue-900 text-xs bg-blue-50 px-2 py-1 rounded">
-                            Edit
-                          </Link>
+                      <td className="relative whitespace-nowrap py-3 sm:py-4 pl-1 sm:pl-2 pr-2 sm:pr-6 text-right text-sm font-medium">
+                        <div className="flex flex-col sm:flex-row items-end sm:items-center justify-end gap-1.5 sm:gap-3">
+                          <div className="flex items-center gap-1.5 sm:gap-3">
+                            <ToggleHiddenButton productId={product._id} initialIsHidden={product.isHidden} />
+                            <Link href={`/admin/products/${product._id}/edit`} className="text-blue-600 hover:text-blue-900 text-[10px] sm:text-xs bg-blue-50 px-2 py-0.5 sm:py-1 rounded font-semibold border border-blue-100">
+                              Edit
+                            </Link>
+                          </div>
                           {userRole !== 'operator' && (
-                            <DeleteProductButton productId={product._id} />
+                            <div className="transform scale-90 sm:scale-100 origin-right">
+                              <DeleteProductButton productId={product._id} />
+                            </div>
                           )}
                         </div>
                       </td>
