@@ -4,7 +4,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Ganti email "from" ini dengan domain yang sudah diverifikasi di Resend
 // Jika belum ada domain, gunakan 'onboarding@resend.dev' untuk testing
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'; 
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'sistem@hipmora.my.id'; 
 
 /**
  * Mengirim email menggunakan template dari Resend Dashboard
@@ -19,6 +19,7 @@ export async function sendTemplateEmail(to, templateId, subject, variables = {})
     const data = await resend.emails.send({
       from: `HIPMORA <${FROM_EMAIL}>`,
       to: [to],
+      reply_to: 'hipmikatalog@gmail.com',
       subject: subject,
       template: {
         id: templateId,

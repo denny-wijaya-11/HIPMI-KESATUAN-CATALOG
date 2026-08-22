@@ -99,7 +99,8 @@ export async function POST(request) {
         // 2. Kirim Email ke Tenant (Notifikasi pesanan baru)
         if (tenantUser && tenantUser.email && process.env.RESEND_API_KEY) {
           await resend.emails.send({
-            from: 'HIPMORA <onboarding@resend.dev>', // Nanti ganti dengan domain sendiri
+            from: 'HIPMORA <sistem@hipmora.my.id>',
+            reply_to: 'hipmikatalog@gmail.com',
             to: tenantUser.email,
             subject: 'Ada Pesanan Baru di Toko Anda! 🎉',
             html: `
