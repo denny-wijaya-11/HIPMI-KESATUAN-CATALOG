@@ -142,19 +142,37 @@ export async function POST(request) {
       const totalSemuaPesanan = savedOrders.reduce((total, order) => total + order.totalAmount, 0);
       
       try {
-        const { sendTemplateEmail } = await import('@/lib/email');
-        await sendTemplateEmail(
-          buyerUser.email,
-          'hipmora-order-confirm',
-          'Pesanan Anda Sedang Diproses - HIPMORA',
-          {
-            name: buyerUser.name || 'Pelanggan',
-            // Kita kumpulkan nama produk yang dibeli
-            nama_produk: items.length === 1 ? '1 Produk' : `${items.length} Produk`,
-            total_harga: `Rp ${totalSemuaPesanan.toLocaleString('id-ID')}`,
-            id_invoice: savedOrders[0]._id.toString().substring(0, 8).toUpperCase()
-          }
-        );
+        const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'sistem@hipmora.my.id';
+        const invoiceId = savedOrders[0]._id.toString().substring(0, 8).toUpperCase();
+        
+        await resend.emails.send({
+          from: `HIPMORA <${FROM_EMAIL}>`,
+          to: buyerUser.email,
+          reply_to: 'hipmikatalog@gmail.com',
+          subject: `Pesanan Anda Sedang Diproses (Invoice: #${invoiceId})`,
+          html: `
+            <div style="font-family: sans-serif; max-w: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
+              <div style="background-color: #C62828; padding: 20px; text-align: center;">
+                <h1 style="color: white; margin: 0;">HIPMORA</h1>
+              </div>
+              <div style="padding: 30px; background-color: #FAFAF8;">
+                <h2 style="color: #333; margin-top: 0;">Halo ${buyerUser.name || 'Pelanggan'},</h2>
+                <p style="color: #555; font-size: 16px; line-height: 1.5;">
+                  Terima kasih telah berbelanja di HIPMORA! Pesanan Anda sedang diproses oleh penjual.
+                </p>
+                <div style="background-color: white; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0;">
+                  <h3 style="margin-top: 0; color: #C62828;">Detail Pesanan</h3>
+                  <p><strong>Invoice ID:</strong> #${invoiceId}</p>
+                  <p><strong>Total Item:</strong> ${items.length} Produk</p>
+                  <p><strong>Total Pembayaran:</strong> Rp ${totalSemuaPesanan.toLocaleString('id-ID')}</p>
+                </div>
+                <p style="color: #777; font-size: 14px; margin-bottom: 0;">
+                  <em>Anda dapat memantau status pesanan melalui menu Profil -> Pesanan Saya.</em>
+                </p>
+              </div>
+            </div>
+          `
+        });
       } catch (buyerEmailErr) {
         console.error('Gagal mengirim email template ke pembeli', buyerEmailErr);
       }

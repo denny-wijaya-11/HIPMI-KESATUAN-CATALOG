@@ -48,10 +48,10 @@ export default function CategoryFilter() {
             <button
               key={category}
               onClick={() => handleCategoryClick(category)}
-              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
+              className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 ${
                 isActive
-                  ? 'bg-red-600 text-white shadow-[0_0_20px_rgba(220,38,38,0.4)] border border-red-500 scale-105'
-                  : 'bg-white/5 text-neutral-400 hover:bg-white/10 hover:text-white border border-white/10'
+                  ? 'bg-[#C62828] text-white shadow-md border border-[#C62828]'
+                  : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200 hover:border-gray-300'
               }`}
             >
               {category}
@@ -62,12 +62,12 @@ export default function CategoryFilter() {
       
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto mt-6 sm:mt-0">
         <div className="flex items-center justify-between sm:justify-start gap-2">
-          <label htmlFor="region" className="text-sm text-neutral-400 font-medium">Wilayah:</label>
+          <label htmlFor="region" className="text-xs sm:text-sm text-gray-600 font-medium whitespace-nowrap">Wilayah:</label>
           <select 
             id="region"
             value={currentRegion}
             onChange={handleRegionChange}
-            className="bg-neutral-900 border border-white/10 text-white text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5 outline-none transition-colors"
+            className="bg-white border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg focus:ring-[#C62828] focus:border-[#C62828] block p-2 outline-none transition-colors w-full sm:w-auto min-w-[140px]"
           >
             <option value="Semua">Semua Wilayah</option>
             <optgroup label="JABODETABEK">
@@ -109,12 +109,12 @@ export default function CategoryFilter() {
         </div>
 
         <div className="flex items-center justify-between sm:justify-start gap-2">
-          <label htmlFor="sort" className="text-sm text-neutral-400 font-medium">Urutkan:</label>
+          <label htmlFor="sort" className="text-xs sm:text-sm text-gray-600 font-medium whitespace-nowrap">Urutkan:</label>
           <select 
             id="sort"
             value={currentSort}
             onChange={handleSortChange}
-            className="bg-neutral-900 border border-white/10 text-white text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5 outline-none transition-colors"
+            className="bg-white border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg focus:ring-[#C62828] focus:border-[#C62828] block p-2 outline-none transition-colors w-full sm:w-auto min-w-[120px]"
           >
             <option value="newest">Terbaru</option>
             <option value="price_asc">Termurah</option>

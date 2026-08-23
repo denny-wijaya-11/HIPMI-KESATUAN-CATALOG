@@ -96,30 +96,26 @@ export default async function ProductsPage({ searchParams }) {
       
               <AdminProductFilter userRole={user.role} />
       
-      <div className="mt-8 flex flex-col">
-        <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-            {products.length === 0 ? (
-              <div className="text-center bg-white rounded-lg border border-gray-200 py-12 px-4 shadow-sm">
-                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                </svg>
-                <h3 className="mt-2 text-sm font-medium text-gray-900">Tidak ada produk</h3>
-                <p className="mt-1 text-sm text-gray-500">Mulai unggah produk dagangan Anda ke katalog.</p>
-                <div className="mt-6">
-                  <Link
-                    href="/admin/products/create"
-                    className="inline-flex items-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700"
-                  >
-                    Tambah Produk
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              <BulkDeleteTable products={JSON.parse(JSON.stringify(products))} userRole={user.role} />
-            )}
+      <div className="mt-8">
+        {products.length === 0 ? (
+          <div className="text-center bg-white rounded-lg border border-gray-200 py-12 px-4 shadow-sm">
+            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            </svg>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">Tidak ada produk</h3>
+            <p className="mt-1 text-sm text-gray-500">Mulai unggah produk dagangan Anda ke katalog.</p>
+            <div className="mt-6">
+              <Link
+                href="/admin/products/create"
+                className="inline-flex items-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700"
+              >
+                Tambah Produk
+              </Link>
+            </div>
           </div>
-        </div>
+        ) : (
+          <BulkDeleteTable products={JSON.parse(JSON.stringify(products))} userRole={user.role} />
+        )}
       </div>
     </div>
   );

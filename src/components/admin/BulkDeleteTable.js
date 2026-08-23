@@ -150,8 +150,8 @@ export default function BulkDeleteTable({ products, userRole }) {
         </div>
       )}
 
-      <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+      <div className="overflow-x-auto">
+        <div className="inline-block min-w-full py-2 align-middle">
           <div className="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-300">
               <thead className="bg-gray-50">
