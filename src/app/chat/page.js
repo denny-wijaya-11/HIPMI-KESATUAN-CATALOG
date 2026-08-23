@@ -208,10 +208,13 @@ function ChatContent() {
   }
 
   return (
-    <div className="flex h-full bg-[#f0f2f5] overflow-hidden font-sans">
+    <div className="flex h-[calc(100vh-64px)] bg-[#f0f2f5] overflow-hidden font-sans">
       {/* Sidebar - Contacts (Hidden on mobile if a chat is active) */}
       <div className={`w-full md:w-[350px] lg:w-[400px] bg-white border-r border-gray-200 flex flex-col ${activeContact ? 'hidden md:flex' : 'flex'}`}>
-        <div className="h-16 px-4 border-b border-gray-200 flex items-center justify-between bg-white shrink-0 z-10">
+        <div 
+          className="px-4 border-b border-gray-200 flex items-center justify-between bg-white shrink-0 z-10"
+          style={{ paddingTop: 'max(env(safe-area-inset-top), 1rem)', paddingBottom: '1rem', minHeight: '64px' }}
+        >
           <h2 className="text-xl font-bold text-gray-800">Pesan</h2>
           <Link href="/" className="text-sm font-medium text-gray-500 hover:text-[#C62828] transition-colors">
             Kembali
@@ -273,7 +276,10 @@ function ChatContent() {
         {activeContact ? (
           <>
             {/* Chat Header */}
-            <div className="h-16 bg-white flex items-center px-4 shrink-0 shadow-sm z-10 sticky top-0 border-b border-gray-200">
+            <div 
+              className="bg-white flex items-center px-4 shrink-0 shadow-sm z-10 sticky top-0 border-b border-gray-200"
+              style={{ paddingTop: 'max(env(safe-area-inset-top), 0.5rem)', paddingBottom: '0.5rem', minHeight: '64px' }}
+            >
               <button 
                 onClick={() => setActiveContact(null)}
                 className="md:hidden mr-2 p-2 -ml-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors flex items-center"
