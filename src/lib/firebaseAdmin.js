@@ -14,10 +14,18 @@ if (!admin.apps.length) {
       });
     } else {
       // Di Local Development (komputer kamu), kita menggunakan file JSON langsung
-      const serviceAccount = require('../../firebase-admin-key.json');
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
-      });
+      const fs = require('fs');
+      const path = require('path');
+      const keyPath = path.join(process.cwd(), 'firebase-admin-key.json');
+      
+      if (fs.existsSync(keyPath)) {
+        const serviceAccount = JSON.parse(fs.readFileSync(keyPath, 'utf8'));
+        admin.initializeApp({
+          credential: admin.credential.cert(serviceAccount),
+        });
+      } else {
+        console.warn('Firebase Admin: Local key not found and no environment variables set.');
+      }
     }
     console.log('Firebase Admin Initialized Successfully');
   } catch (error) {
