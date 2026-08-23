@@ -27,7 +27,7 @@ export default function OnlineTracker() {
       clearInterval(interval);
       window.removeEventListener('focus', handleFocus);
     };
-  }, [user]);
+  }, []);
 
   return null; // This component doesn't render anything
 }
