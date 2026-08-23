@@ -25,6 +25,8 @@ export default function PublicHeader({ user }) {
 
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100 pt-[env(safe-area-inset-top,0px)]">
+      {/* Background khusus untuk status bar di HP agar teks putih bisa terbaca */}
+      <div className="absolute top-0 left-0 w-full h-[env(safe-area-inset-top,0px)] bg-[#9b1c1c] z-[-1]"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 md:h-20">
           

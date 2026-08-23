@@ -94,6 +94,20 @@ export default function ProfilePage() {
     }
   };
 
+  const handleLogout = async () => {
+    if (!window.confirm('Apakah Anda yakin ingin keluar?')) return;
+    try {
+      const res = await fetch('/api/auth/logout', { method: 'POST' });
+      if (res.ok) {
+        localStorage.removeItem('hipmora_cart');
+        localStorage.removeItem('hipmora_wishlist');
+        window.location.href = '/';
+      }
+    } catch (err) {
+      console.error('Logout failed', err);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center bg-gray-50">
@@ -247,20 +261,33 @@ export default function ProfilePage() {
               </div>
             )}
 
-            <div className="mt-8 flex justify-end gap-3">
-              <Link
-                href="/"
-                className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              >
-                Kembali
-              </Link>
+            <div className="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
               <button
-                type="submit"
-                disabled={saving}
-                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                type="button"
+                onClick={handleLogout}
+                className="w-full sm:w-auto inline-flex justify-center items-center py-2 px-4 border border-red-200 shadow-sm text-sm font-medium rounded-md text-red-600 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
               >
-                {saving ? 'Menyimpan...' : 'Simpan Perubahan'}
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Keluar dari Akun
               </button>
+              
+              <div className="flex w-full sm:w-auto gap-3">
+                <Link
+                  href="/"
+                  className="flex-1 sm:flex-none inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                  Kembali
+                </Link>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex-1 sm:flex-none inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                >
+                  {saving ? 'Menyimpan...' : 'Simpan Perubahan'}
+                </button>
+              </div>
             </div>
           </form>
         </div>
