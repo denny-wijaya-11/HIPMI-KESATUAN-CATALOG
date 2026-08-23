@@ -3,6 +3,10 @@ import "./globals.css";
 import AntiInspect from "@/components/AntiInspect";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
+import MobileBottomNav from "@/components/mobile/MobileBottomNav";
+import PushNotificationHandler from "@/components/mobile/PushNotificationHandler";
+import MobileUXEnhancer from "@/components/mobile/MobileUXEnhancer";
+import PullToRefresh from "@/components/mobile/PullToRefresh";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -27,6 +31,11 @@ export const metadata = {
 
 export const viewport = {
   themeColor: '#C62828',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({ children }) {
@@ -35,11 +44,16 @@ export default function RootLayout({ children }) {
       lang="id"
       className={`${jakarta.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col pb-16 md:pb-0">
         <AntiInspect />
+        <PushNotificationHandler />
+        <MobileUXEnhancer />
         <WishlistProvider>
           <CartProvider>
-            {children}
+            <PullToRefresh>
+              {children}
+            </PullToRefresh>
+            <MobileBottomNav />
           </CartProvider>
         </WishlistProvider>
       </body>

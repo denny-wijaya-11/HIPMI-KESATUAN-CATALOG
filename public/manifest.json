@@ -4,33 +4,49 @@
   "description": "Ekosistem Pengusaha Muda HIPMORA Kesatuan",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0a0a",
+  "background_color": "#FFFFFF",
   "theme_color": "#dc2626",
   "icons": [
     {
-      "src": "/images/LOGO.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/images/LOGO.png",
-      "sizes": "256x256",
-      "type": "image/png"
-    },
-    {
-      "src": "/images/LOGO.png",
-      "sizes": "384x384",
-      "type": "image/png"
-    },
-    {
-      "src": "/images/LOGO.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    },
-    {
-      "src": "/images/LOGO.png",
-      "sizes": "any",
+      "src": "../icons/icon-48.webp",
       "type": "image/png",
+      "sizes": "48x48",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "../icons/icon-72.webp",
+      "type": "image/png",
+      "sizes": "72x72",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "../icons/icon-96.webp",
+      "type": "image/png",
+      "sizes": "96x96",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "../icons/icon-128.webp",
+      "type": "image/png",
+      "sizes": "128x128",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "../icons/icon-192.webp",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "../icons/icon-256.webp",
+      "type": "image/png",
+      "sizes": "256x256",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "../icons/icon-512.webp",
+      "type": "image/png",
+      "sizes": "512x512",
       "purpose": "any maskable"
     }
   ]

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">HIPMORA</string>
+    <string name="title_activity_main">HIPMORA</string>
+    <string name="package_name">com.hipmi.hipmora</string>
+    <string name="custom_url_scheme">com.hipmi.hipmora</string>
+</resources>

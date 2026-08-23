@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "519176780979",
+    "project_id": "hipmora",
+    "storage_bucket": "hipmora.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:519176780979:android:1668cfbc14ccf60432c4c6",
+        "android_client_info": {
+          "package_name": "com.hipmora.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXcIG-T84kHPsMOchbgyxV5aOHvbCEqYo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

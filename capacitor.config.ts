@@ -1,13 +1,19 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.hipmi.hipmora',
+  appId: 'com.hipmora.app',
   appName: 'HIPMORA',
   webDir: 'public',
   server: {
-    url: 'https://hipmora.my.id',
-    cleartext: true
-  }
+    url: 'https://www.hipmora.my.id',
+    cleartext: false,
+    allowNavigation: ['hipmora.my.id', 'www.hipmora.my.id']
+  },
+  plugins: {
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"],
+    },
+  },
 };
 
 export default config;

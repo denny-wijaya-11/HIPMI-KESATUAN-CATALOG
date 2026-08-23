@@ -96,6 +96,26 @@ export async function POST(request) {
           link: '/tenant/orders'
         });
 
+        // 1.5 Send FCM Push Notification
+        if (tenantUser && tenantUser.fcmToken) {
+          try {
+            const admin = require('@/lib/firebaseAdmin').default;
+            await admin.messaging().send({
+              token: tenantUser.fcmToken,
+              notification: {
+                title: '🛒 Pesanan Baru Masuk!',
+                body: `Hore! Ada pesanan baru senilai Rp ${order.totalAmount.toLocaleString('id-ID')}`,
+              },
+              data: {
+                link: '/tenant/orders'
+              }
+            });
+            console.log('Push notification sent to', tenantUser.fcmToken);
+          } catch (fcmError) {
+            console.error('Failed to send FCM push', fcmError);
+          }
+        }
+
         // 2. Kirim Email ke Tenant (Notifikasi pesanan baru)
         if (tenantUser && tenantUser.email && process.env.RESEND_API_KEY) {
           await resend.emails.send({
