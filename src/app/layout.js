@@ -7,6 +7,7 @@ import MobileBottomNav from "@/components/mobile/MobileBottomNav";
 import PushNotificationHandler from "@/components/mobile/PushNotificationHandler";
 import MobileUXEnhancer from "@/components/mobile/MobileUXEnhancer";
 import PullToRefresh from "@/components/mobile/PullToRefresh";
+import OnlineTracker from "@/components/public/OnlineTracker";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -48,6 +49,7 @@ export default function RootLayout({ children }) {
         <AntiInspect />
         <PushNotificationHandler />
         <MobileUXEnhancer />
+        <OnlineTracker />
         <WishlistProvider>
           <CartProvider>
             <PullToRefresh>

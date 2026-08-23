@@ -38,8 +38,8 @@ export async function GET(request) {
       $or: [{ sender: userId }, { receiver: userId }]
     })
       .sort({ createdAt: -1 })
-      .populate('sender', 'name email role')
-      .populate('receiver', 'name email role')
+      .populate('sender', 'name email role avatar lastActive')
+      .populate('receiver', 'name email role avatar lastActive')
       .populate('productContext', 'name image');
 
     // Group by contact (the other person in the chat)
@@ -80,16 +80,17 @@ export async function POST(request) {
 
   try {
     await connectDB();
-    const { receiverId, content, productId } = await request.json();
+    const { receiverId, content, productId, image } = await request.json();
 
-    if (!receiverId || !content) {
-      return NextResponse.json({ error: 'Receiver and content are required' }, { status: 400 });
+    if (!receiverId || (!content && !image)) {
+      return NextResponse.json({ error: 'Receiver and content/image are required' }, { status: 400 });
     }
 
     const newMessage = await Message.create({
       sender: user.id,
       receiver: receiverId,
-      content,
+      content: content || '',
+      image: image || null,
       productContext: productId || null
     });
 

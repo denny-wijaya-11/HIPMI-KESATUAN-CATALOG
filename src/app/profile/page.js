@@ -226,6 +226,22 @@ export default function ProfilePage() {
                 </div>
               </div>
 
+              <div className="sm:col-span-6">
+                <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700">
+                  Nomor WhatsApp <span className="text-gray-400 text-xs font-normal">(Hubungi Admin untuk mengubah)</span>
+                </label>
+                <div className="mt-2">
+                  <input
+                    type="tel"
+                    name="whatsapp"
+                    id="whatsapp"
+                    disabled
+                    value={user?.whatsapp || ''}
+                    className="block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm sm:text-sm px-3 py-2 border text-gray-500 cursor-not-allowed"
+                  />
+                </div>
+              </div>
+
               {/* Tampilkan kolom tambahan berdasarkan role atau tipe user jika diperlukan */}
               {(user?.role === 'tenant' || user?.role === 'operator') && !user?.isStudent && (
                 <>

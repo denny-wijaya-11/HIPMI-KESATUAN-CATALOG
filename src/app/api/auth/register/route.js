@@ -9,11 +9,11 @@ const resend = new Resend(process.env.RESEND_API_KEY || "re_dummy");
 
 export async function POST(request) {
   try {
-    const { name, email, password } = await request.json();
+    const { name, email, whatsapp, password } = await request.json();
 
-    if (!name || !email || !password) {
+    if (!name || !email || !whatsapp || !password) {
       return NextResponse.json(
-        { error: "Nama, email, dan password wajib diisi" },
+        { error: "Nama, email, nomor WhatsApp, dan password wajib diisi" },
         { status: 400 }
       );
     }
@@ -46,6 +46,7 @@ export async function POST(request) {
     await VerificationToken.create({
       name,
       email,
+      whatsapp,
       password: hashedPassword,
       token: otp,
       expiresAt,

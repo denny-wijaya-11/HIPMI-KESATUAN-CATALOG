@@ -41,6 +41,7 @@ export async function POST(request) {
     const newUser = await User.create({
       name: verificationRecord.name,
       email: verificationRecord.email,
+      whatsapp: verificationRecord.whatsapp,
       password: verificationRecord.password, // Sudah di-hash saat register
       role: 'user', // Default role
       cart: [],

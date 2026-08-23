@@ -10,6 +10,7 @@ function RegisterContent() {
   const [step, setStep] = useState(1); // 1: Form Register, 2: Form OTP
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
   
@@ -28,7 +29,7 @@ function RegisterContent() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, whatsapp, password }),
       });
 
       const data = await res.json();
@@ -138,6 +139,24 @@ function RegisterContent() {
                     value={email}
                     placeholder="Gmail Anda"
                     onChange={(e) => setEmail(e.target.value)}
+                    className="appearance-none block w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] text-sm transition-all bg-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700">
+                  Nomor WhatsApp
+                </label>
+                <div className="mt-1.5">
+                  <input
+                    id="whatsapp"
+                    name="whatsapp"
+                    type="tel"
+                    required
+                    value={whatsapp}
+                    placeholder="Contoh: 081234567890"
+                    onChange={(e) => setWhatsapp(e.target.value)}
                     className="appearance-none block w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] text-sm transition-all bg-white"
                   />
                 </div>

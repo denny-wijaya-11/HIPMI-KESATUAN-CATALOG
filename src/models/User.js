@@ -26,6 +26,13 @@ const UserSchema = new mongoose.Schema({
     enum: ['developer', 'admin', 'operator', 'tenant', 'user'],
     default: 'user',
   },
+  whatsapp: {
+    type: String,
+  },
+  lastActive: {
+    type: Date,
+    default: Date.now,
+  },
   city: {
     type: String,
   },

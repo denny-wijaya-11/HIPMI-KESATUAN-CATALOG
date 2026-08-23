@@ -11,6 +11,11 @@ function ChatContent() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [now, setNow] = useState(Date.now());
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  
+  const commonEmojis = ['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😝','😜','🤪','🤨','🧐','🤓','😎','🤩','🥳','😏','😒','😞','😔','😟','😕','🙁','☹️','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','👍','👎','👏','🙌','👐','🤲','🤝','🙏','❤️','💔','🔥','✨','🎉','🎊','🌟','💯','👍🏻','👍🏼','👍🏽','👍🏾','👍🏿'];
+
   const messagesEndRef = useRef(null);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -21,6 +26,10 @@ function ChatContent() {
 
   useEffect(() => {
     fetchContacts();
+    
+    // Timer to update 'now' every 30s for presence tracking
+    const interval = setInterval(() => setNow(Date.now()), 30000);
+    return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -81,22 +90,27 @@ function ChatContent() {
     }
   }
 
+  const fileInputRef = useRef(null);
+
   async function handleSendMessage(e) {
     e.preventDefault();
-    if (!newMessage.trim() || !activeContact) return;
+    if (!newMessage.trim() && !activeContact) return;
 
+    // We can't do optimistic UI easily if we upload image first from this same function
+    // But we'll just handle text here
     const content = newMessage;
-    setNewMessage(''); // optimistic clear
+    setNewMessage(''); 
 
-    // Optimistic UI update
     const optimisticMsg = {
       _id: Date.now().toString(),
       content,
-      sender: 'me', // placeholder, won't match activeContact._id
+      sender: 'me',
       createdAt: new Date().toISOString(),
       productContext: messages.length === 0 && productId ? { _id: productId, name: 'Produk Terkait' } : null
     };
-    setMessages(prev => [...prev, optimisticMsg]);
+    if (content) {
+      setMessages(prev => [...prev, optimisticMsg]);
+    }
 
     try {
       const res = await fetch('/api/chat', {
@@ -105,17 +119,83 @@ function ChatContent() {
         body: JSON.stringify({
           receiverId: activeContact._id,
           content,
-          productId: messages.length === 0 ? productId : null // Only attach product if it's the first message
+          productId: messages.length === 0 ? productId : null 
         })
       });
 
       if (res.ok) {
-        // Refresh to get the real message with DB ID
         fetchMessages(activeContact._id);
         fetchContacts();
       }
     } catch (err) {
       console.error('Failed to send message', err);
+    }
+  }
+
+  async function handleFileUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file || !activeContact) return;
+
+    // Reset input
+    e.target.value = '';
+
+    if (!file.type.startsWith('image/')) {
+      alert('Hanya file gambar yang diperbolehkan.');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Ukuran gambar maksimal adalah 10 MB.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      // Optimistic UI for image upload
+      const optimisticMsg = {
+        _id: 'temp_' + Date.now().toString(),
+        content: '',
+        image: URL.createObjectURL(file), // temporary local URL
+        sender: 'me',
+        createdAt: new Date().toISOString(),
+      };
+      setMessages(prev => [...prev, optimisticMsg]);
+
+      // 1. Upload image
+      const uploadRes = await fetch('/api/chat/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const uploadData = await uploadRes.json();
+      
+      if (!uploadRes.ok) {
+        alert(uploadData.error || 'Gagal mengupload gambar');
+        // Remove optimistic msg
+        setMessages(prev => prev.filter(m => m._id !== optimisticMsg._id));
+        return;
+      }
+
+      // 2. Send message with image URL
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          receiverId: activeContact._id,
+          content: '',
+          image: uploadData.url,
+          productId: messages.length === 0 ? productId : null 
+        })
+      });
+
+      if (res.ok) {
+        fetchMessages(activeContact._id);
+        fetchContacts();
+      }
+    } catch (err) {
+      console.error('Failed to upload image', err);
+      alert('Terjadi kesalahan saat mengupload gambar.');
     }
   }
 
@@ -171,7 +251,7 @@ function ChatContent() {
                     )}
                   </div>
                   <p className={`text-sm truncate ${unreadCount > 0 ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
-                    {lastMessage?.content || 'Mulai obrolan baru...'}
+                    {lastMessage ? (lastMessage.isDeleted ? '🚫 Pesan dihapus' : lastMessage.content) : 'Mulai obrolan baru...'}
                   </p>
                 </div>
                 {unreadCount > 0 && (
@@ -209,12 +289,20 @@ function ChatContent() {
                     {activeContact.name.charAt(0).toUpperCase()}
                   </div>
                 )}
-                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                {activeContact.lastActive && (now - new Date(activeContact.lastActive).getTime() < 60000) ? (
+                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                ) : (
+                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 border-2 border-white rounded-full"></div>
+                )}
               </div>
               
               <div className="flex-1 min-w-0">
                 <h2 className="text-[15px] font-semibold text-gray-900 truncate leading-tight">{activeContact.name}</h2>
-                <p className="text-[12px] text-green-600 font-medium">Sedang Online</p>
+                {activeContact.lastActive && (now - new Date(activeContact.lastActive).getTime() < 60000) ? (
+                  <p className="text-[12px] text-green-600 font-medium">Sedang Online</p>
+                ) : (
+                  <p className="text-[12px] text-gray-400 font-medium">Offline</p>
+                )}
               </div>
               
               <div className="flex items-center gap-1 text-gray-400">
@@ -237,26 +325,65 @@ function ChatContent() {
                 const isMe = msg.sender !== activeContact._id;
                 
                 return (
-                  <div key={msg._id || index} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-1 duration-200`}>
+                  <div key={msg._id || index} className={`flex ${isMe ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-1 duration-200 group`}>
+                    {/* Delete button (only for sender and not deleted) */}
+                    {isMe && !msg.isDeleted && msg._id && !msg._id.toString().startsWith('temp') && (
+                      <button 
+                        onClick={async () => {
+                          if (!window.confirm('Hapus pesan ini?')) return;
+                          try {
+                            const res = await fetch(`/api/chat/message/${msg._id}`, { method: 'DELETE' });
+                            if (res.ok) {
+                              // Update local state
+                              setMessages(prev => prev.map(m => m._id === msg._id ? { ...m, isDeleted: true } : m));
+                            }
+                          } catch (err) {
+                            console.error('Failed to delete message', err);
+                          }
+                        }}
+                        className="mr-2 self-center p-2 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Hapus pesan"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      </button>
+                    )}
+
                     <div className={`max-w-[85%] md:max-w-[70%] rounded-2xl px-3 pt-2 pb-1.5 shadow-sm relative ${isMe ? 'bg-[#d9fdd3] text-gray-900 rounded-tr-none' : 'bg-white text-gray-900 rounded-tl-none border border-gray-100'}`}>
                       
                       {/* Tail styling */}
                       <div className={`absolute top-0 w-3 h-3 ${isMe ? '-right-2 bg-[#d9fdd3]' : '-left-2 bg-white border-l border-t border-gray-100'}`} style={{ clipPath: isMe ? 'polygon(0 0, 0% 100%, 100% 0)' : 'polygon(100% 0, 0 0, 100% 100%)' }}></div>
                       
-                      {/* Optional Product Context */}
-                      {msg.productContext && !isMe && (
-                        <div className="mb-2 p-2 bg-gray-50/80 rounded-xl border border-gray-200 text-gray-800 flex items-center gap-3 cursor-pointer hover:bg-gray-100 transition-colors">
-                          <div className="w-10 h-10 bg-gray-200 rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
-                             <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs text-gray-500 mb-0.5">Terkait produk:</p>
-                            <p className="font-semibold text-sm line-clamp-1 leading-none">{msg.productContext.name}</p>
-                          </div>
-                        </div>
-                      )}
+                      {msg.isDeleted ? (
+                        <p className="text-[14.5px] italic text-gray-500 pr-10 flex items-center gap-1">
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                          Pesan ini telah dihapus
+                        </p>
+                      ) : (
+                        <>
+                          {/* Optional Product Context */}
+                          {msg.productContext && !isMe && (
+                            <div className="mb-2 p-2 bg-gray-50/80 rounded-xl border border-gray-200 text-gray-800 flex items-center gap-3 cursor-pointer hover:bg-gray-100 transition-colors">
+                              <div className="w-10 h-10 bg-gray-200 rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
+                                <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs text-gray-500 mb-0.5">Terkait produk:</p>
+                                <p className="font-semibold text-sm line-clamp-1 leading-none">{msg.productContext.name}</p>
+                              </div>
+                            </div>
+                          )}
 
-                      <p className="text-[14.5px] whitespace-pre-wrap break-words leading-relaxed pr-10">{msg.content}</p>
+                          {msg.image && (
+                            <div className="mb-1 rounded-lg overflow-hidden">
+                              <img src={msg.image} alt="Attachment" className="max-w-full h-auto object-contain max-h-64 rounded-lg" />
+                            </div>
+                          )}
+
+                          {msg.content && (
+                            <p className="text-[14.5px] whitespace-pre-wrap break-words leading-relaxed pr-10">{msg.content}</p>
+                          )}
+                        </>
+                      )}
                       
                       <div className={`float-right -mb-1 ml-2 text-[10px] font-medium flex items-center gap-1 ${isMe ? 'text-green-700' : 'text-gray-400'}`}>
                         {new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
@@ -273,12 +400,48 @@ function ChatContent() {
             </div>
 
             {/* Chat Input */}
-            <div className="p-3 md:p-4 bg-[#f0f2f5] z-10 shrink-0">
+            <div className="p-3 md:p-4 bg-[#f0f2f5] z-10 shrink-0 relative">
+              
+              {/* Emoji Picker Popup */}
+              {showEmojiPicker && (
+                <div className="absolute bottom-full left-4 mb-2 bg-white border border-gray-200 rounded-xl shadow-lg p-2 w-64 max-h-48 overflow-y-auto custom-scrollbar z-50 grid grid-cols-6 gap-1">
+                  {commonEmojis.map(emoji => (
+                    <button 
+                      key={emoji} 
+                      type="button"
+                      onClick={() => {
+                        setNewMessage(prev => prev + emoji);
+                        setShowEmojiPicker(false);
+                      }}
+                      className="text-xl hover:bg-gray-100 p-1 rounded transition-colors"
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileUpload} 
+                accept="image/*" 
+                className="hidden" 
+              />
+
               <form onSubmit={handleSendMessage} className="flex gap-2 max-w-4xl mx-auto items-end">
-                <button type="button" className="p-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors shrink-0">
+                <button 
+                  type="button" 
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                  className={`p-2.5 hover:bg-gray-200 rounded-full transition-colors shrink-0 ${showEmojiPicker ? 'text-[#C62828] bg-gray-200' : 'text-gray-500 hover:text-gray-700'}`}
+                >
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 </button>
-                <button type="button" className="p-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors shrink-0">
+                <button 
+                  type="button" 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="p-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors shrink-0"
+                >
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
                 </button>
                 

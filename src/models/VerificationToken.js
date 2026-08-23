@@ -9,6 +9,10 @@ const verificationTokenSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  whatsapp: {
+    type: String,
+    required: true,
+  },
   password: { // We need to temporarily store hashed password so we can create user after OTP is verified
     type: String,
     required: true,
