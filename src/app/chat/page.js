@@ -208,7 +208,7 @@ function ChatContent() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-64px)] bg-[#f0f2f5] overflow-hidden pt-16 font-sans">
+    <div className="flex h-full bg-[#f0f2f5] overflow-hidden font-sans">
       {/* Sidebar - Contacts (Hidden on mobile if a chat is active) */}
       <div className={`w-full md:w-[350px] lg:w-[400px] bg-white border-r border-gray-200 flex flex-col ${activeContact ? 'hidden md:flex' : 'flex'}`}>
         <div className="h-16 px-4 border-b border-gray-200 flex items-center justify-between bg-white shrink-0 z-10">
@@ -289,7 +289,7 @@ function ChatContent() {
                     {activeContact.name.charAt(0).toUpperCase()}
                   </div>
                 )}
-                {activeContact.lastActive && (now - new Date(activeContact.lastActive).getTime() < 60000) ? (
+                {activeContact.lastActive && (Math.abs(now - new Date(activeContact.lastActive).getTime()) < 60000) ? (
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
                 ) : (
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 border-2 border-white rounded-full"></div>
@@ -298,7 +298,7 @@ function ChatContent() {
               
               <div className="flex-1 min-w-0">
                 <h2 className="text-[15px] font-semibold text-gray-900 truncate leading-tight">{activeContact.name}</h2>
-                {activeContact.lastActive && (now - new Date(activeContact.lastActive).getTime() < 60000) ? (
+                {activeContact.lastActive && (Math.abs(now - new Date(activeContact.lastActive).getTime()) < 60000) ? (
                   <p className="text-[12px] text-green-600 font-medium">Sedang Online</p>
                 ) : (
                   <p className="text-[12px] text-gray-400 font-medium">Offline</p>
@@ -341,7 +341,7 @@ function ChatContent() {
                             console.error('Failed to delete message', err);
                           }
                         }}
-                        className="mr-2 self-center p-2 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="mr-2 self-center p-2 text-gray-400 hover:text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                         title="Hapus pesan"
                       >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
