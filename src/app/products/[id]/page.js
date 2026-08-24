@@ -6,6 +6,7 @@ import User from "@/models/User";
 import AddToCartButton from "@/components/public/AddToCartButton";
 import CartIcon from "@/components/public/CartIcon";
 import WishlistButton from "@/components/public/WishlistButton";
+import ShareButton from "@/components/public/ShareButton";
 import UserNavMenu from "@/components/public/UserNavMenu";
 import PublicHeader from "@/components/public/PublicHeader";
 import { getUserPayload } from "@/lib/auth";
@@ -75,7 +76,10 @@ export default async function ProductDetailPage({ params }) {
                 <span className="inline-block bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-medium mb-4 w-fit">
                   {product.category || 'Lainnya'}
                 </span>
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">{product.name}</h1>
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">{product.name}</h1>
+                  <ShareButton title={product.name} text={product.description || `Cek ${product.name} di HIPMORA!`} />
+                </div>
                 <p className="text-[#C62828] text-sm font-medium mb-6">Oleh: {product.owner?.name || 'HIPMORA Tenant'}</p>
                 
                 <div className="mb-6">
