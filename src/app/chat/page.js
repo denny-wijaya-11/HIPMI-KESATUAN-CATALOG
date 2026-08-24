@@ -36,6 +36,14 @@ function ChatContent() {
   useEffect(() => {
     if (activeContact) {
       fetchMessages(activeContact._id);
+      
+      // Start polling for new messages when a contact is active
+      const messageInterval = setInterval(() => {
+        fetchMessages(activeContact._id);
+        fetchContacts(true); // pass true to indicate silent fetch (don't set loading)
+      }, 3000);
+      
+      return () => clearInterval(messageInterval);
     }
   }, [activeContact]);
 
@@ -43,14 +51,14 @@ function ChatContent() {
     scrollToBottom();
   }, [messages]);
 
-  async function fetchContacts() {
+  async function fetchContacts(isSilent = false) {
     try {
       const res = await fetch('/api/chat');
       if (res.ok) {
         const data = await res.json();
         setContacts(data);
         
-        if (presetUserId) {
+        if (presetUserId && !isSilent) {
           // If navigating from a product with a specific user
           const existingContact = data.find(c => c.contact._id === presetUserId);
           if (existingContact) {
@@ -62,7 +70,7 @@ function ChatContent() {
               name: presetUserName || 'Penjual'
             });
           }
-        } else if (data.length > 0) {
+        } else if (data.length > 0 && !activeContact && !isSilent) {
           // No preset user, just load the first contact
           setActiveContact(data[0].contact);
         }
@@ -70,7 +78,7 @@ function ChatContent() {
     } catch (err) {
       console.error('Failed to fetch contacts', err);
     } finally {
-      setLoading(false);
+      if (!isSilent) setLoading(false);
     }
   }
 
@@ -79,7 +87,13 @@ function ChatContent() {
       const res = await fetch(`/api/chat/${userId}`);
       if (res.ok) {
         const data = await res.json();
-        setMessages(data);
+        setMessages(prev => {
+          // Only update if lengths differ or the last message ID differs (to avoid constant re-renders/scrolls)
+          if (prev.length !== data.length || (prev.length > 0 && data.length > 0 && prev[prev.length - 1]._id !== data[data.length - 1]._id)) {
+            return data;
+          }
+          return prev;
+        });
         // Mark as read in local state
         setContacts(prev => prev.map(c => 
           c.contact._id === userId ? { ...c, unreadCount: 0 } : c

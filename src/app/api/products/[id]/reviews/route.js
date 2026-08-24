@@ -28,7 +28,7 @@ export async function POST(req, { params }) {
 
     // Check if user already reviewed
     const alreadyReviewed = product.reviews.find(
-      (r) => r.user.toString() === user.userId
+      (r) => r.user.toString() === user.id
     );
 
     if (alreadyReviewed) {
@@ -36,7 +36,7 @@ export async function POST(req, { params }) {
     }
 
     const review = {
-      user: user.userId,
+      user: user.id,
       name: user.name || user.email.split('@')[0],
       rating: Number(rating),
       comment,
