@@ -16,7 +16,7 @@ import dbConnect from '@/lib/mongodb';
 
 export const dynamic = 'force-dynamic';
 
-async function getAllProducts(category, sort, region, searchQuery) {
+async function getAllProducts(category, sort, region, searchQuery, userUniversity, isSatuKampus) {
   await dbConnect();
   
   let query = { isHidden: { $ne: true } };
@@ -34,6 +34,9 @@ async function getAllProducts(category, sort, region, searchQuery) {
   if (region && region !== 'Semua') {
     query.region = region;
   }
+  if (isSatuKampus && userUniversity) {
+    query.university = userUniversity;
+  }
 
   let sortOption = { createdAt: -1 };
   if (sort === 'price_asc') sortOption = { price: 1 };
@@ -50,7 +53,8 @@ export default async function ProductsPage({ searchParams }) {
   const sort = resolvedParams?.sort;
   const region = resolvedParams?.region;
   const search = resolvedParams?.search;
-  const products = await getAllProducts(category, sort, region, search);
+  const isSatuKampus = resolvedParams?.satuKampus === 'true';
+  const products = await getAllProducts(category, sort, region, search, user?.university, isSatuKampus);
 
   return (
     <div className="min-h-screen bg-[#FAFAF8] text-gray-800 font-sans">
@@ -71,7 +75,7 @@ export default async function ProductsPage({ searchParams }) {
 
             <SearchBar initialQuery={search || ''} />
 
-            <CategoryFilter />
+            <CategoryFilter userUniversity={user?.university} />
 
             <div className="grid gap-3 md:gap-6 grid-cols-2 lg:grid-cols-3">
               {products.length === 0 ? (

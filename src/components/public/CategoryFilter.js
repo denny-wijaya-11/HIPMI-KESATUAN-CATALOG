@@ -4,14 +4,15 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 const CATEGORIES = ['Semua', 'Makanan', 'Minuman', 'Fashion', 'Aksesoris', 'Perlengkapan', 'Jasa', 'Lainnya'];
 
-export default function CategoryFilter() {
+export default function CategoryFilter({ userUniversity }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentCategory = searchParams.get('category') || 'Semua';
   const currentSort = searchParams.get('sort') || 'newest';
   const currentRegion = searchParams.get('region') || 'Semua';
+  const isSatuKampus = searchParams.get('satuKampus') === 'true';
 
-  const updateFilters = (newCategory, newSort, newRegion) => {
+  const updateFilters = (newCategory, newSort, newRegion, newSatuKampus) => {
     const params = new URLSearchParams();
     if (newCategory && newCategory !== 'Semua') {
       params.set('category', newCategory);
@@ -22,106 +23,148 @@ export default function CategoryFilter() {
     if (newRegion && newRegion !== 'Semua') {
       params.set('region', newRegion);
     }
+    if (newSatuKampus) {
+      params.set('satuKampus', 'true');
+    }
     
     const queryString = params.toString();
     router.push(queryString ? `/products?${queryString}` : '/products');
   };
 
   const handleCategoryClick = (category) => {
-    updateFilters(category, currentSort, currentRegion);
+    updateFilters(category, currentSort, currentRegion, isSatuKampus);
   };
 
   const handleSortChange = (e) => {
-    updateFilters(currentCategory, e.target.value, currentRegion);
+    updateFilters(currentCategory, e.target.value, currentRegion, isSatuKampus);
   };
 
   const handleRegionChange = (e) => {
-    updateFilters(currentCategory, currentSort, e.target.value);
+    updateFilters(currentCategory, currentSort, e.target.value, isSatuKampus);
+  };
+
+  const handleSatuKampusToggle = () => {
+    updateFilters(currentCategory, currentSort, currentRegion, !isSatuKampus);
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
-      <div className="flex flex-wrap gap-3">
-        {CATEGORIES.map((category) => {
-          const isActive = currentCategory === category;
-          return (
-            <button
-              key={category}
-              onClick={() => handleCategoryClick(category)}
-              className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 ${
-                isActive
-                  ? 'bg-[#C62828] text-white shadow-md border border-[#C62828]'
-                  : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200 hover:border-gray-300'
-              }`}
+    <div className="flex flex-col mb-10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-wrap gap-3">
+          {CATEGORIES.map((category) => {
+            const isActive = currentCategory === category;
+            return (
+              <button
+                key={category}
+                onClick={() => handleCategoryClick(category)}
+                className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 ${
+                  isActive
+                    ? 'bg-[#C62828] text-white shadow-md border border-[#C62828]'
+                    : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                {category}
+              </button>
+            );
+          })}
+        </div>
+        
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto mt-6 sm:mt-0">
+          <div className="flex items-center justify-between sm:justify-start gap-2">
+            <label htmlFor="region" className="text-xs sm:text-sm text-gray-600 font-medium whitespace-nowrap">Wilayah:</label>
+            <select 
+              id="region"
+              value={currentRegion}
+              onChange={handleRegionChange}
+              className="bg-white border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg focus:ring-[#C62828] focus:border-[#C62828] block p-2 outline-none transition-colors w-full sm:w-auto min-w-[140px]"
             >
-              {category}
-            </button>
-          );
-        })}
+              <option value="Semua">Semua Wilayah</option>
+              <optgroup label="JABODETABEK">
+                <option value="Jakarta">Jakarta</option>
+                <option value="Kota Bogor">Kota Bogor</option>
+                <option value="Kab. Bogor">Kab. Bogor</option>
+                <option value="Kota Depok">Kota Depok</option>
+                <option value="Kota Tangerang">Kota Tangerang</option>
+                <option value="Kota Tangerang Selatan">Kota Tangerang Selatan</option>
+                <option value="Kab. Tangerang">Kab. Tangerang</option>
+                <option value="Kota Bekasi">Kota Bekasi</option>
+                <option value="Kab. Bekasi">Kab. Bekasi</option>
+              </optgroup>
+              <optgroup label="Jawa Barat">
+                <option value="Kota Bandung">Kota Bandung</option>
+                <option value="Kab. Bandung">Kab. Bandung</option>
+                <option value="Kab. Bandung Barat">Kab. Bandung Barat</option>
+                <option value="Kota Cimahi">Kota Cimahi</option>
+                <option value="Kota Sukabumi">Kota Sukabumi</option>
+                <option value="Kab. Sukabumi">Kab. Sukabumi</option>
+                <option value="Kota Cirebon">Kota Cirebon</option>
+                <option value="Kab. Cirebon">Kab. Cirebon</option>
+                <option value="Kota Tasikmalaya">Kota Tasikmalaya</option>
+                <option value="Kab. Tasikmalaya">Kab. Tasikmalaya</option>
+                <option value="Kota Banjar">Kota Banjar</option>
+                <option value="Kab. Ciamis">Kab. Ciamis</option>
+                <option value="Kab. Cianjur">Kab. Cianjur</option>
+                <option value="Kab. Garut">Kab. Garut</option>
+                <option value="Kab. Indramayu">Kab. Indramayu</option>
+                <option value="Kab. Karawang">Kab. Karawang</option>
+                <option value="Kab. Kuningan">Kab. Kuningan</option>
+                <option value="Kab. Majalengka">Kab. Majalengka</option>
+                <option value="Kab. Pangandaran">Kab. Pangandaran</option>
+                <option value="Kab. Purwakarta">Kab. Purwakarta</option>
+                <option value="Kab. Subang">Kab. Subang</option>
+                <option value="Kab. Sumedang">Kab. Sumedang</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div className="flex items-center justify-between sm:justify-start gap-2">
+            <label htmlFor="sort" className="text-xs sm:text-sm text-gray-600 font-medium whitespace-nowrap">Urutkan:</label>
+            <select 
+              id="sort"
+              value={currentSort}
+              onChange={handleSortChange}
+              className="bg-white border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg focus:ring-[#C62828] focus:border-[#C62828] block p-2 outline-none transition-colors w-full sm:w-auto min-w-[120px]"
+            >
+              <option value="newest">Terbaru</option>
+              <option value="price_asc">Termurah</option>
+              <option value="price_desc">Termahal</option>
+            </select>
+          </div>
+        </div>
       </div>
       
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto mt-6 sm:mt-0">
-        <div className="flex items-center justify-between sm:justify-start gap-2">
-          <label htmlFor="region" className="text-xs sm:text-sm text-gray-600 font-medium whitespace-nowrap">Wilayah:</label>
-          <select 
-            id="region"
-            value={currentRegion}
-            onChange={handleRegionChange}
-            className="bg-white border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg focus:ring-[#C62828] focus:border-[#C62828] block p-2 outline-none transition-colors w-full sm:w-auto min-w-[140px]"
+      {/* Social Filter / Satu Kampus Toggle */}
+      {userUniversity && (
+        <div className="mt-5 flex items-center justify-between sm:justify-start bg-red-50/50 sm:bg-transparent p-3 sm:p-0 rounded-xl sm:rounded-none border border-red-100 sm:border-none">
+          <div className="flex items-center gap-3">
+            <div className="bg-red-100 p-1.5 rounded-full text-[#C62828]">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
+              </svg>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs sm:text-sm font-semibold text-gray-800">Dukung Teman Sekampus</span>
+              <span className="text-[10px] sm:text-xs text-gray-500">Tampilkan produk mahasiswa {userUniversity}</span>
+            </div>
+          </div>
+          
+          <button 
+            onClick={handleSatuKampusToggle}
+            className={`ml-4 sm:ml-6 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#C62828] focus:ring-offset-2 ${
+              isSatuKampus ? 'bg-[#C62828]' : 'bg-gray-200'
+            }`}
+            role="switch"
+            aria-checked={isSatuKampus}
           >
-            <option value="Semua">Semua Wilayah</option>
-            <optgroup label="JABODETABEK">
-              <option value="Jakarta">Jakarta</option>
-              <option value="Kota Bogor">Kota Bogor</option>
-              <option value="Kab. Bogor">Kab. Bogor</option>
-              <option value="Kota Depok">Kota Depok</option>
-              <option value="Kota Tangerang">Kota Tangerang</option>
-              <option value="Kota Tangerang Selatan">Kota Tangerang Selatan</option>
-              <option value="Kab. Tangerang">Kab. Tangerang</option>
-              <option value="Kota Bekasi">Kota Bekasi</option>
-              <option value="Kab. Bekasi">Kab. Bekasi</option>
-            </optgroup>
-            <optgroup label="Jawa Barat">
-              <option value="Kota Bandung">Kota Bandung</option>
-              <option value="Kab. Bandung">Kab. Bandung</option>
-              <option value="Kab. Bandung Barat">Kab. Bandung Barat</option>
-              <option value="Kota Cimahi">Kota Cimahi</option>
-              <option value="Kota Sukabumi">Kota Sukabumi</option>
-              <option value="Kab. Sukabumi">Kab. Sukabumi</option>
-              <option value="Kota Cirebon">Kota Cirebon</option>
-              <option value="Kab. Cirebon">Kab. Cirebon</option>
-              <option value="Kota Tasikmalaya">Kota Tasikmalaya</option>
-              <option value="Kab. Tasikmalaya">Kab. Tasikmalaya</option>
-              <option value="Kota Banjar">Kota Banjar</option>
-              <option value="Kab. Ciamis">Kab. Ciamis</option>
-              <option value="Kab. Cianjur">Kab. Cianjur</option>
-              <option value="Kab. Garut">Kab. Garut</option>
-              <option value="Kab. Indramayu">Kab. Indramayu</option>
-              <option value="Kab. Karawang">Kab. Karawang</option>
-              <option value="Kab. Kuningan">Kab. Kuningan</option>
-              <option value="Kab. Majalengka">Kab. Majalengka</option>
-              <option value="Kab. Pangandaran">Kab. Pangandaran</option>
-              <option value="Kab. Purwakarta">Kab. Purwakarta</option>
-              <option value="Kab. Subang">Kab. Subang</option>
-              <option value="Kab. Sumedang">Kab. Sumedang</option>
-            </optgroup>
-          </select>
+            <span
+              aria-hidden="true"
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                isSatuKampus ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
         </div>
-
-        <div className="flex items-center justify-between sm:justify-start gap-2">
-          <label htmlFor="sort" className="text-xs sm:text-sm text-gray-600 font-medium whitespace-nowrap">Urutkan:</label>
-          <select 
-            id="sort"
-            value={currentSort}
-            onChange={handleSortChange}
-            className="bg-white border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg focus:ring-[#C62828] focus:border-[#C62828] block p-2 outline-none transition-colors w-full sm:w-auto min-w-[120px]"
-          >
-            <option value="newest">Terbaru</option>
-            <option value="price_asc">Termurah</option>
-            <option value="price_desc">Termahal</option>
-          </select>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
