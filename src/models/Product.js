@@ -56,6 +56,21 @@ const ProductSchema = new mongoose.Schema({
   isHidden: {
     type: Boolean,
     default: false
+  },
+  reviews: [{
+    user: { type: mongoose.Schema.ObjectId, ref: 'User', required: true },
+    name: { type: String, required: true },
+    rating: { type: Number, required: true, min: 1, max: 5 },
+    comment: { type: String, required: true, maxlength: 500 },
+    createdAt: { type: Date, default: Date.now }
+  }],
+  rating: {
+    type: Number,
+    default: 0
+  },
+  numReviews: {
+    type: Number,
+    default: 0
   }
 }, { timestamps: true });
 
