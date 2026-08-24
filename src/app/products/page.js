@@ -9,16 +9,25 @@ import CartIcon from "@/components/public/CartIcon";
 import WishlistNavIcon from "@/components/public/WishlistNavIcon";
 import WishlistButton from "@/components/public/WishlistButton";
 import UserNavMenu from "@/components/public/UserNavMenu";
+import SearchBar from "@/components/mobile/SearchBar";
 import PublicHeader from "@/components/public/PublicHeader";
 import { getUserPayload } from "@/lib/auth";
 import dbConnect from '@/lib/mongodb';
 
 export const dynamic = 'force-dynamic';
 
-async function getAllProducts(category, sort, region) {
+async function getAllProducts(category, sort, region, searchQuery) {
   await dbConnect();
   
   let query = { isHidden: { $ne: true } };
+  
+  if (searchQuery) {
+    query.$or = [
+      { name: { $regex: searchQuery, $options: 'i' } },
+      { description: { $regex: searchQuery, $options: 'i' } }
+    ];
+  }
+
   if (category && category !== 'Semua') {
     query.category = category;
   }
@@ -40,7 +49,8 @@ export default async function ProductsPage({ searchParams }) {
   const category = resolvedParams?.category;
   const sort = resolvedParams?.sort;
   const region = resolvedParams?.region;
-  const products = await getAllProducts(category, sort, region);
+  const search = resolvedParams?.search;
+  const products = await getAllProducts(category, sort, region, search);
 
   return (
     <div className="min-h-screen bg-[#FAFAF8] text-gray-800 font-sans">
@@ -50,7 +60,7 @@ export default async function ProductsPage({ searchParams }) {
       <main className="relative z-10">
         <section className="py-8 md:py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12 gap-4">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 md:mb-10 gap-4">
               <div>
                 <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">Semua Produk</h1>
                 <p className="text-gray-500 max-w-xl text-sm md:text-base">
@@ -58,6 +68,8 @@ export default async function ProductsPage({ searchParams }) {
                 </p>
               </div>
             </div>
+
+            <SearchBar initialQuery={search || ''} />
 
             <CategoryFilter />
 

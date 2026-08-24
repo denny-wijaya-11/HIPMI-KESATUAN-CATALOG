@@ -6,7 +6,7 @@ import User from "@/models/User";
 import AddToCartButton from "@/components/public/AddToCartButton";
 import CartIcon from "@/components/public/CartIcon";
 import WishlistButton from "@/components/public/WishlistButton";
-import ShareButton from "@/components/public/ShareButton";
+import ShareButton from "@/components/mobile/ShareButton";
 import ReviewSection from "@/components/public/ReviewSection";
 import UserNavMenu from "@/components/public/UserNavMenu";
 import PublicHeader from "@/components/public/PublicHeader";
