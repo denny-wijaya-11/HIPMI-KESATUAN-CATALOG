@@ -131,7 +131,19 @@ export default async function ProductsPage({ searchParams }) {
                         <p className="text-gray-400 text-[9px] sm:text-[10px] md:text-xs leading-relaxed line-clamp-2 hidden sm:block">{product.description || '-'}</p>
                       </div>
                       <div className="mt-2 md:mt-4 flex items-center justify-between">
-                        <span className="text-xs sm:text-sm md:text-lg font-bold text-[#C62828]">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
+                        <div className="flex flex-col">
+                          {product.originalPrice > product.price && (
+                            <span className="text-[10px] md:text-xs text-gray-400 line-through mb-0.5">Rp {Number(product.originalPrice).toLocaleString('id-ID')}</span>
+                          )}
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs sm:text-sm md:text-lg font-bold text-[#C62828]">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
+                            {product.originalPrice > product.price && (
+                              <span className="bg-red-100 text-[#C62828] text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded-sm">
+                                -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                              </span>
+                            )}
+                          </div>
+                        </div>
                         <AddToCartButton product={JSON.parse(JSON.stringify(product))} />
                       </div>
                     </div>

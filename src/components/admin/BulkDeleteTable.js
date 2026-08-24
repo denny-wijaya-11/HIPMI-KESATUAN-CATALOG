@@ -267,7 +267,7 @@ export default function BulkDeleteTable({ products, userRole }) {
                         <div className="flex flex-col sm:flex-row items-end sm:items-center justify-end gap-1.5 sm:gap-3">
                           <div className="flex items-center gap-1 sm:gap-3">
                             <ToggleHiddenButton productId={product._id} initialIsHidden={product.isHidden} />
-                            <Link href={`/admin/products/${product._id}/edit`} className="text-blue-600 hover:text-blue-900 text-[10px] sm:text-xs bg-blue-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded font-semibold border border-blue-100">
+                            <Link href={userRole === 'tenant' ? `/tenant/products/${product._id}/edit` : `/admin/products/${product._id}/edit`} className="text-blue-600 hover:text-blue-900 text-[10px] sm:text-xs bg-blue-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded font-semibold border border-blue-100">
                               Edit
                             </Link>
                           </div>

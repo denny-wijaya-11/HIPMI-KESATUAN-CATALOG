@@ -4,6 +4,8 @@ import { jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import Product from '@/models/Product';
+import User from '@/models/User';
+import Notification from '@/models/Notification';
 import dbConnect from '@/lib/mongodb';
 
 // Helper to ensure DB connection
@@ -30,7 +32,7 @@ async function getUserPayload() {
   try {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
     const { payload } = await jwtVerify(token, secret);
-    return payload; // { userId, email, role }
+    return payload; // { id, email, role }
   } catch (err) {
     return null;
   }
@@ -38,7 +40,7 @@ async function getUserPayload() {
 
 export async function GET(request, { params }) {
   const user = await getUserPayload();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!user || user.role !== 'tenant') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
     await connectDB();
@@ -49,8 +51,7 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
     
-    // Check if operator owns it
-    if (user.role === 'operator' && product.owner.toString() !== user.id) {
+    if (product.owner.toString() !== user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -62,7 +63,7 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   const user = await getUserPayload();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!user || user.role !== 'tenant') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
     await connectDB();
@@ -75,8 +76,7 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
-    // Role check for update
-    if (user.role === 'operator' && product.owner.toString() !== user.id) {
+    if (product.owner.toString() !== user.id) {
       return NextResponse.json({ error: 'Forbidden. You can only edit your own products.' }, { status: 403 });
     }
 
@@ -87,67 +87,51 @@ export async function PUT(request, { params }) {
     const updateData = {};
     if (body.name !== undefined) updateData.name = body.name;
     if (body.description !== undefined) updateData.description = body.description;
-    if (body.price !== undefined) updateData.price = body.price;
     if (body.category !== undefined) updateData.category = body.category;
     if (body.region !== undefined) updateData.region = body.region;
     if (body.image !== undefined) updateData.image = body.image;
     
-    // Only admins/developers can alter isFeatured
-    if (user.role !== 'operator' && body.isFeatured !== undefined) {
-      updateData.isFeatured = body.isFeatured;
-    }
-
-    if (body.isHidden !== undefined) {
-      updateData.isHidden = body.isHidden;
+    let isPriceDropped = false;
+    if (body.price !== undefined) {
+      const newPrice = Number(body.price);
+      if (newPrice < product.price) {
+        // Price dropped! Set originalPrice to previous price
+        updateData.originalPrice = product.price;
+        isPriceDropped = true;
+      }
+      updateData.price = newPrice;
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(id, { $set: updateData }, { new: true });
 
+    // Handle Wishlist Notifications
+    if (isPriceDropped) {
+      // Find all users who have this product in their wishlist
+      const usersWithWishlist = await User.find({ wishlist: id });
+      
+      const notifications = usersWithWishlist.map(u => ({
+        recipient: u._id,
+        title: 'Harga Turun!',
+        message: `Hore! Harga ${updatedProduct.name} yang ada di wishlist kamu turun dari Rp ${product.price.toLocaleString('id-ID')} menjadi Rp ${updatedProduct.price.toLocaleString('id-ID')}. Yuk checkout sekarang!`,
+        type: 'price_drop',
+        link: `/products/${id}`,
+        isRead: false
+      }));
+
+      if (notifications.length > 0) {
+        await Notification.insertMany(notifications);
+      }
+    }
+
     // Revalidate the cache so the homepage and products page update instantly
     revalidatePath('/', 'layout');
-    revalidatePath('/admin/products', 'page');
+    revalidatePath('/tenant/products', 'page');
+    revalidatePath('/products', 'page');
+    revalidatePath(`/products/${id}`, 'page');
 
     return NextResponse.json({ message: 'Product updated successfully', product: updatedProduct });
   } catch (error) {
     console.error('Error updating product:', error);
     return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
-  }
-}
-
-export async function DELETE(request, { params }) {
-  const user = await getUserPayload();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-  // Only Admin or Developer can delete
-  if (user.role === 'operator') {
-    return NextResponse.json({ error: 'Forbidden. Only Admins can delete products.' }, { status: 403 });
-  }
-
-  try {
-    await connectDB();
-    const resolvedParams = await params;
-    const { id } = resolvedParams;
-
-    const product = await Product.findById(id);
-    if (!product) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
-    }
-
-    if (user.role === 'tenant' && product.owner.toString() !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. You can only delete your own products.' }, { status: 403 });
-    }
-
-    await Product.findByIdAndDelete(id);
-
-    // Revalidate paths so UI updates instantly
-    revalidatePath('/', 'layout');
-    revalidatePath('/admin', 'layout');
-    revalidatePath('/admin/products', 'page');
-    revalidatePath('/products', 'page');
-
-    return NextResponse.json({ message: 'Product deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting product:', error);
-    return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
   }
 }

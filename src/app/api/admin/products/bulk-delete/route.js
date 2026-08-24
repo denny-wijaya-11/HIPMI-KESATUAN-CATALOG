@@ -41,8 +41,15 @@ export async function POST(request) {
       return NextResponse.json({ error: 'No product IDs provided' }, { status: 400 });
     }
 
-    // Delete all products that match the IDs in the array
-    await Product.deleteMany({ _id: { $in: productIds } });
+    let filter = { _id: { $in: productIds } };
+    
+    // If the user is a tenant, restrict deletion to their own products only
+    if (user.role === 'tenant') {
+      filter.owner = user.id;
+    }
+
+    // Delete all products that match the filter
+    await Product.deleteMany(filter);
 
     // Revalidate paths so UI updates instantly
     revalidatePath('/', 'layout');

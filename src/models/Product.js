@@ -15,6 +15,10 @@ const ProductSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'Please provide a price'],
   },
+  originalPrice: {
+    type: Number,
+    default: 0
+  },
   category: {
     type: String,
     enum: ['Makanan', 'Minuman', 'Fashion', 'Aksesoris', 'Perlengkapan', 'Jasa', 'Lainnya'],

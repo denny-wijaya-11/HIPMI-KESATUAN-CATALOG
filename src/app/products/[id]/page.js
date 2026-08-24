@@ -105,7 +105,17 @@ export default async function ProductDetailPage({ params }) {
                 <div className="mt-auto pt-6 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <span className="block text-xs text-gray-400 mb-0.5">Harga</span>
-                    <span className="text-2xl sm:text-3xl font-bold text-[#C62828]">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
+                    {product.originalPrice > product.price && (
+                      <span className="text-sm text-gray-400 line-through mb-1 block">Rp {Number(product.originalPrice).toLocaleString('id-ID')}</span>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl sm:text-3xl font-bold text-[#C62828]">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
+                      {product.originalPrice > product.price && (
+                        <span className="bg-red-100 text-[#C62828] text-xs font-bold px-2 py-1 rounded-md">
+                          Hemat {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
                     <Link
