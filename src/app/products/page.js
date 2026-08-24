@@ -84,7 +84,7 @@ export default async function ProductsPage({ searchParams }) {
                 </div>
               ) : (
                 products.map((product) => (
-                  <div key={product._id.toString()} className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col">
+                  <div key={product._id.toString()} className="group bg-[#F2F2F2] rounded-2xl border border-gray-100 shadow-sm hover:shadow-md overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col">
                     <div className="relative h-32 sm:h-40 md:h-64 w-full bg-gray-50 overflow-hidden">
                       <Link href={`/products/${product._id}`}>
                         <Image 
