@@ -42,6 +42,8 @@ export async function POST(request) {
       name: verificationRecord.name,
       email: verificationRecord.email,
       whatsapp: verificationRecord.whatsapp,
+      university: verificationRecord.university,
+      city: verificationRecord.city,
       password: verificationRecord.password, // Sudah di-hash saat register
       role: 'user', // Default role
       cart: [],

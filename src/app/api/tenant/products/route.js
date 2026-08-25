@@ -66,16 +66,18 @@ export async function POST(request) {
     let finalImage = image || '/images/placeholder.png';
     finalImage = transformImageUrl(finalImage);
 
+    const userFromDb = await dbConnect().then(() => import('@/models/User').then(m => m.default.findById(user.id)));
+
     // Create product untuk tenant
     const newProduct = await Product.create({
       name,
       description,
       price: Number(price),
       category: category || 'Lainnya',
-      region: user.university || 'HIPMORA',
+      region: userFromDb?.city || 'HIPMORA',
       image: finalImage,
-      isFromUniversity: true,
-      university: user.university || 'HIPMORA',
+      isFromUniversity: userFromDb?.isStudent !== false,
+      university: userFromDb?.university || 'HIPMORA',
       owner: user.id // Terkunci ke ID tenant yang sedang login
     });
 

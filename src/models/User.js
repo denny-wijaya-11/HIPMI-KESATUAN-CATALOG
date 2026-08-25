@@ -28,6 +28,7 @@ const UserSchema = new mongoose.Schema({
   },
   whatsapp: {
     type: String,
+    required: function() { return this.role !== 'developer' && this.role !== 'admin'; }
   },
   lastActive: {
     type: Date,
@@ -35,9 +36,11 @@ const UserSchema = new mongoose.Schema({
   },
   city: {
     type: String,
+    required: function() { return this.role !== 'developer' && this.role !== 'admin'; }
   },
   university: {
     type: String,
+    required: function() { return this.role !== 'developer' && this.role !== 'admin'; }
   },
   isStudent: {
     type: Boolean,
@@ -76,7 +79,8 @@ const UserSchema = new mongoose.Schema({
   paymentMethods: [{
     provider: { type: String, required: true }, // e.g., 'BCA', 'GoPay'
     accountNumber: { type: String, required: true },
-    accountName: { type: String, required: true }
+    accountName: { type: String, required: true },
+    qrisImage: { type: String } // URL to the QRIS image
   }]
 }, { timestamps: true });
 

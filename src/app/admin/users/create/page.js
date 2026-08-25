@@ -17,12 +17,33 @@ export default function CreateUserPage() {
     name: '',
     email: '',
     password: '',
+    whatsapp: '',
     role: 'operator',
     isStudent: true,
     university: UNIVERSITIES[0],
     city: REGIONS[0],
-    address: ''
+    address: '',
+    paymentMethods: []
   });
+
+  const handleAddPaymentMethod = () => {
+    setFormData({
+      ...formData,
+      paymentMethods: [...formData.paymentMethods, { provider: '', accountNumber: '', accountName: '', qrisImage: '' }]
+    });
+  };
+
+  const handleRemovePaymentMethod = (index) => {
+    const newMethods = [...formData.paymentMethods];
+    newMethods.splice(index, 1);
+    setFormData({ ...formData, paymentMethods: newMethods });
+  };
+
+  const handlePaymentMethodChange = (index, field, value) => {
+    const newMethods = [...formData.paymentMethods];
+    newMethods[index][field] = value;
+    setFormData({ ...formData, paymentMethods: newMethods });
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -136,6 +157,24 @@ export default function CreateUserPage() {
             </div>
 
             <div className="sm:col-span-4">
+              <label htmlFor="whatsapp" className="block text-sm font-medium leading-6 text-gray-900">
+                Nomor WhatsApp
+              </label>
+              <div className="mt-2">
+                <input
+                  id="whatsapp"
+                  name="whatsapp"
+                  type="tel"
+                  required={formData.role !== 'developer' && formData.role !== 'admin'}
+                  value={formData.whatsapp}
+                  onChange={handleChange}
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
+                  placeholder="0812..."
+                />
+              </div>
+            </div>
+
+            <div className="sm:col-span-4">
               <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                 Password
               </label>
@@ -225,6 +264,128 @@ export default function CreateUserPage() {
                   </div>
                 </div>
               </>
+            )}
+
+            {(formData.role === 'operator' || formData.role === 'tenant' || formData.role === 'user') && (
+              <>
+                <div className="sm:col-span-4">
+                  <label htmlFor="city" className="block text-sm font-medium leading-6 text-gray-900">
+                    Kota Domisili
+                  </label>
+                  <div className="mt-2">
+                    <select
+                      id="city"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleChange}
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
+                    >
+                      {REGIONS.map((r) => (
+                        <option key={r} value={r}>{r}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="sm:col-span-4 flex items-center">
+                  <input
+                    id="isStudent"
+                    name="isStudent"
+                    type="checkbox"
+                    checked={formData.isStudent}
+                    onChange={(e) => setFormData({ ...formData, isStudent: e.target.checked })}
+                    className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
+                  />
+                  <label htmlFor="isStudent" className="ml-2 block text-sm font-medium leading-6 text-gray-900">
+                    Berstatus Mahasiswa Aktif (Sembunyikan jika Tenant Umum/ROAM)
+                  </label>
+                </div>
+              </>
+            )}
+
+            {/* Payment Methods for Tenant */}
+            {formData.role === 'tenant' && (
+              <div className="sm:col-span-6 border-t border-gray-200 pt-6 mt-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h4 className="text-lg font-medium text-gray-900">Metode Pembayaran</h4>
+                    <p className="text-sm text-gray-500">Rekening atau E-Wallet yang akan ditampilkan ke pembeli saat checkout.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddPaymentMethod}
+                    className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  >
+                    + Tambah Rekening
+                  </button>
+                </div>
+
+                {formData.paymentMethods.length === 0 ? (
+                  <div className="text-center py-4 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                    <p className="text-sm text-gray-500">Belum ada metode pembayaran yang ditambahkan.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {formData.paymentMethods.map((method, index) => (
+                      <div key={index} className="flex flex-col gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200 relative">
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePaymentMethod(index)}
+                          className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                        
+                        <div className="flex flex-col sm:flex-row gap-3">
+                          <div className="flex-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">Bank / E-Wallet</label>
+                            <input
+                              type="text"
+                              required
+                              value={method.provider}
+                              onChange={(e) => handlePaymentMethodChange(index, 'provider', e.target.value)}
+                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
+                              placeholder="BCA"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">Nomor Rekening / HP</label>
+                            <input
+                              type="text"
+                              required
+                              value={method.accountNumber}
+                              onChange={(e) => handlePaymentMethodChange(index, 'accountNumber', e.target.value)}
+                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
+                              placeholder="1234567890"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">Atas Nama (A/N)</label>
+                            <input
+                              type="text"
+                              required
+                              value={method.accountName}
+                              onChange={(e) => handlePaymentMethodChange(index, 'accountName', e.target.value)}
+                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
+                              placeholder="Budi Santoso"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">Link/URL QRIS (Opsional)</label>
+                          <input
+                            type="url"
+                            value={method.qrisImage || ''}
+                            onChange={(e) => handlePaymentMethodChange(index, 'qrisImage', e.target.value)}
+                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
+                            placeholder="https://imgur.com/... (URL Gambar)"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             )}
 
           </div>

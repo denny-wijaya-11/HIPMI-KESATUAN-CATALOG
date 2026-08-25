@@ -101,6 +101,11 @@ export default async function UsersPage() {
                                 'bg-red-100 text-red-800'}`}>
                               {user.role}
                             </span>
+                            {!user.isStudent && (
+                              <span className="inline-flex rounded-full px-2 text-[10px] font-semibold leading-5 bg-orange-100 text-orange-800 ml-1">
+                                ROAM
+                              </span>
+                            )}
                           </div>
                         </div>
                       </td>
@@ -112,6 +117,11 @@ export default async function UsersPage() {
                             'bg-red-100 text-red-800'}`}>
                           {user.role}
                         </span>
+                        {!user.isStudent && (
+                          <span className="inline-flex rounded-full px-2 text-xs font-semibold leading-5 bg-orange-100 text-orange-800 ml-1">
+                            ROAM
+                          </span>
+                        )}
                       </td>
                       <td className="hidden lg:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         {user.city || user.university || '-'}

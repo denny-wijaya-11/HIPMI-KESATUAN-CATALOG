@@ -16,26 +16,43 @@ import dbConnect from '@/lib/mongodb';
 
 export const dynamic = 'force-dynamic';
 
-async function getAllProducts(category, sort, region, searchQuery, userUniversity, isSatuKampus) {
+async function getAllProducts(category, sort, region, searchQuery, userUniversity, isRoaming) {
   await dbConnect();
   
   let query = { isHidden: { $ne: true } };
+  let conditions = [];
   
   if (searchQuery) {
-    query.$or = [
-      { name: { $regex: searchQuery, $options: 'i' } },
-      { description: { $regex: searchQuery, $options: 'i' } }
-    ];
+    conditions.push({
+      $or: [
+        { name: { $regex: searchQuery, $options: 'i' } },
+        { description: { $regex: searchQuery, $options: 'i' } }
+      ]
+    });
   }
 
   if (category && category !== 'Semua') {
-    query.category = category;
+    conditions.push({ category: category });
   }
   if (region && region !== 'Semua') {
-    query.region = region;
+    conditions.push({ region: region });
   }
-  if (isSatuKampus && userUniversity) {
-    query.university = userUniversity;
+
+  if (userUniversity) {
+    if (isRoaming) {
+      conditions.push({
+        $or: [
+          { university: userUniversity },
+          { isFromUniversity: false } // Non-student products
+        ]
+      });
+    } else {
+      conditions.push({ university: userUniversity });
+    }
+  }
+
+  if (conditions.length > 0) {
+    query.$and = conditions;
   }
 
   let sortOption = { createdAt: -1 };
@@ -53,8 +70,17 @@ export default async function ProductsPage({ searchParams }) {
   const sort = resolvedParams?.sort;
   const region = resolvedParams?.region;
   const search = resolvedParams?.search;
-  const isSatuKampus = resolvedParams?.satuKampus === 'true';
-  const products = await getAllProducts(category, sort, region, search, user?.university, isSatuKampus);
+  const isRoaming = resolvedParams?.roaming === 'true'; // Default is false
+  
+  let actualUserUniversity = user?.university;
+  if (user) {
+    // Fetch fresh user data to get university just in case token is stale
+    await dbConnect();
+    const freshUser = await User.findById(user.id);
+    actualUserUniversity = freshUser?.university || user.university;
+  }
+
+  const products = await getAllProducts(category, sort, region, search, actualUserUniversity, isRoaming);
 
   return (
     <div className="min-h-screen bg-[#FAFAF8] text-gray-800 font-sans">
@@ -68,9 +94,26 @@ export default async function ProductsPage({ searchParams }) {
               <div>
                 <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">Semua Produk</h1>
                 <p className="text-gray-500 max-w-xl text-sm md:text-base">
-                  Jelajahi seluruh karya dan produk inovatif dari anggota HIPMORA Kesatuan.
+                  {actualUserUniversity && !isRoaming 
+                    ? `Menampilkan produk khusus dari mahasiswa ${actualUserUniversity}.` 
+                    : "Jelajahi seluruh karya dan produk inovatif dari anggota HIPMORA Kesatuan."}
                 </p>
               </div>
+              
+              {actualUserUniversity && (
+                <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-gray-900">Mode ROAMING</span>
+                    <span className="text-[10px] text-gray-500 leading-tight">Lihat produk di luar kampus</span>
+                  </div>
+                  <Link 
+                    href={`/products?${new URLSearchParams({ ...resolvedParams, roaming: isRoaming ? 'false' : 'true' }).toString()}`}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#C62828] focus:ring-offset-2 ${isRoaming ? 'bg-[#C62828]' : 'bg-gray-200'}`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isRoaming ? 'translate-x-6' : 'translate-x-1'}`} />
+                  </Link>
+                </div>
+              )}
             </div>
 
             <SearchBar initialQuery={search || ''} />

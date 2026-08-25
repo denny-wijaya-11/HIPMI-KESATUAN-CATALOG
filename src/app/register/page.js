@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Suspense } from "react";
+import { REGIONS, UNIVERSITIES } from "@/lib/constants";
 
 function RegisterContent() {
   const [step, setStep] = useState(1); // 1: Form Register, 2: Form OTP
@@ -12,6 +13,8 @@ function RegisterContent() {
   const [email, setEmail] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [password, setPassword] = useState("");
+  const [university, setUniversity] = useState(UNIVERSITIES[0]);
+  const [city, setCity] = useState(REGIONS[0]);
   const [otp, setOtp] = useState("");
   
   const [error, setError] = useState("");
@@ -29,7 +32,7 @@ function RegisterContent() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, whatsapp, password }),
+        body: JSON.stringify({ name, email, whatsapp, password, university, city }),
       });
 
       const data = await res.json();
@@ -159,6 +162,46 @@ function RegisterContent() {
                     onChange={(e) => setWhatsapp(e.target.value)}
                     className="appearance-none block w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] text-sm transition-all bg-white"
                   />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="university" className="block text-sm font-medium text-gray-700">
+                  Kampus / Universitas
+                </label>
+                <div className="mt-1.5">
+                  <select
+                    id="university"
+                    name="university"
+                    required
+                    value={university}
+                    onChange={(e) => setUniversity(e.target.value)}
+                    className="appearance-none block w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] text-sm transition-all bg-white"
+                  >
+                    {UNIVERSITIES.map(u => (
+                      <option key={u} value={u}>{u}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="city" className="block text-sm font-medium text-gray-700">
+                  Domisili (Kota)
+                </label>
+                <div className="mt-1.5">
+                  <select
+                    id="city"
+                    name="city"
+                    required
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className="appearance-none block w-full px-4 py-2.5 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] text-sm transition-all bg-white"
+                  >
+                    {REGIONS.map(r => (
+                      <option key={r} value={r}>{r}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
