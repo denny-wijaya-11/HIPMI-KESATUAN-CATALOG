@@ -66,13 +66,18 @@ export async function POST(request) {
     }
 
     // Create an order for each tenant
-    const orderPromises = Object.values(itemsByTenant).map(tenantOrder => {
+    const orderPromises = Object.values(itemsByTenant).map(async (tenantOrder) => {
+      // Get the tenant to copy their payment methods
+      const tenantUser = await User.findById(tenantOrder.tenant);
+      const paymentInstructions = tenantUser?.paymentMethods || [];
+
       const newOrder = new Order({
         buyer: payload.id,
         tenant: tenantOrder.tenant,
         items: tenantOrder.items,
         totalAmount: tenantOrder.totalAmount,
-        shippingAddress
+        shippingAddress,
+        paymentInstructions
       });
       return newOrder.save();
     });
@@ -181,7 +186,11 @@ export async function POST(request) {
     // Empty user cart after checkout
     await User.findByIdAndUpdate(payload.id, { $set: { cart: [] } });
 
-    return NextResponse.json({ success: true, message: 'Pesanan berhasil dibuat' });
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Pesanan berhasil dibuat',
+      orderIds: savedOrders.map(o => o._id.toString())
+    });
   } catch (error) {
     console.error('Checkout error:', error);
     return NextResponse.json({ error: error.message || 'Gagal memproses pesanan' }, { status: 500 });

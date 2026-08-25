@@ -77,7 +77,8 @@ export default function CheckoutPage() {
       if (!res.ok) throw new Error(data.error || 'Gagal memproses pesanan');
 
       clearCart();
-      router.push('/checkout/success');
+      const orderIdsParam = data.orderIds ? data.orderIds.join(',') : '';
+      router.push(`/checkout/success?orders=${orderIdsParam}`);
     } catch (err) {
       setError(err.message);
       setIsSubmitting(false);

@@ -72,6 +72,11 @@ const UserSchema = new mongoose.Schema({
       type: Number,
       default: 1
     }
+  }],
+  paymentMethods: [{
+    provider: { type: String, required: true }, // e.g., 'BCA', 'GoPay'
+    accountNumber: { type: String, required: true },
+    accountName: { type: String, required: true }
   }]
 }, { timestamps: true });
 

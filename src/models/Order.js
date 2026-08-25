@@ -46,6 +46,11 @@ const OrderSchema = new mongoose.Schema({
     enum: ['manual_transfer'],
     default: 'manual_transfer'
   },
+  paymentInstructions: [{
+    provider: String,
+    accountNumber: String,
+    accountName: String
+  }],
   paymentProof: {
     type: String,
     default: null
