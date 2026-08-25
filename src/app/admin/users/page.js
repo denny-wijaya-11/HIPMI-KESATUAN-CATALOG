@@ -114,7 +114,7 @@ export default async function UsersPage() {
                         </span>
                       </td>
                       <td className="hidden lg:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {user.city || '-'}
+                        {user.city || user.university || '-'}
                       </td>
                       <td className="hidden xl:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         {new Date(user.createdAt).toLocaleDateString('id-ID')}

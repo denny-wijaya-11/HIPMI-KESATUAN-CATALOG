@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
+import { UNIVERSITIES } from '@/lib/constants';
 
 export default function EditUserPage() {
   const { id } = useParams();
@@ -17,7 +18,9 @@ export default function EditUserPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    role: 'operator'
+    role: 'operator',
+    whatsapp: '',
+    university: ''
   });
 
   useEffect(() => {
@@ -31,9 +34,11 @@ export default function EditUserPage() {
         }
         
         setFormData({
-          name: data.user.name,
-          email: data.user.email,
-          role: data.user.role
+          name: data.user.name || '',
+          email: data.user.email || '',
+          role: data.user.role || 'operator',
+          whatsapp: data.user.whatsapp || '',
+          university: data.user.university || ''
         });
 
         // Also fetch current user profile
@@ -149,6 +154,22 @@ export default function EditUserPage() {
               </div>
             </div>
 
+            <div className="sm:col-span-4">
+              <label htmlFor="whatsapp" className="block text-sm font-medium leading-6 text-gray-900">
+                Nomor WhatsApp
+              </label>
+              <div className="mt-2">
+                <input
+                  id="whatsapp"
+                  name="whatsapp"
+                  type="text"
+                  value={formData.whatsapp}
+                  onChange={handleChange}
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
+                />
+              </div>
+            </div>
+
             {currentUser?.role === 'operator' ? (
               <div className="sm:col-span-6 border-t border-gray-900/10 pt-6 mt-2">
                 <div className="bg-red-50 text-red-700 p-4 rounded-md text-sm border border-red-100">
@@ -176,6 +197,37 @@ export default function EditUserPage() {
                   </select>
                 </div>
               </div>
+            )}
+
+            {currentUser?.role !== 'operator' && (formData.role === 'operator' || formData.role === 'tenant') && (
+              <>
+                <div className="sm:col-span-6 border-t border-gray-900/10 pt-6 mt-2">
+                  <h3 className="text-base font-semibold leading-7 text-gray-900">Detail Kampus</h3>
+                  <p className="mt-1 text-sm leading-6 text-gray-600">
+                    Pilih kampus untuk {formData.role === 'operator' ? 'operator' : 'tenant'} ini.
+                  </p>
+                </div>
+
+                <div className="sm:col-span-4">
+                  <label htmlFor="university" className="block text-sm font-medium leading-6 text-gray-900">
+                    Pilih Universitas
+                  </label>
+                  <div className="mt-2">
+                    <select
+                      id="university"
+                      name="university"
+                      value={formData.university}
+                      onChange={handleChange}
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
+                    >
+                      <option value="">Pilih Kampus...</option>
+                      {UNIVERSITIES.map((univ) => (
+                        <option key={univ} value={univ}>{univ}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </>
             )}
 
           </div>
