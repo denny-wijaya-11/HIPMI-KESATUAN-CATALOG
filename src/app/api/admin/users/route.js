@@ -58,7 +58,7 @@ export async function POST(request) {
 
   try {
     await connectDB();
-    const { email, password, name, role, isStudent, university, city, address } = await request.json();
+    const { email, password, name, role, isStudent, university, city, address, whatsapp, paymentMethods } = await request.json();
 
     if (!email || !password || !name || !role) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
@@ -88,19 +88,23 @@ export async function POST(request) {
       email,
       password: hashedPassword,
       name,
-      role: finalRole
+      role: finalRole,
+      whatsapp: whatsapp || '',
+      city: city || 'Semua'
     };
 
-    if (finalRole === 'operator') {
+    if (finalRole !== 'admin' && finalRole !== 'developer') {
       userData.isStudent = isStudent;
       if (isStudent) {
         userData.university = finalUniversity;
-      } else {
-        userData.city = city;
+      }
+    }
+
+    if (finalRole === 'tenant') {
+      userData.paymentMethods = paymentMethods || [];
+      if (!isStudent) {
         userData.address = address;
       }
-    } else if (finalRole === 'tenant') {
-      userData.university = finalUniversity;
     }
 
     // Create user
