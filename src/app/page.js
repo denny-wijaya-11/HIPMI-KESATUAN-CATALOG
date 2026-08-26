@@ -217,10 +217,10 @@ export default async function Home() {
                   Bergabunglah dengan mahasiswa pengusaha lainnya. Dapatkan akses ke pasar yang lebih luas dan komunitas yang suportif.
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center gap-3">
-                  <SolidButton href="/login" className="!bg-white !text-[#C62828] hover:!bg-gray-100">
+                  <SolidButton href="/become-tenant" className="!bg-white !text-[#C62828] hover:!bg-gray-100">
                     Daftar Sebagai Tenant
                   </SolidButton>
-                  <SolidButton href="#" className="!bg-white/10 !text-white hover:!bg-white/20 !border-white/20">
+                  <SolidButton href="https://wa.me/6281234567890?text=Halo%20Admin%2C%20saya%20ingin%20mendaftar%20sebagai%20tenant%20di%20HIPMORA" target="_blank" className="!bg-white/10 !text-white hover:!bg-white/20 !border-white/20">
                     Hubungi Admin
                   </SolidButton>
                 </div>

@@ -171,9 +171,10 @@ export default function EditUserPage() {
                   name="email"
                   type="email"
                   required
+                  disabled={currentUser?.role === 'operator'}
                   value={formData.email}
                   onChange={handleChange}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3 disabled:bg-gray-100 disabled:text-gray-500"
                 />
               </div>
             </div>
@@ -187,9 +188,10 @@ export default function EditUserPage() {
                   id="whatsapp"
                   name="whatsapp"
                   type="text"
+                  disabled={currentUser?.role === 'operator'}
                   value={formData.whatsapp}
                   onChange={handleChange}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3 disabled:bg-gray-100 disabled:text-gray-500"
                 />
               </div>
             </div>
@@ -300,13 +302,15 @@ export default function EditUserPage() {
                     <h4 className="text-lg font-medium text-gray-900">Metode Pembayaran</h4>
                     <p className="text-sm text-gray-500">Rekening atau E-Wallet yang akan ditampilkan ke pembeli saat checkout.</p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleAddPaymentMethod}
-                    className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                  >
-                    + Tambah Rekening
-                  </button>
+                  {currentUser?.role !== 'operator' && (
+                    <button
+                      type="button"
+                      onClick={handleAddPaymentMethod}
+                      className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    >
+                      + Tambah Rekening
+                    </button>
+                  )}
                 </div>
 
                 {formData.paymentMethods.length === 0 ? (
@@ -317,13 +321,15 @@ export default function EditUserPage() {
                   <div className="space-y-4">
                     {formData.paymentMethods.map((method, index) => (
                       <div key={index} className="flex flex-col gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200 relative">
-                        <button
-                          type="button"
-                          onClick={() => handleRemovePaymentMethod(index)}
-                          className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
-                        >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        </button>
+                        {currentUser?.role !== 'operator' && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemovePaymentMethod(index)}
+                            className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                          </button>
+                        )}
                         
                         <div className="flex flex-col sm:flex-row gap-3">
                           <div className="flex-1">
@@ -331,9 +337,10 @@ export default function EditUserPage() {
                             <input
                               type="text"
                               required
+                              disabled={currentUser?.role === 'operator'}
                               value={method.provider}
                               onChange={(e) => handlePaymentMethodChange(index, 'provider', e.target.value)}
-                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
+                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border disabled:bg-gray-100 disabled:text-gray-500"
                               placeholder="BCA"
                             />
                           </div>
@@ -342,9 +349,10 @@ export default function EditUserPage() {
                             <input
                               type="text"
                               required
+                              disabled={currentUser?.role === 'operator'}
                               value={method.accountNumber}
                               onChange={(e) => handlePaymentMethodChange(index, 'accountNumber', e.target.value)}
-                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
+                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border disabled:bg-gray-100 disabled:text-gray-500"
                               placeholder="1234567890"
                             />
                           </div>
@@ -353,9 +361,10 @@ export default function EditUserPage() {
                             <input
                               type="text"
                               required
+                              disabled={currentUser?.role === 'operator'}
                               value={method.accountName}
                               onChange={(e) => handlePaymentMethodChange(index, 'accountName', e.target.value)}
-                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
+                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border disabled:bg-gray-100 disabled:text-gray-500"
                               placeholder="Budi Santoso"
                             />
                           </div>
@@ -364,9 +373,10 @@ export default function EditUserPage() {
                           <label className="block text-xs font-medium text-gray-700 mb-1">Link/URL QRIS (Opsional)</label>
                           <input
                             type="url"
+                            disabled={currentUser?.role === 'operator'}
                             value={method.qrisImage || ''}
                             onChange={(e) => handlePaymentMethodChange(index, 'qrisImage', e.target.value)}
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
+                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border disabled:bg-gray-100 disabled:text-gray-500"
                             placeholder="https://imgur.com/... (URL Gambar)"
                           />
                         </div>

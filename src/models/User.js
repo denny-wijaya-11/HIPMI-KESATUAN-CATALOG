@@ -26,6 +26,11 @@ const UserSchema = new mongoose.Schema({
     enum: ['developer', 'admin', 'operator', 'tenant', 'user'],
     default: 'user',
   },
+  tenantStatus: {
+    type: String,
+    enum: ['none', 'pending', 'approved', 'rejected'],
+    default: 'none',
+  },
   whatsapp: {
     type: String,
     required: function() { return this.role !== 'developer' && this.role !== 'admin'; }
