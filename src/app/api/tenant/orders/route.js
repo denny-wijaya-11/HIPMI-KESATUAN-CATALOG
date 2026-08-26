@@ -8,7 +8,7 @@ import User from '@/models/User'; // needed for populate
 
 export async function GET(request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get('auth_token');
 
     if (!token) {

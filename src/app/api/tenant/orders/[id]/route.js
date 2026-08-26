@@ -7,7 +7,7 @@ import Order from '@/models/Order';
 export async function PATCH(request, { params }) {
   try {
     const { id } = params;
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get('auth_token');
 
     if (!token) {
