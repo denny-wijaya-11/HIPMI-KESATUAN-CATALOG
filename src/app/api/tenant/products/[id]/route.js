@@ -89,7 +89,16 @@ export async function PUT(request, { params }) {
     if (body.description !== undefined) updateData.description = body.description;
     if (body.category !== undefined) updateData.category = body.category;
     if (body.region !== undefined) updateData.region = body.region;
-    if (body.image !== undefined) updateData.image = body.image;
+    
+    if (body.images !== undefined) {
+      updateData.images = body.images;
+      updateData.image = body.images[0] || '/images/placeholder.png';
+    } else if (body.image !== undefined) {
+      updateData.image = body.image;
+      updateData.images = [body.image];
+    }
+
+    if (body.variants !== undefined) updateData.variants = body.variants;
     
     let isPriceDropped = false;
     if (body.price !== undefined) {

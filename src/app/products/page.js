@@ -131,7 +131,7 @@ export default async function ProductsPage({ searchParams }) {
                     <div className="relative h-32 sm:h-40 md:h-64 w-full bg-gray-50 overflow-hidden">
                       <Link href={`/products/${product._id}`}>
                         <Image 
-                          src={product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png'} 
+                          src={(product.images && product.images.length > 0) ? product.images[0] : (product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png')} 
                           alt={product.name || 'Produk'} 
                           fill 
                           sizes="(max-width: 768px) 50vw, 33vw"

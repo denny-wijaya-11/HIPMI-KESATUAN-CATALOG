@@ -48,6 +48,19 @@ const ProductSchema = new mongoose.Schema({
     type: String,
     default: '/images/placeholder.png'
   },
+  images: [{
+    type: String
+  }],
+  variants: [{
+    name: {
+      type: String,
+      required: true
+    },
+    additionalPrice: {
+      type: Number,
+      default: 0
+    }
+  }],
   owner: {
     type: mongoose.Schema.ObjectId,
     ref: 'User',

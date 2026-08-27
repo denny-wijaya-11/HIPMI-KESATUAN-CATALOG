@@ -57,14 +57,21 @@ export async function POST(request) {
 
   try {
     await connectDB();
-    const { name, description, price, category, image } = await request.json();
+    const { name, description, price, category, image, images, variants } = await request.json();
 
     if (!name || !description || !price) {
       return NextResponse.json({ error: 'Name, description, and price are required' }, { status: 400 });
     }
+
+    // Check limit: Max 10 products per tenant
+    const productCount = await Product.countDocuments({ owner: user.id });
+    if (productCount >= 10) {
+      return NextResponse.json({ error: 'Batas maksimal 10 produk telah tercapai.' }, { status: 403 });
+    }
     
+    // Handle legacy image and new images array
     let finalImage = image || '/images/placeholder.png';
-    finalImage = transformImageUrl(finalImage);
+    let finalImages = images && images.length > 0 ? images : [finalImage];
 
     const userFromDb = await dbConnect().then(() => import('@/models/User').then(m => m.default.findById(user.id)));
 
@@ -75,7 +82,9 @@ export async function POST(request) {
       price: Number(price),
       category: category || 'Lainnya',
       region: userFromDb?.city || 'HIPMORA',
-      image: finalImage,
+      image: finalImages[0], // fallback for old code
+      images: finalImages,
+      variants: variants || [],
       isFromUniversity: userFromDb?.isStudent !== false,
       university: userFromDb?.university || 'HIPMORA',
       owner: user.id // Terkunci ke ID tenant yang sedang login
