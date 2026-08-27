@@ -25,10 +25,14 @@ export async function POST(request) {
 
   try {
     await dbConnect();
-    const { address, paymentMethods } = await request.json();
+    const { storeName, address, paymentMethods } = await request.json();
 
     if (!paymentMethods || paymentMethods.length === 0) {
       return NextResponse.json({ error: 'Minimal 1 metode pembayaran harus ditambahkan' }, { status: 400 });
+    }
+    
+    if (!storeName) {
+      return NextResponse.json({ error: 'Nama Toko wajib diisi' }, { status: 400 });
     }
 
     const user = await User.findById(payload.id);
@@ -40,6 +44,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Pengajuan Anda sebelumnya masih dalam status Pending' }, { status: 400 });
     }
 
+    user.name = storeName;
     user.address = address || user.address;
     user.paymentMethods = paymentMethods;
     user.tenantStatus = 'pending';

@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 export default function TenantRequestsPage() {
   const [requests, setRequests] = useState([]);
+  const [currentUserRole, setCurrentUserRole] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState(null);
@@ -18,7 +19,8 @@ export default function TenantRequestsPage() {
       const res = await fetch('/api/admin/tenant-requests');
       if (!res.ok) throw new Error('Gagal mengambil data pengajuan');
       const data = await res.json();
-      setRequests(data);
+      setRequests(data.requests || []);
+      setCurrentUserRole(data.role || '');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -27,7 +29,8 @@ export default function TenantRequestsPage() {
   };
 
   const handleAction = async (userId, action) => {
-    if (!confirm(`Apakah Anda yakin ingin me-${action === 'approve' ? 'nerima' : 'nolak'} pengajuan ini?`)) return;
+    let actionText = action === 'approve' ? 'menerima' : action === 'reject' ? 'menolak' : 'menandai lunas';
+    if (!confirm(`Apakah Anda yakin ingin ${actionText} pengajuan ini?`)) return;
     
     setActionLoading(userId);
     try {
@@ -43,8 +46,13 @@ export default function TenantRequestsPage() {
       }
       
       // Remove from list on success
-      setRequests(requests.filter(req => req._id !== userId));
-      alert(`Pengajuan berhasil di${action === 'approve' ? 'terima' : 'tolak'}.`);
+      if (action === 'mark_paid') {
+        setRequests(requests.map(req => req._id === userId ? { ...req, tenantStatus: 'paid' } : req));
+        alert('Pengajuan berhasil ditandai lunas.');
+      } else {
+        setRequests(requests.filter(req => req._id !== userId));
+        alert(`Pengajuan berhasil di${action === 'approve' ? 'terima' : 'tolak'}.`);
+      }
     } catch (err) {
       alert(err.message);
     } finally {
@@ -100,9 +108,15 @@ export default function TenantRequestsPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-bold text-red-600 truncate">{request.name}</p>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                          Pending
-                        </span>
+                        {request.tenantStatus === 'pending' ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Menunggu Pembayaran
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            Lunas (Menunggu ACC)
+                          </span>
+                        )}
                       </div>
                       <div className="mt-2 text-sm text-gray-500 flex flex-col gap-1">
                         <p>📧 {request.email}</p>
@@ -129,20 +143,38 @@ export default function TenantRequestsPage() {
                     </div>
 
                     <div className="flex flex-col items-end justify-center gap-2 mt-4 md:mt-0">
-                      <button
-                        onClick={() => handleAction(request._id, 'approve')}
-                        disabled={actionLoading === request._id}
-                        className="w-full md:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
-                      >
-                        {actionLoading === request._id ? 'Memproses...' : 'Terima'}
-                      </button>
-                      <button
-                        onClick={() => handleAction(request._id, 'reject')}
-                        disabled={actionLoading === request._id}
-                        className="w-full md:w-auto inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
-                      >
-                        {actionLoading === request._id ? 'Memproses...' : 'Tolak'}
-                      </button>
+                      {request.tenantStatus === 'pending' ? (
+                        <>
+                          {(currentUserRole === 'admin' || currentUserRole === 'developer') ? (
+                            <button
+                              onClick={() => handleAction(request._id, 'mark_paid')}
+                              disabled={actionLoading === request._id}
+                              className="w-full md:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-yellow-900 bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50"
+                            >
+                              {actionLoading === request._id ? 'Memproses...' : 'Tandai Lunas'}
+                            </button>
+                          ) : (
+                            <p className="text-xs text-gray-500 italic">Menunggu konfirmasi admin</p>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleAction(request._id, 'approve')}
+                            disabled={actionLoading === request._id}
+                            className="w-full md:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                          >
+                            {actionLoading === request._id ? 'Memproses...' : 'Terima'}
+                          </button>
+                          <button
+                            onClick={() => handleAction(request._id, 'reject')}
+                            disabled={actionLoading === request._id}
+                            className="w-full md:w-auto inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                          >
+                            {actionLoading === request._id ? 'Memproses...' : 'Tolak'}
+                          </button>
+                        </>
+                      )}
                     </div>
 
                   </div>

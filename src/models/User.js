@@ -28,7 +28,7 @@ const UserSchema = new mongoose.Schema({
   },
   tenantStatus: {
     type: String,
-    enum: ['none', 'pending', 'approved', 'rejected'],
+    enum: ['none', 'pending', 'paid', 'approved', 'rejected'],
     default: 'none',
   },
   whatsapp: {

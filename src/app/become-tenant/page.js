@@ -13,6 +13,7 @@ export default function BecomeTenantPage() {
   const [user, setUser] = useState(null);
 
   const [formData, setFormData] = useState({
+    storeName: '',
     address: '',
     paymentMethods: []
   });
@@ -28,10 +29,13 @@ export default function BecomeTenantPage() {
           if (data.role !== 'user') {
             setError('Anda sudah menjadi Tenant atau Admin.');
           } else if (data.tenantStatus === 'pending') {
-            setError('Pengajuan Anda sedang diproses oleh Admin. Harap bersabar.');
+            setError('Pengajuan Anda sedang menunggu pembayaran. Silakan selesaikan pembayaran ke rekening Admin.');
+          } else if (data.tenantStatus === 'paid') {
+            setError('Pembayaran Anda telah lunas! Pengajuan sedang diproses oleh Operator. Harap bersabar.');
           }
           
           setFormData({
+            storeName: data.name || '',
             address: data.address || '',
             paymentMethods: data.paymentMethods || []
           });
@@ -73,6 +77,12 @@ export default function BecomeTenantPage() {
     setError('');
     setSuccess('');
 
+    if (!formData.storeName) {
+      setError('Nama Toko wajib diisi.');
+      setSaving(false);
+      return;
+    }
+
     if (formData.paymentMethods.length === 0) {
       setError('Minimal tambahkan 1 metode pembayaran untuk transaksi pembeli.');
       setSaving(false);
@@ -94,7 +104,7 @@ export default function BecomeTenantPage() {
         throw new Error(data.error || 'Gagal mengirim pengajuan');
       }
 
-      setSuccess('Pengajuan berhasil dikirim! Mohon tunggu konfirmasi dari Admin.');
+      setSuccess('Pengajuan berhasil! Silakan selesaikan pembayaran.');
       setUser({ ...user, tenantStatus: 'pending' });
       
     } catch (err) {
@@ -112,7 +122,7 @@ export default function BecomeTenantPage() {
     );
   }
 
-  const isFormDisabled = saving || (user?.role !== 'user') || (user?.tenantStatus === 'pending');
+  const isFormDisabled = saving || (user?.role !== 'user') || (user?.tenantStatus === 'pending' || user?.tenantStatus === 'paid');
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -123,11 +133,36 @@ export default function BecomeTenantPage() {
             <p className="mt-1 max-w-2xl text-sm text-gray-500">
               Lengkapi data bisnis Anda untuk mulai berjualan di platform HIPMORA.
             </p>
+            {user?.isStudent && user?.university && (
+              <div className="mt-3 p-3 bg-blue-50 text-blue-700 text-sm rounded-md border border-blue-100">
+                🎓 Anda akan mendaftar sebagai tenant di kampus <strong>{user.university}</strong>.
+              </div>
+            )}
           </div>
           
           <form onSubmit={handleSubmit} className="px-4 py-6 sm:p-8">
             <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
               
+              <div className="sm:col-span-6">
+                <label htmlFor="storeName" className="block text-sm font-medium text-gray-700">
+                  Nama Toko / Bisnis
+                </label>
+                <div className="mt-2">
+                  <input
+                    type="text"
+                    id="storeName"
+                    name="storeName"
+                    required
+                    disabled={isFormDisabled}
+                    value={formData.storeName}
+                    onChange={(e) => setFormData({ ...formData, storeName: e.target.value })}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border disabled:bg-gray-100 disabled:text-gray-500"
+                    placeholder="Contoh: Ayam Geprek Budi"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">Ini akan mengganti nama profil Anda dengan nama toko.</p>
+                </div>
+              </div>
+
               <div className="sm:col-span-6">
                 <label htmlFor="address" className="block text-sm font-medium text-gray-700">
                   Alamat Lengkap Toko / Bisnis
@@ -248,6 +283,22 @@ export default function BecomeTenantPage() {
             {success && (
               <div className="mt-6 px-4 py-3 bg-green-50 text-green-700 text-sm rounded-md border border-green-100">
                 {success}
+              </div>
+            )}
+
+            {user?.tenantStatus === 'pending' && (
+              <div className="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                <h4 className="text-sm font-bold text-yellow-800 mb-2">Instruksi Pembayaran</h4>
+                <p className="text-sm text-yellow-700 mb-2">
+                  Silakan selesaikan pembayaran sewa <strong>Promo Bulan Pertama sebesar Rp 100.000</strong> ke rekening berikut untuk mengaktifkan akun toko Anda:
+                </p>
+                <div className="bg-white p-3 rounded border border-yellow-100 mb-2">
+                  <p className="font-mono text-gray-900 font-bold">BCA 0955018988</p>
+                  <p className="text-sm text-gray-600">a/n Denny Jovan Wijaya</p>
+                </div>
+                <p className="text-sm text-yellow-700">
+                  Setelah transfer, harap tunggu konfirmasi dari Admin atau <a href="https://wa.me/6289530467021" className="underline font-medium hover:text-yellow-900" target="_blank" rel="noopener noreferrer">Hubungi Admin</a>.
+                </p>
               </div>
             )}
 
