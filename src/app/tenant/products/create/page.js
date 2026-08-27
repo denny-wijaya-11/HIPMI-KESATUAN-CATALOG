@@ -67,7 +67,7 @@ export default function TenantCreateProductPage() {
   const addVariant = () => {
     setFormData({
       ...formData,
-      variants: [...formData.variants, { name: '', additionalPrice: 0 }]
+      variants: [...formData.variants, { name: '', additionalPrice: '' }]
     });
   };
 
@@ -288,11 +288,10 @@ export default function TenantCreateProductPage() {
                     <div className="w-1/3">
                       <input
                         type="number"
-                        required
                         min="0"
                         value={variant.additionalPrice}
-                        onChange={(e) => handleVariantChange(idx, 'additionalPrice', Number(e.target.value))}
-                        placeholder="Harga Tambahan (Rp)"
+                        onChange={(e) => handleVariantChange(idx, 'additionalPrice', e.target.value === '' ? '' : Number(e.target.value))}
+                        placeholder="Tambahan Harga (Opsional)"
                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
                       />
                     </div>
