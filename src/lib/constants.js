@@ -7,6 +7,8 @@ export const REGIONS = [
   'Bekasi',
   'Sukabumi',
   'Cianjur',
+  'Kota Bandung',
+  'Kabupaten Bandung',
   'Lainnya'
 ];
 
