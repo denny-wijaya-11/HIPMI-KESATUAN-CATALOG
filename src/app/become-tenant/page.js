@@ -124,6 +124,19 @@ export default function BecomeTenantPage() {
 
   const isFormDisabled = saving || (user?.role !== 'user') || (user?.tenantStatus === 'pending' || user?.tenantStatus === 'paid');
 
+  let waUrl = '';
+  if (user?.tenantStatus === 'pending') {
+    const waText = `Halo Admin, saya telah melakukan pembayaran sewa Tenant. Berikut data saya:
+Nama Lengkap: ${user?.name || '-'}
+Nama Toko: ${formData.storeName || '-'}
+Domisili: ${formData.address || '-'}
+Universitas: ${user?.university || '-'}
+Membayar dari Bank/E-Wallet: ${formData.paymentMethods?.[0]?.provider || '-'}
+
+Mohon segera dikonfirmasi!`;
+    waUrl = `https://wa.me/${process.env.NEXT_PUBLIC_ADMIN_WA || ''}?text=${encodeURIComponent(waText)}`;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto">
@@ -297,7 +310,7 @@ export default function BecomeTenantPage() {
                   <p className="text-sm text-gray-600">{process.env.NEXT_PUBLIC_ADMIN_BANK_NAME ? `a/n ${process.env.NEXT_PUBLIC_ADMIN_BANK_NAME}` : ''}</p>
                 </div>
                 <p className="text-sm text-yellow-700">
-                  Setelah transfer, harap tunggu konfirmasi dari Admin atau <a href={`https://wa.me/${process.env.NEXT_PUBLIC_ADMIN_WA || ''}`} className="underline font-medium hover:text-yellow-900" target="_blank" rel="noopener noreferrer">Hubungi Admin</a>.
+                  Setelah transfer, klik tautan ini untuk <a href={waUrl} className="underline font-medium hover:text-yellow-900" target="_blank" rel="noopener noreferrer">Mengirim Bukti Transfer via WhatsApp</a>.
                 </p>
               </div>
             )}

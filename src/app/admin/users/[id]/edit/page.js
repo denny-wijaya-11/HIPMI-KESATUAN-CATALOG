@@ -62,7 +62,8 @@ export default function EditUserPage() {
           university: data.user.university || '',
           city: data.user.city || '',
           isStudent: data.user.isStudent !== false,
-          paymentMethods: data.user.paymentMethods || []
+          paymentMethods: data.user.paymentMethods || [],
+          tenantStatus: data.user.tenantStatus || 'none'
         });
 
         // Also fetch current user profile
@@ -84,6 +85,36 @@ export default function EditUserPage() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSuspendToggle = async () => {
+    const isCurrentlySuspended = formData.tenantStatus === 'suspended';
+    if (!confirm(`Yakin ingin ${isCurrentlySuspended ? 'mencabut suspend' : 'men-suspend'} akun tenant ini? Produk mereka akan ${isCurrentlySuspended ? 'kembali muncul' : 'disembunyikan'} dari katalog.`)) return;
+    
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    
+    try {
+      const newStatus = isCurrentlySuspended ? 'approved' : 'suspended';
+      const payload = { ...formData, tenantStatus: newStatus };
+      
+      const res = await fetch(`/api/admin/users/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.error || 'Gagal mengubah status suspend');
+      
+      setFormData(payload);
+      setSuccess(`Akun berhasil di-${isCurrentlySuspended ? 'aktifkan' : 'suspend'}.`);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -130,7 +161,21 @@ export default function EditUserPage() {
             Edit Pengguna
           </h2>
         </div>
-        <div className="mt-4 flex md:ml-4 md:mt-0">
+        <div className="mt-4 flex md:ml-4 md:mt-0 gap-3">
+          {(formData.role === 'tenant' && (formData.tenantStatus === 'approved' || formData.tenantStatus === 'suspended')) && (
+            <button
+              onClick={handleSuspendToggle}
+              disabled={loading}
+              type="button"
+              className={`inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50 ${
+                formData.tenantStatus === 'suspended'
+                  ? 'bg-green-600 text-white hover:bg-green-500 focus-visible:outline-green-600'
+                  : 'bg-yellow-500 text-white hover:bg-yellow-400 focus-visible:outline-yellow-500'
+              }`}
+            >
+              {formData.tenantStatus === 'suspended' ? 'Cabut Suspend' : 'Suspend Akun'}
+            </button>
+          )}
           <Link
             href="/admin/users"
             className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"

@@ -93,8 +93,17 @@ export async function PUT(request, { params }) {
     const updateData = {
       name: body.name,
       email: body.email,
-      role: finalRole
+      role: finalRole,
+      whatsapp: body.whatsapp,
+      university: body.university,
+      city: body.city,
+      isStudent: body.isStudent,
+      paymentMethods: body.paymentMethods
     };
+
+    if (body.tenantStatus) {
+      updateData.tenantStatus = body.tenantStatus;
+    }
 
     const updatedUser = await User.findByIdAndUpdate(
       id,

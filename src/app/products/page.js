@@ -59,8 +59,8 @@ async function getAllProducts(category, sort, region, searchQuery, userUniversit
   if (sort === 'price_asc') sortOption = { price: 1 };
   if (sort === 'price_desc') sortOption = { price: -1 };
 
-  const products = await Product.find(query).populate('owner', 'name').sort(sortOption);
-  return products;
+  const products = await Product.find(query).populate('owner', 'name tenantStatus').sort(sortOption);
+  return products.filter(p => p.owner?.tenantStatus !== 'suspended');
 }
 
 export default async function ProductsPage({ searchParams }) {

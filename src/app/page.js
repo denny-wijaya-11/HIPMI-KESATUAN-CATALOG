@@ -16,14 +16,14 @@ export const dynamic = 'force-dynamic';
 
 async function getProducts() {
   await dbConnect();
-  const products = await Product.find({ isFeatured: true, isHidden: { $ne: true } }).populate('owner', 'name').sort({ createdAt: -1 }).limit(6);
-  return products;
+  const products = await Product.find({ isFeatured: true, isHidden: { $ne: true } }).populate('owner', 'name tenantStatus').sort({ createdAt: -1 });
+  return products.filter(p => p.owner?.tenantStatus !== 'suspended').slice(0, 6);
 }
 
 async function getStats() {
   await dbConnect();
   const totalProducts = await Product.countDocuments({ isHidden: { $ne: true } });
-  const totalTenants = await User.countDocuments({ role: 'tenant' });
+  const totalTenants = await User.countDocuments({ role: 'tenant', tenantStatus: { $ne: 'suspended' } });
   return { totalProducts, totalTenants };
 }
 
