@@ -293,11 +293,11 @@ export default function BecomeTenantPage() {
                   Silakan selesaikan pembayaran sewa <strong>Promo Bulan Pertama sebesar Rp 100.000</strong> ke rekening berikut untuk mengaktifkan akun toko Anda:
                 </p>
                 <div className="bg-white p-3 rounded border border-yellow-100 mb-2">
-                  <p className="font-mono text-gray-900 font-bold">BCA 0955018988</p>
-                  <p className="text-sm text-gray-600">a/n Denny Jovan Wijaya</p>
+                  <p className="font-mono text-gray-900 font-bold">{process.env.NEXT_PUBLIC_ADMIN_BANK_ACCOUNT || 'Hubungi Admin untuk No. Rekening'}</p>
+                  <p className="text-sm text-gray-600">{process.env.NEXT_PUBLIC_ADMIN_BANK_NAME ? `a/n ${process.env.NEXT_PUBLIC_ADMIN_BANK_NAME}` : ''}</p>
                 </div>
                 <p className="text-sm text-yellow-700">
-                  Setelah transfer, harap tunggu konfirmasi dari Admin atau <a href="https://wa.me/6289530467021" className="underline font-medium hover:text-yellow-900" target="_blank" rel="noopener noreferrer">Hubungi Admin</a>.
+                  Setelah transfer, harap tunggu konfirmasi dari Admin atau <a href={`https://wa.me/${process.env.NEXT_PUBLIC_ADMIN_WA || ''}`} className="underline font-medium hover:text-yellow-900" target="_blank" rel="noopener noreferrer">Hubungi Admin</a>.
                 </p>
               </div>
             )}
