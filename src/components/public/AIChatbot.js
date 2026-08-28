@@ -83,7 +83,7 @@ export default function AIChatbot() {
         animate={{ scale: isOpen ? 0 : 1 }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-r from-[#C62828] to-[#8E0000] rounded-full shadow-lg flex items-center justify-center text-white focus:outline-none"
+        className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-[60] w-14 h-14 bg-gradient-to-r from-[#C62828] to-[#8E0000] rounded-full shadow-lg flex items-center justify-center text-white focus:outline-none"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-7 h-7">
           <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
@@ -97,8 +97,8 @@ export default function AIChatbot() {
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
-            className="fixed bottom-24 right-6 z-50 w-[350px] sm:w-[400px] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"
-            style={{ maxHeight: 'calc(100vh - 120px)', height: '550px' }}
+            className="fixed bottom-24 md:bottom-24 right-4 md:right-6 z-[60] w-[calc(100vw-2rem)] sm:w-[400px] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"
+            style={{ maxHeight: 'calc(100vh - 140px)', height: '550px' }}
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-[#C62828] to-[#8E0000] p-4 flex items-center justify-between text-white">
