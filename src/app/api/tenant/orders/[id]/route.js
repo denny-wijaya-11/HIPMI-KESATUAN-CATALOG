@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import * as jose from 'jose';
 import dbConnect from '@/lib/mongodb';
 import Order from '@/models/Order';
+import mongoose from 'mongoose';
 
 export async function PATCH(request, { params }) {
   try {
