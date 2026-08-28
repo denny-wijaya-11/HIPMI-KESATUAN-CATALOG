@@ -59,15 +59,16 @@ export default function AIChatbot() {
         body: JSON.stringify({ message: userMessage, history: messages })
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Gagal menghubungi AI');
+        throw new Error(data.reply || 'Gagal menghubungi AI');
       }
 
-      const data = await response.json();
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
     } catch (error) {
       console.error('Chat error:', error);
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Maaf, sistem AI sedang sibuk atau ada gangguan jaringan. Silakan coba lagi.' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: error.message || 'Maaf, sistem AI sedang sibuk atau ada gangguan jaringan. Silakan coba lagi.' }]);
     } finally {
       setIsLoading(false);
     }
