@@ -8,6 +8,7 @@ import PushNotificationHandler from "@/components/mobile/PushNotificationHandler
 import MobileUXEnhancer from "@/components/mobile/MobileUXEnhancer";
 import PullToRefresh from "@/components/mobile/PullToRefresh";
 import OnlineTracker from "@/components/public/OnlineTracker";
+import AIChatbot from "@/components/public/AIChatbot";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -58,6 +59,7 @@ export default function RootLayout({ children }) {
             <MobileBottomNav />
           </CartProvider>
         </WishlistProvider>
+        <AIChatbot />
       </body>
     </html>
   );
