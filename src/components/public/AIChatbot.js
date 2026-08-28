@@ -11,6 +11,7 @@ export default function AIChatbot() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const timerRef = useRef(null);
 
   // Auto-scroll to bottom of chat
   const scrollToBottom = () => {
@@ -20,6 +21,25 @@ export default function AIChatbot() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Auto-clear chat after 5 minutes of inactivity
+  useEffect(() => {
+    if (isOpen) {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
+        setIsOpen(false);
+        setMessages([
+          { role: 'assistant', content: 'Halo! Saya asisten pintar HIPMORA. Ada yang bisa saya bantu tentang platform ini?' }
+        ]);
+      }, 5 * 60 * 1000); // 5 minutes
+    } else {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    }
+    
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [messages, isOpen]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -99,6 +119,9 @@ export default function AIChatbot() {
 
             {/* Chat History */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50">
+              <div className="text-center text-[10px] text-gray-400 mb-2 bg-gray-200/50 rounded-full py-1 px-3 w-fit mx-auto">
+                Chat otomatis dihapus setelah 5 menit tanpa interaksi
+              </div>
               {messages.map((msg, idx) => (
                 <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[80%] rounded-2xl p-3 text-sm leading-relaxed ${
