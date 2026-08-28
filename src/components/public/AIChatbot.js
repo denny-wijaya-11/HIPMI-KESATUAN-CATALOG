@@ -3,6 +3,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const formatMessage = (text) => {
+  if (typeof text !== 'string') return text;
+  return text.split(/(\*\*.*?\*\*)/g).map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i}>{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+};
+
 export default function AIChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
@@ -125,12 +135,12 @@ export default function AIChatbot() {
               </div>
               {messages.map((msg, idx) => (
                 <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[80%] rounded-2xl p-3 text-sm leading-relaxed ${
+                  <div className={`max-w-[80%] rounded-2xl p-3 text-sm leading-relaxed whitespace-pre-wrap ${
                     msg.role === 'user' 
                       ? 'bg-[#C62828] text-white rounded-tr-sm' 
                       : 'bg-white border border-gray-100 text-gray-800 rounded-tl-sm shadow-sm'
                   }`}>
-                    {msg.content}
+                    {formatMessage(msg.content)}
                   </div>
                 </div>
               ))}
