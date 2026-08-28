@@ -64,7 +64,7 @@ export async function POST(request) {
         contents: formattedContents,
         generationConfig: {
           temperature: 0.7,
-          maxOutputTokens: 500,
+          maxOutputTokens: 2048,
         }
       })
     });

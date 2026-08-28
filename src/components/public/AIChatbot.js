@@ -16,7 +16,7 @@ const formatMessage = (text) => {
 export default function AIChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'Halo! Saya asisten pintar HIPMORA. Ada yang bisa saya bantu tentang platform ini?' }
+    { role: 'assistant', content: 'Halo! Saya MORA Assistant. Ada yang bisa saya bantu tentang platform ini?' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +39,7 @@ export default function AIChatbot() {
       timerRef.current = setTimeout(() => {
         setIsOpen(false);
         setMessages([
-          { role: 'assistant', content: 'Halo! Saya asisten pintar HIPMORA. Ada yang bisa saya bantu tentang platform ini?' }
+          { role: 'assistant', content: 'Halo! Saya MORA Assistant. Ada yang bisa saya bantu tentang platform ini?' }
         ]);
       }, 5 * 60 * 1000); // 5 minutes
     } else {
@@ -113,11 +113,11 @@ export default function AIChatbot() {
             {/* Header */}
             <div className="bg-gradient-to-r from-[#C62828] to-[#8E0000] p-4 flex items-center justify-between text-white">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                  🤖
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center overflow-hidden">
+                  <img src="/images/MASKOT LOGO.png" alt="MORA" className="w-full h-full object-cover" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm">HIPMORA Assistant</h3>
+                  <h3 className="font-semibold text-sm">MORA Assistant</h3>
                   <p className="text-xs text-red-100">AI Siap Membantu</p>
                 </div>
               </div>
