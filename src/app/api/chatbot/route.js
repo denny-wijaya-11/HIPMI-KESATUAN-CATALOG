@@ -41,13 +41,16 @@ export async function POST(request) {
     }
 
     // Format history for Gemini API
-    const formattedContents = [];
+    const formattedContents = history.map(msg => ({
+      role: msg.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: msg.content }]
+    }));
     
-    // First, push the system prompt context as part of the conversation or a systemInstruction if supported.
-    // For simplicity with the standard v1beta REST API, we can just inject it into the first user message.
-    
-    // We'll append the system prompt invisibly to the user's latest query to enforce behavior without exposing it.
-    const actualQuery = `${SYSTEM_PROMPT}\n\nPertanyaan User: ${message}\n\nTolong jawab sebagai HIPMORA Assistant:`;
+    // Add current user message
+    formattedContents.push({
+      role: 'user',
+      parts: [{ text: message }]
+    });
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
@@ -55,12 +58,10 @@ export async function POST(request) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: actualQuery }]
-          }
-        ],
+        systemInstruction: {
+          parts: [{ text: SYSTEM_PROMPT }]
+        },
+        contents: formattedContents,
         generationConfig: {
           temperature: 0.7,
           maxOutputTokens: 500,
