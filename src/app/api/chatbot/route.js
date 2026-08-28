@@ -49,7 +49,7 @@ export async function POST(request) {
     // We'll append the system prompt invisibly to the user's latest query to enforce behavior without exposing it.
     const actualQuery = `${SYSTEM_PROMPT}\n\nPertanyaan User: ${message}\n\nTolong jawab sebagai HIPMORA Assistant:`;
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
