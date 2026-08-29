@@ -58,7 +58,7 @@ async function getProducts(user, search, region, sort, featured) {
     .populate('owner', 'name')
     .sort(sortOption);
     
-  return products;
+  return products.filter(p => p.owner != null);
 }
 
 export default async function ProductsPage({ searchParams }) {
@@ -74,7 +74,7 @@ export default async function ProductsPage({ searchParams }) {
   const products = await getProducts(user, search, region, sort, featured);
 
   return (
-    <div>
+    <div className="w-full max-w-full overflow-hidden">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-2xl font-semibold text-gray-900">Katalog Produk</h1>
