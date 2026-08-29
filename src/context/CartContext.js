@@ -46,11 +46,19 @@ export function CartProvider({ children }) {
           setCart(mergedCart);
           
           // Sync back to db
-          await fetch('/api/user/sync', {
+          const syncRes = await fetch('/api/user/sync', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ cart: mergedCart })
           });
+          
+          if (syncRes.ok) {
+            const syncData = await syncRes.json();
+            if (syncData.validCartIds) {
+              const finalCart = mergedCart.filter(item => syncData.validCartIds.includes(item._id));
+              setCart(finalCart);
+            }
+          }
         } else {
           setCart(localCart);
         }
@@ -74,7 +82,17 @@ export function CartProvider({ children }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cart })
-      }).catch(() => {});
+      })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data && data.validCartIds) {
+          const finalCart = cart.filter(item => data.validCartIds.includes(item._id));
+          if (finalCart.length !== cart.length) {
+            setCart(finalCart); // Removes invalid products dynamically
+          }
+        }
+      })
+      .catch(() => {});
     }
   }, [cart, isLoaded]);
 

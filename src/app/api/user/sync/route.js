@@ -37,17 +37,19 @@ export async function GET(request) {
     }
 
     // Format the cart so it looks like the local storage cart (array of products with quantity)
-    const formattedCart = user.cart
-      .filter(item => item.product != null)
-      .map(item => ({
+    const validCartItems = user.cart.filter(item => item.product != null && item.product.owner != null);
+    const formattedCart = validCartItems.map(item => ({
         ...item.product.toObject(),
         quantity: item.quantity
-      }));
+    }));
+
+    const validCartIds = validCartItems.map(item => item.product._id.toString());
 
     return NextResponse.json({
       user: { id: payload.id, role: payload.role, email: payload.email, name: user.name, city: user.city, university: user.university, savedAddresses: user.savedAddresses },
       wishlist: user.wishlist || [],
-      cart: formattedCart || []
+      cart: formattedCart || [],
+      validCartIds
     });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch user data' }, { status: 500 });
@@ -75,16 +77,26 @@ export async function POST(request) {
       user.wishlist = wishlist.map(p => p._id);
     }
 
+    let validCartIds = [];
     if (cart !== undefined) {
+      const productIds = cart.map(item => item._id).filter(Boolean);
+      const validProducts = await Product.find({ _id: { $in: productIds } }).select('_id owner');
+      
+      validCartIds = validProducts
+        .filter(p => p.owner != null)
+        .map(p => p._id.toString());
+
       // Map frontend cart items to { product: ObjectId, quantity: Number }
-      user.cart = cart.map(item => ({
-        product: item._id,
-        quantity: item.quantity || 1
-      }));
+      user.cart = cart
+        .filter(item => validCartIds.includes(item._id.toString()))
+        .map(item => ({
+          product: item._id,
+          quantity: item.quantity || 1
+        }));
     }
 
     await user.save();
-    return NextResponse.json({ success: true, message: 'Synced successfully' });
+    return NextResponse.json({ success: true, validCartIds, message: 'Synced successfully' });
   } catch (error) {
     console.error('Sync Error:', error);
     return NextResponse.json({ error: 'Failed to sync user data' }, { status: 500 });
