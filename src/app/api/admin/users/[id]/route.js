@@ -105,6 +105,12 @@ export async function PUT(request, { params }) {
       updateData.tenantStatus = body.tenantStatus;
     }
 
+    if (body.password && body.password.trim() !== '') {
+      const bcrypt = require('bcryptjs');
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(body.password, salt);
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       id,
       { $set: updateData },
@@ -149,6 +155,10 @@ export async function DELETE(request, { params }) {
     if (userToDelete.role === 'developer' && user.role !== 'developer') {
       return NextResponse.json({ error: 'Forbidden. Only developers can delete developer accounts.' }, { status: 403 });
     }
+
+    // Delete all products owned by this user to prevent "orphan" products
+    const Product = require('@/models/Product').default || require('@/models/Product');
+    await Product.deleteMany({ owner: id });
 
     await User.findByIdAndDelete(id);
 

@@ -95,9 +95,16 @@ function LoginContent() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  Password
+                </label>
+                <div className="text-sm">
+                  <Link href="/forgot-password" className="font-semibold text-[#C62828] hover:text-[#8E0000] transition-colors">
+                    Lupa password?
+                  </Link>
+                </div>
+              </div>
               <div className="mt-1.5 relative">
                 <input
                   id="password"

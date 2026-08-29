@@ -21,6 +21,8 @@ export default function CheckoutPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [isSameCampus, setIsSameCampus] = useState(false);
+  const [selectedAddressId, setSelectedAddressId] = useState('new');
 
   useEffect(() => {
     fetch('/api/user/sync')
@@ -28,6 +30,10 @@ export default function CheckoutPage() {
       .then(data => {
         if (data.user) {
           setUser(data.user);
+          // If no addresses saved, default to 'new', else select first
+          if (data.user.savedAddresses && data.user.savedAddresses.length > 0) {
+            setSelectedAddressId(data.user.savedAddresses[0]._id);
+          }
           setFormData(prev => ({
             ...prev,
             name: data.user.name || '',
@@ -41,6 +47,17 @@ export default function CheckoutPage() {
   }, [router]);
 
   const totalAmount = cart.reduce((total, item) => total + (Number(item.price) * (item.quantity || 1)), 0);
+
+  // Check if ALL products in the cart are from tenants in the same university
+  useEffect(() => {
+    if (user && user.university && cart.length > 0) {
+      const allSame = cart.every(item => {
+        const tenantUni = item.owner?.university || item.tenant?.university || item.university; // fallback depends on how it's populated
+        return tenantUni === user.university;
+      });
+      setIsSameCampus(allSame);
+    }
+  }, [cart, user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -59,6 +76,24 @@ export default function CheckoutPage() {
     setError('');
 
     try {
+      // Determine final shipping address based on Smart Campus and selected address
+      let finalAddress = formData;
+      if (isSameCampus) {
+        finalAddress = {
+          name: user.name,
+          phone: user.whatsapp || formData.phone,
+          address: 'Satu Kampus (Tanpa Alamat)',
+          city: user.city,
+          postalCode: '',
+          notes: formData.notes
+        };
+      } else if (selectedAddressId !== 'new') {
+        const savedAddr = user.savedAddresses.find(a => a._id === selectedAddressId);
+        if (savedAddr) {
+          finalAddress = { ...savedAddr, notes: formData.notes };
+        }
+      }
+
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -69,7 +104,7 @@ export default function CheckoutPage() {
             price: item.price,
             tenant: item.owner?._id || item.owner
           })),
-          shippingAddress: formData
+          shippingAddress: finalAddress
         })
       });
 
@@ -132,37 +167,82 @@ export default function CheckoutPage() {
                 )}
                 
                 <form id="checkout-form" onSubmit={handleSubmit} className="space-y-5">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Nama Penerima *</label>
-                      <input required name="name" value={formData.name} onChange={handleInputChange} type="text" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] transition-all" />
+                  {isSameCampus ? (
+                    <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
+                      <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                      </div>
+                      <h3 className="text-green-800 font-bold mb-1">Satu Kampus dengan Penjual!</h3>
+                      <p className="text-green-700 text-sm">Anda tidak perlu mengisi alamat pengiriman karena Anda dan penjual berada di kampus yang sama ({user?.university}). Silakan janjian COD (bertemu langsung) melalui WhatsApp nanti.</p>
+                      
+                      <div className="mt-6 text-left">
+                        <label className="block text-sm font-medium text-green-900 mb-1.5">Catatan Pesanan (Opsional)</label>
+                        <input name="notes" value={formData.notes} onChange={handleInputChange} type="text" className="w-full bg-white border border-green-200 rounded-xl px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all" placeholder="Misal: Saya ambil di kantin jam 1 siang" />
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Nomor Telepon / WA *</label>
-                      <input required name="phone" value={formData.phone} onChange={handleInputChange} type="tel" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] transition-all" />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Alamat Lengkap *</label>
-                    <textarea required name="address" value={formData.address} onChange={handleInputChange} rows="3" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] transition-all" placeholder="Nama Jalan, Gedung, No. Rumah, RT/RW"></textarea>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Kota / Kabupaten *</label>
-                      <input required name="city" value={formData.city} onChange={handleInputChange} type="text" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] transition-all" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Kode Pos *</label>
-                      <input required name="postalCode" value={formData.postalCode} onChange={handleInputChange} type="text" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] transition-all" />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Catatan Pesanan (Opsional)</label>
-                    <input name="notes" value={formData.notes} onChange={handleInputChange} type="text" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] transition-all" placeholder="Misal: Warna merah, ukuran L" />
-                  </div>
+                  ) : (
+                    <>
+                      {user?.savedAddresses && user.savedAddresses.length > 0 && (
+                        <div className="mb-6">
+                          <label className="block text-sm font-medium text-gray-700 mb-3">Pilih Alamat Pengiriman</label>
+                          <div className="space-y-3">
+                            {user.savedAddresses.map(addr => (
+                              <label key={addr._id} className={`flex p-4 border rounded-xl cursor-pointer transition-all ${selectedAddressId === addr._id ? 'border-[#C62828] bg-red-50' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
+                                <input type="radio" name="selectedAddress" value={addr._id} checked={selectedAddressId === addr._id} onChange={(e) => setSelectedAddressId(e.target.value)} className="mt-1 text-[#C62828] focus:ring-[#C62828]" />
+                                <div className="ml-3">
+                                  <span className="block text-sm font-bold text-gray-900">{addr.label} <span className="text-gray-500 font-normal">({addr.name})</span></span>
+                                  <span className="block text-sm text-gray-500 mt-1">{addr.address}, {addr.city} {addr.postalCode} - {addr.phone}</span>
+                                </div>
+                              </label>
+                            ))}
+                            <label className={`flex p-4 border rounded-xl cursor-pointer transition-all ${selectedAddressId === 'new' ? 'border-[#C62828] bg-red-50' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
+                              <input type="radio" name="selectedAddress" value="new" checked={selectedAddressId === 'new'} onChange={(e) => setSelectedAddressId(e.target.value)} className="mt-1 text-[#C62828] focus:ring-[#C62828]" />
+                              <div className="ml-3">
+                                <span className="block text-sm font-bold text-gray-900">Ketik Alamat Baru</span>
+                                <span className="block text-sm text-gray-500 mt-1">Gunakan alamat lain untuk pesanan ini</span>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      )}
+
+                      {selectedAddressId === 'new' && (
+                        <div className="space-y-5 animate-in fade-in slide-in-from-top-4 duration-300">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1.5">Nama Penerima *</label>
+                              <input required={selectedAddressId === 'new'} name="name" value={formData.name} onChange={handleInputChange} type="text" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] transition-all" />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1.5">Nomor Telepon / WA *</label>
+                              <input required={selectedAddressId === 'new'} name="phone" value={formData.phone} onChange={handleInputChange} type="tel" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] transition-all" />
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Alamat Lengkap *</label>
+                            <textarea required={selectedAddressId === 'new'} name="address" value={formData.address} onChange={handleInputChange} rows="3" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] transition-all" placeholder="Nama Jalan, Gedung, No. Rumah, RT/RW"></textarea>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1.5">Kota / Kabupaten *</label>
+                              <input required={selectedAddressId === 'new'} name="city" value={formData.city} onChange={handleInputChange} type="text" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] transition-all" />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1.5">Kode Pos *</label>
+                              <input required={selectedAddressId === 'new'} name="postalCode" value={formData.postalCode} onChange={handleInputChange} type="text" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] transition-all" />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Catatan Pesanan (Opsional)</label>
+                        <input name="notes" value={formData.notes} onChange={handleInputChange} type="text" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] transition-all" placeholder="Misal: Warna merah, ukuran L" />
+                      </div>
+                    </>
+                  )}
                 </form>
               </div>
             </div>

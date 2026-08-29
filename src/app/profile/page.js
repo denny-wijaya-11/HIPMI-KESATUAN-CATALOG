@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import SavedAddresses from '@/components/public/SavedAddresses';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 
@@ -36,7 +37,8 @@ export default function ProfilePage() {
           city: data.city || '',
           address: data.address || '',
           university: data.university || '',
-          paymentMethods: data.paymentMethods || []
+          paymentMethods: data.paymentMethods || [],
+          savedAddresses: data.savedAddresses || []
         });
       } else {
         router.push('/login');
@@ -283,6 +285,13 @@ export default function ProfilePage() {
                   </div>
                 </>
               )}
+
+              {/* Saved Addresses Section */}
+              <SavedAddresses 
+                addresses={formData.savedAddresses || []}
+                onAddressAdded={(newAddresses) => setFormData(prev => ({ ...prev, savedAddresses: newAddresses }))}
+                onAddressDeleted={(newAddresses) => setFormData(prev => ({ ...prev, savedAddresses: newAddresses }))}
+              />
 
               {/* Payment Methods for Tenant */}
               {user?.role === 'tenant' && (

@@ -1,5 +1,9 @@
 import mongoose from 'mongoose';
 
+function arrayLimit(val) {
+  return val.length <= 5;
+}
+
 const UserSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -53,6 +57,18 @@ const UserSchema = new mongoose.Schema({
   },
   address: {
     type: String,
+  },
+  savedAddresses: {
+    type: [{
+      label: { type: String, required: true }, // e.g., "Rumah", "Kost"
+      name: { type: String, required: true }, // Receiver's name
+      phone: { type: String, required: true },
+      address: { type: String, required: true },
+      city: { type: String, required: true },
+      postalCode: { type: String },
+      notes: { type: String }
+    }],
+    validate: [arrayLimit, '{PATH} melebihi batas 5 alamat']
   },
   authProvider: {
     type: String,

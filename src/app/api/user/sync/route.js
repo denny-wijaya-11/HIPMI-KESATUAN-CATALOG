@@ -30,7 +30,7 @@ export async function GET(request) {
 
   try {
     await connectDB();
-    const user = await User.findById(payload.id).populate('wishlist').populate('cart.product');
+    const user = await User.findById(payload.id).populate('wishlist').populate({ path: 'cart.product', populate: { path: 'owner', select: 'university' } });
     
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -45,7 +45,7 @@ export async function GET(request) {
       }));
 
     return NextResponse.json({
-      user: { id: payload.id, role: payload.role, email: payload.email, name: user.name, city: user.city },
+      user: { id: payload.id, role: payload.role, email: payload.email, name: user.name, city: user.city, university: user.university, savedAddresses: user.savedAddresses },
       wishlist: user.wishlist || [],
       cart: formattedCart || []
     });
