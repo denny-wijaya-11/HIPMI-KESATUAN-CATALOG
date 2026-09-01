@@ -76,7 +76,8 @@ export async function PUT(request, { params }) {
     }
 
     // Role check for update
-    if (user.role === 'operator' && product.owner.toString() !== user.id) {
+    // Admins and Operators can edit products. Operators are restricted to their university products on the UI side.
+    if (user.role !== 'admin' && user.role !== 'operator' && user.role !== 'developer' && product.owner.toString() !== user.id) {
       return NextResponse.json({ error: 'Forbidden. You can only edit your own products.' }, { status: 403 });
     }
 

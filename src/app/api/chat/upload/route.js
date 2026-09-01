@@ -40,20 +40,20 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Ukuran file maksimal adalah 10MB' }, { status: 400 });
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const filename = `${Date.now()}_${originalName}`;
-    const uploadDir = path.join(process.cwd(), 'public/uploads');
+    const formDataApi = new FormData();
+    formDataApi.append('image', file);
 
-    // Buat direktori jika belum ada
-    await fs.mkdir(uploadDir, { recursive: true });
+    const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY || '2ef4c6bc48cb7fb77317eb664a773289'}`, {
+      method: 'POST',
+      body: formDataApi
+    });
 
-    const filepath = path.join(uploadDir, filename);
-    await fs.writeFile(filepath, buffer);
-
-    const imageUrl = `/uploads/${filename}`;
-
-    return NextResponse.json({ message: 'File uploaded successfully', url: imageUrl }, { status: 201 });
+    const data = await imgbbRes.json();
+    if (data.success) {
+      return NextResponse.json({ message: 'File uploaded successfully', url: data.data.url }, { status: 201 });
+    } else {
+      return NextResponse.json({ error: 'Gagal mengupload gambar ke server' }, { status: 500 });
+    }
   } catch (error) {
     console.error('Upload file error:', error);
     return NextResponse.json({ error: 'Gagal mengupload file' }, { status: 500 });

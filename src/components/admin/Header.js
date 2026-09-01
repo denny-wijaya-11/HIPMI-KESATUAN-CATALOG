@@ -1,22 +1,52 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 export default function Header({ setIsSidebarOpen }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+  const [user, setUser] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const res = await fetch('/api/profile');
+        if (res.ok) {
+          const data = await res.json();
+          setUser({ id: data._id, name: data.name, role: data.role });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    fetchUser();
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/admin/products?search=${encodeURIComponent(searchQuery)}`);
+      router.push(`${pathname}?search=${encodeURIComponent(searchQuery)}`);
     } else {
-      router.push(`/admin/products`);
+      router.push(pathname);
     }
   };
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch('/api/auth/logout', { method: 'POST' });
+      if (res.ok) {
+        window.location.href = '/';
+      }
+    } catch (err) {
+      console.error('Logout failed', err);
+    }
+  };
+
   return (
     <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow-sm border-b border-gray-200">
       <button
@@ -53,15 +83,36 @@ export default function Header({ setIsSidebarOpen }) {
             <BellIcon className="h-6 w-6" aria-hidden="true" />
           </button>
 
-          {/* Profile dropdown Placeholder */}
+          {/* Profile dropdown */}
           <div className="relative">
-            <button className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 p-1 border border-gray-200 hover:bg-gray-50 transition-colors">
+            <button 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 p-1 border border-gray-200 hover:bg-gray-50 transition-colors"
+            >
               <span className="sr-only">Open user menu</span>
               <div className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden border border-blue-200">
-                 <span className="text-blue-700 font-bold text-xs md:text-sm">AD</span>
+                 <span className="text-blue-700 font-bold text-xs md:text-sm">
+                   {user?.role === 'operator' ? 'OP' : 'AD'}
+                 </span>
               </div>
-              <span className="ml-2 pr-2 font-medium text-gray-700 hidden sm:block">Admin HIPMI</span>
+              <span className="ml-2 pr-2 font-medium text-gray-700 hidden sm:block">
+                {user?.role === 'operator' ? 'Operator HIPMI' : 'Admin HIPMI'}
+              </span>
             </button>
+
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                <div className="py-1" role="menu" aria-orientation="vertical">
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600"
+                    role="menuitem"
+                  >
+                    Log Out
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

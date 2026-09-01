@@ -247,6 +247,27 @@ export default function EditProductPage() {
               </div>
             </div>
 
+            <div className="sm:col-span-6">
+              <div className="relative flex gap-x-3">
+                <div className="flex h-6 items-center">
+                  <input
+                    id="isFeatured"
+                    name="isFeatured"
+                    type="checkbox"
+                    checked={formData.isFeatured || false}
+                    onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
+                    className="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
+                  />
+                </div>
+                <div className="text-sm leading-6">
+                  <label htmlFor="isFeatured" className="font-medium text-gray-900">
+                    Jadikan Produk Unggulan ⭐
+                  </label>
+                  <p className="text-gray-500">Centang ini jika Anda ingin produk ini tampil sebagai unggulan di halaman utama katalog.</p>
+                </div>
+              </div>
+            </div>
+
             <div className="sm:col-span-3">
               <label htmlFor="region" className="block text-sm font-medium leading-6 text-gray-900">
                 Wilayah Pengiriman (Region)

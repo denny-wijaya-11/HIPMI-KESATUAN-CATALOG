@@ -156,10 +156,31 @@ export default function UserNavMenu({ user, isMobile = false }) {
               Pesan / Chat
             </Link>
 
+            {/* Dashboard Links for specific roles */}
+            {(user.role === 'admin' || user.role === 'developer' || user.role === 'operator') && (
+              <Link 
+                href="/admin" 
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors md:hidden"
+                role="menuitem"
+                onClick={() => setIsOpen(false)}
+              >
+                Dashboard Admin
+              </Link>
+            )}
+            {(user.role === 'tenant' || user.role === 'admin' || user.role === 'developer' || user.role === 'operator') && (
+              <Link 
+                href="/tenant" 
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors md:hidden"
+                role="menuitem"
+                onClick={() => setIsOpen(false)}
+              >
+                Dashboard Penjualan
+              </Link>
+            )}
             
             <button
               onClick={handleLogout}
-              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors"
+              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors border-t border-gray-100 mt-1 pt-2"
               role="menuitem"
             >
               Log Out

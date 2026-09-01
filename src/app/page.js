@@ -10,6 +10,7 @@ import PublicHeader from "@/components/public/PublicHeader";
 import { FadeInUp, StaggerContainer, HoverScale } from "@/components/public/MotionWrappers";
 import { SimpleCard, SolidButton, WarmBackground, StatItem } from "@/components/public/Web3Components";
 import MascotWithQuote from "@/components/public/MascotWithQuote";
+import BannerSlider from "@/components/public/BannerSlider";
 import { getUserPayload } from "@/lib/auth";
 
 export const dynamic = 'force-dynamic';
@@ -48,8 +49,11 @@ export default async function Home() {
       <PublicHeader user={user} />
 
       <main className="relative z-10">
+        {/* Banner Slide Show */}
+        <BannerSlider />
+
         {/* Hero Section — Split Layout */}
-        <section className="relative pt-12 pb-16 md:pt-20 md:pb-28 overflow-hidden">
+        <section className="relative pt-6 pb-12 md:pt-10 md:pb-20 overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
               {/* Left — Text Content */}
@@ -199,41 +203,43 @@ export default async function Home() {
         </section>
 
         {/* CTA Section */}
-        <section id="tentang" className="py-16 md:py-24 relative overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="bg-gradient-to-br from-[#C62828] to-[#8E0000] rounded-3xl p-8 md:p-16 text-center relative overflow-hidden">
-              {/* Subtle decorative elements */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-              <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-              
-              <div className="relative">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
-                  Tentang HIPMORA
-                </h2>
-                <p className="text-base md:text-lg text-red-100 max-w-2xl mx-auto mb-8">
-                  HIPMORA adalah platform katalog resmi yang mewadahi inovasi dan kreasi mahasiswa pengusaha. Kami berkomitmen membangun ekosistem wirausaha yang kuat di lingkungan kampus. Punya bisnis inovatif? Bergabunglah bersama kami!
-                </p>
-                <div className="flex flex-col sm:flex-row justify-center gap-3">
-                  <SolidButton href="/become-tenant" className="!bg-white !text-[#C62828] hover:!bg-gray-100">
-                    Daftar Sebagai Tenant
-                  </SolidButton>
-                  <SolidButton href={`https://wa.me/${process.env.NEXT_PUBLIC_ADMIN_WA || ''}?text=Halo%20Admin%2C%20saya%20ingin%20mendaftar%20sebagai%20tenant%20di%20HIPMORA`} target="_blank" className="!bg-white/10 !text-white hover:!bg-white/20 !border-white/20">
-                    Hubungi Admin
-                  </SolidButton>
+        {(!user || user.role !== 'tenant') && (
+          <section id="tentang" className="py-16 md:py-24 relative overflow-hidden">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+              <div className="bg-gradient-to-br from-[#C62828] to-[#8E0000] rounded-3xl p-8 md:p-16 text-center relative overflow-hidden">
+                {/* Subtle decorative elements */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+                
+                <div className="relative">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
+                    Tentang HIPMORA
+                  </h2>
+                  <p className="text-base md:text-lg text-red-100 max-w-2xl mx-auto mb-8">
+                    HIPMORA adalah platform katalog resmi yang mewadahi inovasi dan kreasi mahasiswa pengusaha. Kami berkomitmen membangun ekosistem wirausaha yang kuat di lingkungan kampus. Punya bisnis inovatif? Bergabunglah bersama kami!
+                  </p>
+                  <div className="flex flex-col sm:flex-row justify-center gap-3">
+                    <SolidButton href="/become-tenant" className="!bg-white !text-[#C62828] hover:!bg-gray-100">
+                      Daftar Sebagai Tenant
+                    </SolidButton>
+                    <SolidButton href={`https://wa.me/${process.env.NEXT_PUBLIC_ADMIN_WA || ''}?text=Halo%20Admin%2C%20saya%20ingin%20mendaftar%20sebagai%20tenant%20di%20HIPMORA`} target="_blank" className="!bg-white/10 !text-white hover:!bg-white/20 !border-white/20">
+                      Hubungi Admin
+                    </SolidButton>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
 
       {/* Footer */}
       <footer id="footer" className="relative bg-white border-t border-gray-100 pt-12 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
-            <div className="md:col-span-2">
-              <div className="flex items-center mb-4">
-                <div className="relative w-48 h-28 flex items-center justify-center -ml-2">
+            <div className="md:col-span-2 flex flex-col items-center md:items-start text-center md:text-left">
+              <div className="flex items-center justify-center md:justify-start mb-4 w-full">
+                <div className="relative w-48 h-28 flex items-center justify-center md:-ml-2">
                   <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain" />
                 </div>
               </div>

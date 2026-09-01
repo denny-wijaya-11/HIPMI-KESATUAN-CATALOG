@@ -13,8 +13,8 @@ export default function ChatIcon() {
         href="/chat"
         className={`relative p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 flex items-center justify-center ${
           isActive 
-            ? 'text-white bg-white/20' 
-            : 'text-neutral-400 hover:text-white hover:bg-white/10'
+            ? 'text-[#C62828] bg-red-50' 
+            : 'text-gray-600 hover:text-[#C62828] hover:bg-gray-100'
         }`}
         title="Pesan Masuk"
       >

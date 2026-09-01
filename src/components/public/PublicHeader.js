@@ -16,7 +16,7 @@ export default function PublicHeader({ user }) {
 
   const navLinkClass = (path) => {
     const isActive = pathname === path;
-    return `text-sm font-medium transition-colors duration-200 ${
+    return `text-xs lg:text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
       isActive 
         ? 'text-[#C62828] font-semibold' 
         : 'text-gray-600 hover:text-[#C62828]'
@@ -24,15 +24,15 @@ export default function PublicHeader({ user }) {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100 pt-[env(safe-area-inset-top,0px)]">
+    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100 pt-[env(safe-area-inset-top,0px)] shadow-sm">
       {/* Background khusus untuk status bar di HP agar teks putih bisa terbaca */}
       <div className="absolute top-0 left-0 w-full h-[env(safe-area-inset-top,0px)] bg-[#9b1c1c] z-[-1]"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 md:h-20">
           
           {/* Logo */}
-          <div className="flex items-center h-full py-2">
-            <Link href="/" className="block h-full relative w-32 md:w-48 flex items-center justify-center">
+          <div className="flex items-center h-full py-2 shrink-0">
+            <Link href="/" className="block h-full relative w-32 md:w-40 lg:w-48 flex items-center justify-center">
               <Image 
                 src="/images/MASKOT LOGO.png" 
                 alt="HIPMORA Logo" 
@@ -45,11 +45,11 @@ export default function PublicHeader({ user }) {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex space-x-4 lg:space-x-8 overflow-hidden items-center justify-center mx-4">
             <Link href="/" className={navLinkClass('/')}>Beranda</Link>
             <Link href="/products" className={navLinkClass('/products')}>Produk</Link>
-            <Link href="/#produk" className="text-sm font-medium text-gray-600 hover:text-[#C62828] transition-colors duration-200">Katalog Unggulan</Link>
-            <Link href="/#footer" className="text-sm font-medium text-gray-600 hover:text-[#C62828] transition-colors duration-200">Tentang Kami</Link>
+            <a href="/#produk" className="text-xs lg:text-sm font-medium whitespace-nowrap text-gray-600 hover:text-[#C62828] transition-colors duration-200">Katalog Unggulan</a>
+            <a href="/#tentang" className="text-xs lg:text-sm font-medium whitespace-nowrap text-gray-600 hover:text-[#C62828] transition-colors duration-200">Tentang Kami</a>
             {user && (user.role === 'admin' || user.role === 'developer' || user.role === 'operator') && (
               <Link href="/admin" className={navLinkClass('/admin')}>Dashboard Admin</Link>
             )}
@@ -71,12 +71,12 @@ export default function PublicHeader({ user }) {
               )}
             </div>
 
-            {/* Desktop Auth */}
-            <div className="hidden md:block">
+            {/* Auth Section */}
+            <div className="">
               {user ? (
                 <UserNavMenu user={user} />
               ) : (
-                <Link href="/login" className="text-sm font-semibold text-white bg-[#C62828] hover:bg-[#8E0000] px-5 py-2.5 rounded-full transition-all duration-200 shadow-sm hover:shadow-md">
+                <Link href="/login" className="text-sm font-semibold text-white bg-[#C62828] hover:bg-[#8E0000] px-4 md:px-5 py-2 md:py-2.5 rounded-full transition-all duration-200 shadow-sm hover:shadow-md">
                   Masuk
                 </Link>
               )}

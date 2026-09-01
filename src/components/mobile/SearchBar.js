@@ -90,7 +90,7 @@ export default function SearchBar({ initialQuery = '' }) {
 
       {/* Full Screen Search Overlay for Mobile UX */}
       {isFocused && (
-        <div className="fixed inset-0 z-50 bg-white flex flex-col animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 bg-white flex flex-col animate-in fade-in duration-200 md:hidden">
           {/* Header Overlay */}
           <div className="flex items-center px-4 py-3 border-b border-gray-100 bg-white" style={{ paddingTop: 'max(env(safe-area-inset-top), 0.75rem)' }}>
             <button 
@@ -105,7 +105,7 @@ export default function SearchBar({ initialQuery = '' }) {
               <input
                 autoFocus
                 type="text"
-                className="w-full bg-gray-100 border-none rounded-lg px-4 py-2.5 text-sm focus:ring-0 focus:outline-none"
+                className="w-full bg-gray-100 border-none rounded-lg px-4 py-2.5 text-sm text-gray-900 focus:ring-0 focus:outline-none"
                 placeholder="Mau cari apa hari ini?"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}

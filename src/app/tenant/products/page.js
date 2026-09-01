@@ -20,16 +20,25 @@ async function getUserPayload() {
   }
 }
 
-async function getProducts(userId) {
+async function getProducts(userId, searchQuery) {
   await dbConnect();
-  return await Product.find({ owner: userId }).sort({ createdAt: -1 });
+  let query = { owner: userId };
+  if (searchQuery) {
+    query.$or = [
+      { name: { $regex: searchQuery, $options: 'i' } },
+      { description: { $regex: searchQuery, $options: 'i' } }
+    ];
+  }
+  return await Product.find(query).sort({ createdAt: -1 });
 }
 
-export default async function TenantProductsPage() {
+export default async function TenantProductsPage({ searchParams }) {
   const user = await getUserPayload();
   if (!user || user.role !== 'tenant') return <div>Unauthorized</div>;
 
-  const products = await getProducts(user.id);
+  const resolvedParams = await searchParams;
+  const search = resolvedParams?.search || '';
+  const products = await getProducts(user.id, search);
 
   return (
     <div>

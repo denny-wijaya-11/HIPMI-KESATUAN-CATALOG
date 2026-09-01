@@ -26,12 +26,12 @@ async function getUserPayload() {
 async function getStats(user) {
   await dbConnect();
 
-  let userQuery = {};
-  let productQuery = {};
+  let userQuery = { role: 'tenant' };
+  let productQuery = { isHidden: { $ne: true } };
 
   if (user && user.role === 'operator') {
-    userQuery = { role: 'tenant', university: user.university };
-    productQuery = { university: user.university };
+    userQuery = { ...userQuery, university: user.university };
+    productQuery = { ...productQuery, university: user.university };
   }
 
   const totalUsers = await User.countDocuments(userQuery);

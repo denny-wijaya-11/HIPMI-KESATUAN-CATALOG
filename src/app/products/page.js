@@ -92,6 +92,14 @@ export default async function ProductsPage({ searchParams }) {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 md:mb-10 gap-4">
               <div>
+                <div className="mb-4">
+                  <Link href="/" className="inline-flex items-center text-sm text-gray-500 hover:text-[#C62828] transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Kembali ke Beranda
+                  </Link>
+                </div>
                 <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">Semua Produk</h1>
                 <p className="text-gray-500 max-w-xl text-sm md:text-base">
                   {actualUserUniversity && !isRoaming 

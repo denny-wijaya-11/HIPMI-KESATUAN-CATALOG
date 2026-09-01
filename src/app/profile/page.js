@@ -171,46 +171,47 @@ export default function ProfilePage() {
                     Foto Profil
                   </label>
                   
-                  {/* Camera Button (Hanya terlihat jika di HP / mendukung Capacitor) */}
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      try {
-                        const image = await Camera.getPhoto({
-                          quality: 80,
-                          width: 400,
-                          allowEditing: true,
-                          resultType: CameraResultType.DataUrl,
-                          source: CameraSource.Prompt
-                        });
-                        if (image.dataUrl) {
-                          setFormData({ ...formData, avatar: image.dataUrl });
-                        }
-                      } catch (e) {
-                        console.error('Kamera dibatalkan atau error', e);
-                      }
-                    }}
-                    className="mb-3 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    Ambil Foto / Galeri
-                  </button>
-
-                  <div className="mt-1">
-                    <input
-                      type="url"
-                      name="avatar"
-                      id="avatar"
-                      value={formData.avatar}
-                      onChange={handleChange}
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
-                      placeholder="Atau paste URL gambar di sini..."
-                    />
+                  {/* Camera / File Input */}
+                  <div className="flex flex-col gap-3">
+                    <label className="cursor-pointer inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#C62828] hover:bg-[#8E0000] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 w-fit transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                      </svg>
+                      {saving ? 'Mengunggah...' : 'Pilih Foto Profil'}
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        className="hidden" 
+                        disabled={saving}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          
+                          setSaving(true);
+                          const formDataApi = new FormData();
+                          formDataApi.append('image', file);
+                          
+                          try {
+                            const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY || '2ef4c6bc48cb7fb77317eb664a773289'}`, {
+                              method: 'POST',
+                              body: formDataApi
+                            });
+                            
+                            const data = await imgbbRes.json();
+                            if (data.success) {
+                              setFormData(prev => ({ ...prev, avatar: data.data.url }));
+                            } else {
+                              setError('Gagal mengunggah foto. Silakan coba lagi.');
+                            }
+                          } catch (err) {
+                            setError('Terjadi kesalahan saat mengunggah foto.');
+                          } finally {
+                            setSaving(false);
+                          }
+                        }}
+                      />
+                    </label>
                   </div>
-                  <p className="mt-2 text-xs text-gray-500">Anda dapat memotret langsung atau menggunakan URL gambar (termasuk Data URL Base64).</p>
                 </div>
               </div>
 

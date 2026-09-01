@@ -6,6 +6,7 @@ import Order from '@/models/Order';
 import Product from '@/models/Product';
 import User from '@/models/User';
 import PublicHeader from '@/components/public/PublicHeader';
+import CancelOrderButton from '@/components/public/CancelOrderButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -156,15 +157,20 @@ export default async function BuyerOrdersPage() {
                       <p className="text-xs text-gray-500 mb-0.5">Total Belanja</p>
                       <p className="font-bold text-[#C62828] text-lg">Rp {order.totalAmount?.toLocaleString('id-ID')}</p>
                     </div>
-                    <Link 
-                      href={`/chat?userId=${order.tenant?._id}&userName=${order.tenant?.name}`}
-                      className="inline-flex justify-center items-center bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold py-2 px-5 rounded-lg transition-colors"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                      </svg>
-                      Chat Penjual
-                    </Link>
+                    <div className="flex gap-2">
+                      {order.status === 'Menunggu Pembayaran' && (
+                        <CancelOrderButton orderId={order._id.toString()} />
+                      )}
+                      <Link 
+                        href={`/chat?userId=${order.tenant?._id}&userName=${order.tenant?.name}`}
+                        className="inline-flex justify-center items-center bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold py-2 px-5 rounded-lg transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                        </svg>
+                        Chat Penjual
+                      </Link>
+                    </div>
                   </div>
                 </div>
               );
