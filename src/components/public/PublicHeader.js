@@ -49,7 +49,13 @@ export default function PublicHeader({ user }) {
             <Link href="/" className={navLinkClass('/')}>Beranda</Link>
             <Link href="/products" className={navLinkClass('/products')}>Produk</Link>
             <Link href="/#produk" className="text-sm font-medium text-gray-600 hover:text-[#C62828] transition-colors duration-200">Katalog Unggulan</Link>
-            <Link href="/#tentang" className="text-sm font-medium text-gray-600 hover:text-[#C62828] transition-colors duration-200">Tentang Kami</Link>
+            <Link href="/#footer" className="text-sm font-medium text-gray-600 hover:text-[#C62828] transition-colors duration-200">Tentang Kami</Link>
+            {user && (user.role === 'admin' || user.role === 'developer' || user.role === 'operator') && (
+              <Link href="/admin" className={navLinkClass('/admin')}>Dashboard Admin</Link>
+            )}
+            {user && (user.role === 'tenant' || user.role === 'admin' || user.role === 'developer' || user.role === 'operator') && (
+              <Link href="/tenant" className={navLinkClass('/tenant')}>Dashboard Penjualan</Link>
+            )}
           </nav>
 
           {/* Right Section (Icons & Auth) */}

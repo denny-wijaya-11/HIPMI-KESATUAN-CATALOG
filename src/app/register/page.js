@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Suspense } from "react";
 import { REGIONS, UNIVERSITIES } from "@/lib/constants";
@@ -22,6 +22,8 @@ function RegisterContent() {
   const [showPassword, setShowPassword] = useState(false);
   
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect');
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -94,8 +96,12 @@ function RegisterContent() {
         return;
       }
 
-      // Berhasil verifikasi, auto login, redirect ke Home
-      router.push("/");
+      // Berhasil verifikasi, auto login, redirect ke redirectUrl atau Home
+      if (redirectUrl) {
+        router.push(redirectUrl);
+      } else {
+        router.push("/");
+      }
     } catch (err) {
       setError("Gagal terhubung ke server");
       setIsLoading(false);
@@ -275,7 +281,7 @@ function RegisterContent() {
               <div className="mt-5 text-center">
                 <p className="text-sm text-gray-600">
                   Sudah punya akun?{" "}
-                  <Link href="/login" className="font-semibold text-[#C62828] hover:text-[#8E0000]">
+                  <Link href={redirectUrl ? `/login?redirect=${encodeURIComponent(redirectUrl)}` : '/login'} className="font-semibold text-[#C62828] hover:text-[#8E0000]">
                     Masuk di sini
                   </Link>
                 </p>

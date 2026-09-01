@@ -149,7 +149,7 @@ export default function ReviewSection({ productId, initialReviews, user }) {
                   <div>
                     <h4 className="text-sm font-semibold text-gray-900">{review.name}</h4>
                     <span className="text-[10px] text-gray-400">
-                      {new Date(review.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      {review.createdAt ? new Date(review.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : ''}
                     </span>
                   </div>
                 </div>

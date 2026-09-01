@@ -228,7 +228,7 @@ export default async function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="relative bg-white border-t border-gray-100 pt-12 pb-8">
+      <footer id="footer" className="relative bg-white border-t border-gray-100 pt-12 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
             <div className="md:col-span-2">
@@ -246,7 +246,7 @@ export default async function Home() {
               <ul className="space-y-3 text-sm text-gray-500">
                 <li><Link href="/" className="hover:text-[#C62828] transition-colors">Beranda</Link></li>
                 <li><Link href="/products" className="hover:text-[#C62828] transition-colors">Katalog Produk</Link></li>
-                <li><Link href="#tentang" className="hover:text-[#C62828] transition-colors">Tentang Kami</Link></li>
+                <li><Link href="#footer" className="hover:text-[#C62828] transition-colors">Tentang Kami</Link></li>
               </ul>
             </div>
             <div>

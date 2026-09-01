@@ -83,7 +83,7 @@ export default function CategoryFilter({ userUniversity }) {
   return (
     <div className="flex flex-col mb-10">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex flex-wrap gap-3">
+        <div className="flex overflow-x-auto sm:flex-wrap gap-2 sm:gap-3 pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 hide-scrollbar">
           {CATEGORIES.map((catObj) => {
             const isActive = currentCategory === catObj.name;
             return (

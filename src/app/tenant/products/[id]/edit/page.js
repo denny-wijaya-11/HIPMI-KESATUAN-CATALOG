@@ -318,8 +318,8 @@ export default function EditProductPage() {
                 ))}
                 {formData.images.length < 5 && (
                   <label className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center text-gray-500 hover:text-gray-700 hover:border-gray-400 cursor-pointer bg-gray-50">
-                    <span className="text-2xl leading-none">+</span>
-                    <span className="text-xs mt-1">Upload</span>
+                    <span className="text-2xl leading-none">{loading ? '⌛' : '+'}</span>
+                    <span className="text-xs mt-1 text-center px-1">{loading ? 'Mengunggah...' : 'Upload'}</span>
                     <input
                       type="file"
                       accept="image/*"

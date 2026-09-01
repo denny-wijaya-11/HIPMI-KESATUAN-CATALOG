@@ -30,21 +30,27 @@ export default function AddToCartButton({ product }) {
   return (
     <button 
       onClick={handleAdd}
-      className={`p-3 rounded-2xl transition-all duration-300 border ${
+      className={`px-4 py-3 rounded-xl transition-all duration-300 border flex items-center justify-center gap-2 font-semibold text-sm w-full sm:w-auto ${
         isAdded 
-          ? 'bg-green-600/20 text-green-400 border-green-500/30' 
-          : 'bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border-red-500/30'
+          ? 'bg-green-600/20 text-green-700 border-green-500/30' 
+          : 'bg-[#C62828] hover:bg-[#8E0000] text-white border-transparent shadow-sm'
       }`}
       title="Tambah ke Keranjang"
     >
       {isAdded ? (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-        </svg>
+        <>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          Berhasil Ditambahkan
+        </>
       ) : (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
+        <>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          Tambah ke Keranjang
+        </>
       )}
     </button>
   );

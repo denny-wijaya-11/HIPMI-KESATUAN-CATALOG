@@ -34,12 +34,12 @@ export default async function TenantLayout({ children }) {
             Akses ke Dashboard Tenant Anda sedang ditangguhkan karena belum menyelesaikan pembayaran sewa bulanan. Produk Anda juga disembunyikan dari katalog publik.
           </p>
           <a
-            href={`https://wa.me/${process.env.NEXT_PUBLIC_ADMIN_WA || ''}`}
+            href={`https://wa.me/${process.env.NEXT_PUBLIC_ADMIN_WA || ''}?text=Halo%20Admin,%20saya%20sudah%20melakukan%20pembayaran%20sewa%20tenant%20atas%20nama%20${encodeURIComponent(user?.name || '')}.%20Berikut%20bukti%20pembayarannya:`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex justify-center items-center w-full rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:text-sm"
           >
-            Hubungi Admin
+            Konfirmasi Sudah Bayar (WA)
           </a>
         </div>
       </div>

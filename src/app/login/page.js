@@ -182,7 +182,7 @@ function LoginContent() {
 
               <div className="mt-5">
                 <Link
-                  href="/register"
+                  href={redirectUrl ? `/register?redirect=${encodeURIComponent(redirectUrl)}` : '/register'}
                   className="w-full inline-flex justify-center py-2.5 px-4 border border-[#C62828] rounded-xl bg-white text-sm font-semibold text-[#C62828] hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C62828] transition-all shadow-sm"
                 >
                   Daftar Akun Baru

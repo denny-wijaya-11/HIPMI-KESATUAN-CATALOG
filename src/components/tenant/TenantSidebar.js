@@ -8,6 +8,7 @@ const navigation = [
   { name: "Dashboard", href: "/tenant", icon: HomeIcon },
   { name: "Pesanan", href: "/tenant/orders", icon: ShoppingBagIcon },
   { name: "Produk Saya", href: "/tenant/products", icon: ShoppingBagIcon },
+  { name: "Tambah Produk", href: "/tenant/products/create", icon: ShoppingBagIcon },
   { name: "Pesan / Chat", href: "/chat", icon: ChatBubbleIcon },
 ];
 
