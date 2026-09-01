@@ -2,7 +2,40 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
-const CATEGORIES = ['Semua', 'Makanan', 'Minuman', 'Fashion', 'Aksesoris', 'Perlengkapan', 'Jasa', 'Lainnya'];
+const CATEGORIES = [
+  {
+    name: 'Semua',
+    icon: <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+  },
+  {
+    name: 'Makanan',
+    icon: <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-3 0-6 2-6 5h12c0-3-3-5-6-5zM4 15h16v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z" /></svg>
+  },
+  {
+    name: 'Minuman',
+    icon: <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 3h4M10 5h4M6 8l2 11h8l2-11H6z" /></svg>
+  },
+  {
+    name: 'Fashion',
+    icon: <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8l4-2h6l4 2v4l-2 1v7H7v-7L5 12V8z" /></svg>
+  },
+  {
+    name: 'Aksesoris',
+    icon: <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6a4 4 0 00-4 4 4 4 0 108 0 4 4 0 00-4-4zM6 14h12l1 6H5l1-6z" /></svg>
+  },
+  {
+    name: 'Perlengkapan',
+    icon: <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+  },
+  {
+    name: 'Jasa',
+    icon: <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+  },
+  {
+    name: 'Lainnya',
+    icon: <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" /></svg>
+  }
+];
 
 export default function CategoryFilter({ userUniversity }) {
   const router = useRouter();
@@ -51,19 +84,20 @@ export default function CategoryFilter({ userUniversity }) {
     <div className="flex flex-col mb-10">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-wrap gap-3">
-          {CATEGORIES.map((category) => {
-            const isActive = currentCategory === category;
+          {CATEGORIES.map((catObj) => {
+            const isActive = currentCategory === catObj.name;
             return (
               <button
-                key={category}
-                onClick={() => handleCategoryClick(category)}
-                className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 ${
+                key={catObj.name}
+                onClick={() => handleCategoryClick(catObj.name)}
+                className={`flex items-center gap-1.5 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 ${
                   isActive
                     ? 'bg-[#C62828] text-white shadow-md border border-[#C62828]'
                     : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200 hover:border-gray-300'
                 }`}
               >
-                {category}
+                {catObj.icon}
+                <span>{catObj.name}</span>
               </button>
             );
           })}
