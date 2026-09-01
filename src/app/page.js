@@ -74,9 +74,6 @@ export default async function Home() {
                         <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
                       </svg>
                     </SolidButton>
-                    <SolidButton href="#tentang" variant="outline">
-                      Pelajari Lebih Lanjut
-                    </SolidButton>
                   </div>
                 </FadeInUp>
 
@@ -211,10 +208,10 @@ export default async function Home() {
               
               <div className="relative">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
-                  Punya Bisnis Inovatif?
+                  Tentang HIPMORA
                 </h2>
                 <p className="text-base md:text-lg text-red-100 max-w-2xl mx-auto mb-8">
-                  Bergabunglah dengan mahasiswa pengusaha lainnya. Dapatkan akses ke pasar yang lebih luas dan komunitas yang suportif.
+                  HIPMORA adalah platform katalog resmi yang mewadahi inovasi dan kreasi mahasiswa pengusaha. Kami berkomitmen membangun ekosistem wirausaha yang kuat di lingkungan kampus. Punya bisnis inovatif? Bergabunglah bersama kami!
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center gap-3">
                   <SolidButton href="/become-tenant" className="!bg-white !text-[#C62828] hover:!bg-gray-100">
@@ -257,7 +254,7 @@ export default async function Home() {
               <ul className="space-y-3 text-sm text-gray-500">
                 <li className="flex items-center gap-2.5">
                   <svg className="h-4 w-4 text-[#C62828] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                  <span>hipmikatalog@gmail.com</span>
+                  <a href="mailto:hipmikatalog@gmail.com" className="hover:text-[#C62828] transition-colors">hipmikatalog@gmail.com</a>
                 </li>
               </ul>
             </div>
@@ -265,7 +262,7 @@ export default async function Home() {
           <div className="pt-6 border-t border-gray-100 text-xs text-center text-gray-400 flex flex-col md:flex-row justify-between items-center gap-3">
             <p>&copy; {new Date().getFullYear()} HIPMORA. All rights reserved.</p>
             <div className="flex gap-6">
-              <Link href="#" className="hover:text-gray-600 transition-colors">Kebijakan Privasi</Link>
+              <Link href="/kebijakan-privasi" className="hover:text-gray-600 transition-colors">Kebijakan Privasi</Link>
               <Link href="/syarat-ketentuan" className="hover:text-gray-600 transition-colors">Syarat & Ketentuan</Link>
             </div>
           </div>

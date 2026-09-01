@@ -110,7 +110,9 @@ export default async function BuyerOrdersPage() {
                     {order.items.map((item, idx) => (
                       <div key={idx} className="flex gap-4 mb-4 pb-4 border-b border-gray-50 last:mb-0 last:pb-0 last:border-0">
                         <div className="w-16 h-16 rounded-xl bg-gray-100 shrink-0 border border-gray-200 overflow-hidden relative">
-                           {item.product?.image ? (
+                           {(item.product?.images && item.product.images.length > 0) ? (
+                             <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
+                           ) : item.product?.image ? (
                              <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
                            ) : (
                              <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No Image</div>

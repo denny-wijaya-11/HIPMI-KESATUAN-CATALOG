@@ -60,15 +60,16 @@ export default async function AdminDashboard() {
   const data = await getStats(user);
 
   const stats = [
-    { name: "Total Produk", stat: data.totalProducts, change: "Data Real", changeType: "increase" },
+    { name: "Total Produk", stat: data.totalProducts, change: "Data Real", changeType: "increase", href: "/admin/products" },
     { 
       name: user.role === 'operator' ? "Total Akun (Tenant Kampus)" : "Total Akun (Semua Pengguna)", 
       stat: data.totalUsers, 
       change: "Data Real", 
-      changeType: "increase" 
+      changeType: "increase",
+      href: "/admin/users"
     },
-    { name: "Total Pengunjung", stat: data.totalVisitors, change: "Data Real", changeType: "increase" },
-    { name: "Produk Baru (Minggu Ini)", stat: data.newProducts, change: "Data Real", changeType: "increase" },
+    { name: "Total Pengunjung", stat: data.totalVisitors, change: "Data Real", changeType: "increase", href: "#" },
+    { name: "Produk Baru (Minggu Ini)", stat: data.newProducts, change: "Data Real", changeType: "increase", href: "/admin/products" },
   ];
 
   return (
@@ -111,9 +112,9 @@ export default async function AdminDashboard() {
               </p>
               <div className="absolute bottom-0 inset-x-0 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
                 <div className="text-xs sm:text-sm">
-                  <a href="#" className="font-medium text-red-600 hover:text-red-500 transition-colors">
+                  <Link href={item.href || "#"} className="font-medium text-red-600 hover:text-red-500 transition-colors">
                     Lihat detail <span className="sr-only">{item.name} stats</span>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </dd>

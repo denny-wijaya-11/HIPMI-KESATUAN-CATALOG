@@ -8,7 +8,7 @@ Informasi penting yang perlu kamu ketahui:
    - User harus login/register terlebih dahulu.
    - Klik tombol "Daftar Tenant" atau "Menjadi Tenant".
    - Isi form pendaftaran tenant (nama toko, alamat, dll).
-   - Bayar biaya pendaftaran/sewa (promo bulan pertama Rp 100.000, selanjutnya Rp 150.000) ke rekening BCA 0955018988 a.n Denny Jovan Wijaya.
+   - Bayar biaya pendaftaran/sewa (promo bulan pertama Rp 100.000, selanjutnya Rp 150.000) ke rekening 000227776059 - Hari Pratama (blu by BCA).
    - Konfirmasi pembayaran ke Admin melalui WhatsApp (+62 895-3046-7021).
    - Setelah status diubah menjadi "Paid" oleh Admin, operator kampus akan meng-ACC pendaftaran tersebut.
 2. **Cara Belanja (Pembeli)**:

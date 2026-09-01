@@ -52,6 +52,28 @@ function RegisterContent() {
     }
   };
 
+  const handleResendOTP = async () => {
+    setError("");
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, whatsapp, password, university, city }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Gagal mengirim ulang OTP");
+      } else {
+        alert("OTP baru telah dikirim ke email Anda");
+      }
+    } catch (err) {
+      setError("Gagal terhubung ke server");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
     setError("");
@@ -295,8 +317,15 @@ function RegisterContent() {
                   {isLoading ? "Memverifikasi..." : "Verifikasi & Masuk"}
                 </button>
               </div>
-              
-              <div className="mt-4 text-center">
+              <div className="mt-4 flex flex-col items-center space-y-2">
+                <button
+                  type="button"
+                  onClick={handleResendOTP}
+                  disabled={isLoading}
+                  className="text-sm font-medium text-[#C62828] hover:text-[#8E0000] disabled:opacity-50"
+                >
+                  Kirim ulang OTP
+                </button>
                 <button
                   type="button"
                   onClick={() => { setStep(1); setOtp(""); setError(""); }}

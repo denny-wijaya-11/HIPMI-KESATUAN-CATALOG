@@ -229,7 +229,7 @@ export default async function ProductsPage({ searchParams }) {
               <ul className="space-y-3 text-sm text-gray-500">
                 <li className="flex items-center gap-2.5">
                   <svg className="h-4 w-4 text-[#C62828] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                  <span>hipmikatalog@gmail.com</span>
+                  <a href="mailto:hipmikatalog@gmail.com" className="hover:text-[#C62828] transition-colors">hipmikatalog@gmail.com</a>
                 </li>
               </ul>
             </div>
@@ -237,7 +237,7 @@ export default async function ProductsPage({ searchParams }) {
           <div className="pt-6 border-t border-gray-100 text-xs text-center text-gray-400 flex flex-col md:flex-row justify-between items-center gap-3">
             <p>&copy; {new Date().getFullYear()} HIPMORA. All rights reserved.</p>
             <div className="flex gap-6">
-              <Link href="#" className="hover:text-gray-600 transition-colors">Kebijakan Privasi</Link>
+              <Link href="/kebijakan-privasi" className="hover:text-gray-600 transition-colors">Kebijakan Privasi</Link>
               <Link href="/syarat-ketentuan" className="hover:text-gray-600 transition-colors">Syarat & Ketentuan</Link>
             </div>
           </div>
