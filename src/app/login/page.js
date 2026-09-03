@@ -99,7 +99,7 @@ function LoginContent() {
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                   Password
                 </label>
-                <div className="text-sm">
+                <div className="text-xs sm:text-sm">
                   <Link href="/forgot-password" className="font-semibold text-[#C62828] hover:text-[#8E0000] transition-colors">
                     Lupa password?
                   </Link>
@@ -149,12 +149,6 @@ function LoginContent() {
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-600 cursor-pointer">
                   Ingat saya
                 </label>
-              </div>
-
-              <div className="text-sm">
-                <a href="#" className="font-medium text-[#C62828] hover:text-[#8E0000]">
-                  Lupa password?
-                </a>
               </div>
             </div>
 

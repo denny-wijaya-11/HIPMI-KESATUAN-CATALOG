@@ -27,12 +27,12 @@ export default function PublicHeader({ user }) {
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100 pt-[env(safe-area-inset-top,0px)] shadow-sm">
       {/* Background khusus untuk status bar di HP agar teks putih bisa terbaca */}
       <div className="absolute top-0 left-0 w-full h-[env(safe-area-inset-top,0px)] bg-[#9b1c1c] z-[-1]"></div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 md:h-20">
           
           {/* Logo */}
-          <div className="flex items-center h-full py-2 shrink-0">
-            <Link href="/" className="block h-full relative w-32 md:w-40 lg:w-48 flex items-center justify-center">
+          <div className="flex items-center h-full py-2 shrink">
+            <Link href="/" className="block h-full relative w-24 xs:w-28 sm:w-32 md:w-40 lg:w-48 flex items-center justify-center">
               <Image 
                 src="/images/MASKOT LOGO.png" 
                 alt="HIPMORA Logo" 
@@ -59,9 +59,9 @@ export default function PublicHeader({ user }) {
           </nav>
 
           {/* Right Section (Icons & Auth) */}
-          <div className="flex items-center space-x-1.5 md:space-x-4">
-            <div className="flex items-center space-x-0.5 md:space-x-3">
-              <Link href="/products" className="md:hidden p-1.5 md:p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors" aria-label="Cari Produk">
+          <div className="flex items-center gap-0.5 sm:gap-1.5 md:gap-4 shrink-0">
+            <div className="flex items-center gap-0.5 sm:gap-1.5 md:gap-3">
+              <Link href="/products" className="md:hidden p-1 sm:p-1.5 md:p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors" aria-label="Cari Produk">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>

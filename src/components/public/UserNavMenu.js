@@ -122,7 +122,7 @@ export default function UserNavMenu({ user, isMobile = false }) {
     <div className="relative" ref={menuRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 pl-2 pr-4 py-1.5 rounded-full transition-all duration-300 hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] border border-red-500 flex items-center gap-2"
+        className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 p-1 sm:pl-2 sm:pr-4 sm:py-1.5 rounded-full transition-all duration-300 hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] border border-red-500 flex items-center gap-1 sm:gap-2"
       >
         {user?.avatar ? (
           <img src={user.avatar} alt={user.name} className="w-7 h-7 rounded-full object-cover border border-red-400" />
@@ -131,8 +131,8 @@ export default function UserNavMenu({ user, isMobile = false }) {
             {user?.name ? user.name.charAt(0).toUpperCase() : '?'}
           </div>
         )}
-        <span className="truncate max-w-[100px] sm:max-w-[150px]">{(user?.name || 'User').split(' ')[0]}</span>
-        <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
+        <span className="hidden sm:block truncate sm:max-w-[150px]">{(user?.name || 'User').split(' ')[0]}</span>
+        <svg xmlns="http://www.w3.org/2000/svg" className={`hidden sm:block h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
         </svg>
       </button>
