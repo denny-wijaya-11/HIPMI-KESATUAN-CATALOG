@@ -46,7 +46,7 @@ export default function TenantHeader({ setIsSidebarOpen = () => {} }) {
       </button>
       <div className="flex-1 px-4 flex justify-between items-center">
         <div className="flex-1 flex items-center min-w-0">
-          <form onSubmit={handleSearch} className="w-full max-w-xs relative text-gray-400 focus-within:text-gray-600">
+          <form onSubmit={handleSearch} className="w-full max-w-[130px] sm:max-w-xs relative text-gray-400 focus-within:text-gray-600">
             <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
               <MagnifyingGlassIcon className="h-4 w-4 md:h-5 md:w-5" aria-hidden="true" />
             </div>
