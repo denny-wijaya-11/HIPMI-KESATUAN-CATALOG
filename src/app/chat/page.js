@@ -20,8 +20,9 @@ function ChatContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const presetUserId = searchParams.get('userId');
+    const presetUserId = searchParams.get('userId');
   const presetUserName = searchParams.get('userName');
+  const presetUserAvatar = searchParams.get('userAvatar');
   const productId = searchParams.get('productId');
 
   useEffect(() => {
@@ -67,7 +68,8 @@ function ChatContent() {
             // New chat session
             setActiveContact({
               _id: presetUserId,
-              name: presetUserName || 'Penjual'
+              name: presetUserName || 'Penjual',
+              avatar: presetUserAvatar || ''
             });
           }
         } else if (data.length > 0 && !activeContact && !isSilent) {

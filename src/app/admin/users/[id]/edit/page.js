@@ -264,6 +264,7 @@ export default function EditUserPage() {
                     onChange={handleChange}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 px-3"
                   >
+                    <option value="user">Pengguna Biasa (User)</option>
                     <option value="operator">Operator (Admin Kampus)</option>
                     <option value="tenant">Tenant (Penjual)</option>
                     <option value="admin">Admin Pusat</option>

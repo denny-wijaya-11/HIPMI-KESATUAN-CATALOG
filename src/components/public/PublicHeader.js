@@ -48,12 +48,12 @@ export default function PublicHeader({ user }) {
           <nav className="hidden md:flex md:space-x-2 lg:space-x-5 overflow-hidden items-center justify-center mx-2 lg:mx-4">
             <Link href="/" className={navLinkClass('/')}>Beranda</Link>
             <Link href="/products" className={navLinkClass('/products')}>Produk</Link>
-            <a href="/#produk" className="text-xs lg:text-sm font-medium whitespace-nowrap text-gray-600 hover:text-[#C62828] transition-colors duration-200">Katalog Unggulan</a>
-            <a href="/#tentang" className="text-xs lg:text-sm font-medium whitespace-nowrap text-gray-600 hover:text-[#C62828] transition-colors duration-200">Tentang Kami</a>
+            <Link href="/#produk" className="text-xs lg:text-sm font-medium whitespace-nowrap text-gray-600 hover:text-[#C62828] transition-colors duration-200">Katalog Unggulan</Link>
+            <Link href="/#tentang" className="text-xs lg:text-sm font-medium whitespace-nowrap text-gray-600 hover:text-[#C62828] transition-colors duration-200">Tentang Kami</Link>
             {user && (user.role === 'admin' || user.role === 'developer' || user.role === 'operator') && (
               <Link href="/admin" className={navLinkClass('/admin')}>Dashboard Admin</Link>
             )}
-            {user && (user.role === 'tenant' || user.role === 'admin' || user.role === 'developer' || user.role === 'operator') && (
+            {user && user.role === 'tenant' && (
               <Link href="/tenant" className={navLinkClass('/tenant')}>Dashboard Penjualan</Link>
             )}
           </nav>

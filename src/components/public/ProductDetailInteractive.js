@@ -144,7 +144,7 @@ export default function ProductDetailInteractive({ product }) {
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto mt-2 sm:mt-0">
               <Link
-                href={`/chat?userId=${product.owner?._id}&userName=${encodeURIComponent(product.owner?.name || '')}&productId=${product._id}`}
+                href={`/chat?userId=${product.owner?._id}&userName=${encodeURIComponent(product.owner?.name || '')}&userAvatar=${encodeURIComponent(product.owner?.avatar || '')}&productId=${product._id}`}
                 className="inline-flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-700 transition-colors w-full sm:w-auto"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

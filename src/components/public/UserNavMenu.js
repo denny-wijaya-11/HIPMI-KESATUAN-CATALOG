@@ -29,6 +29,17 @@ export default function UserNavMenu({ user, isMobile = false }) {
     };
   }, []);
 
+  // Silently refresh token in background if data like role has changed in DB
+  useEffect(() => {
+    if (user) {
+      fetch('/api/profile').then(res => res.json()).then(data => {
+        if (data.role && data.role !== user.role) {
+          router.refresh(); // Reload server components to reflect new role
+        }
+      }).catch(() => {});
+    }
+  }, [user, router]);
+
   const handleLogout = async () => {
     try {
       const res = await fetch('/api/auth/logout', { method: 'POST' });

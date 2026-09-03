@@ -199,7 +199,21 @@ export default function ProfilePage() {
                             
                             const data = await imgbbRes.json();
                             if (data.success) {
-                              setFormData(prev => ({ ...prev, avatar: data.data.url }));
+                              const newAvatarUrl = data.data.url;
+                              setFormData(prev => ({ ...prev, avatar: newAvatarUrl }));
+                              
+                              // Auto-save the new avatar to backend
+                              try {
+                                await fetch('/api/profile', {
+                                  method: 'PUT',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ ...formData, avatar: newAvatarUrl })
+                                });
+                                // Refresh to get the new cookie
+                                window.location.reload();
+                              } catch (err) {
+                                console.error('Failed to auto-save avatar');
+                              }
                             } else {
                               setError('Gagal mengunggah foto. Silakan coba lagi.');
                             }
