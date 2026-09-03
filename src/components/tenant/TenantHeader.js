@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import NotificationBell from "@/components/public/NotificationBell";
 
 export default function TenantHeader({ setIsSidebarOpen = () => {} }) {
@@ -10,6 +11,7 @@ export default function TenantHeader({ setIsSidebarOpen = () => {} }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     async function fetchUser() {
@@ -34,6 +36,17 @@ export default function TenantHeader({ setIsSidebarOpen = () => {} }) {
       router.push(`/tenant/products`);
     }
   };
+  const handleLogout = async () => {
+    try {
+      const res = await fetch('/api/auth/logout', { method: 'POST' });
+      if (res.ok) {
+        window.location.href = '/';
+      }
+    } catch (err) {
+      console.error('Logout failed', err);
+    }
+  };
+
   return (
     <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow-sm border-b border-gray-200">
       <button
@@ -74,15 +87,48 @@ export default function TenantHeader({ setIsSidebarOpen = () => {} }) {
             </button>
           )}
 
-          {/* Profile dropdown Placeholder */}
+          {/* Profile dropdown */}
           <div className="relative">
-            <button className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 p-1 border border-gray-200 hover:bg-gray-50 transition-colors">
+            <button 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 p-1 border border-gray-200 hover:bg-gray-50 transition-colors"
+            >
               <span className="sr-only">Open user menu</span>
               <div className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-red-100 flex items-center justify-center overflow-hidden border border-red-200">
-                 <span className="text-red-700 font-bold text-xs md:text-sm">TN</span>
+                 {user?.avatar ? (
+                   <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                 ) : (
+                   <span className="text-red-700 font-bold text-xs md:text-sm">
+                     {user?.name ? user.name.charAt(0).toUpperCase() : 'TN'}
+                   </span>
+                 )}
               </div>
-              <span className="ml-2 pr-2 font-medium text-gray-700 hidden sm:block">Tenant User</span>
+              <span className="ml-2 pr-2 font-medium text-gray-700 hidden sm:block">
+                {user?.name || 'Tenant User'}
+              </span>
             </button>
+
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                <div className="py-1" role="menu" aria-orientation="vertical">
+                  <Link
+                    href={`/products?search=${encodeURIComponent(user?.name || '')}`}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600"
+                    role="menuitem"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    Lihat Toko Saya
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600"
+                    role="menuitem"
+                  >
+                    Log Out
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

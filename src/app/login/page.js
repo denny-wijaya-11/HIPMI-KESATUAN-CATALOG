@@ -40,11 +40,8 @@ function LoginContent() {
       }
 
       // Successful login, redirect to requested url or default based on role (default home)
-      if (redirectUrl) {
-        router.push(redirectUrl);
-      } else {
-        router.push("/");
-      }
+      const targetUrl = redirectUrl || "/";
+      window.location.href = targetUrl;
     } catch (err) {
       setError("Failed to connect to the server");
       setIsLoading(false);

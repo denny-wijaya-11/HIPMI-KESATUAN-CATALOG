@@ -97,11 +97,8 @@ function RegisterContent() {
       }
 
       // Berhasil verifikasi, auto login, redirect ke redirectUrl atau Home
-      if (redirectUrl) {
-        router.push(redirectUrl);
-      } else {
-        router.push("/");
-      }
+      const targetUrl = redirectUrl || "/";
+      window.location.href = targetUrl;
     } catch (err) {
       setError("Gagal terhubung ke server");
       setIsLoading(false);
