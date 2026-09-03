@@ -91,13 +91,22 @@ export default function UserNavMenu({ user, isMobile = false }) {
           </Link>
         )}
         {(user.role === 'tenant' || user.role === 'admin' || user.role === 'developer' || user.role === 'operator') && (
-          <Link 
-            href="/tenant" 
-            className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-neutral-800"
-            onClick={() => setIsOpen(false)}
-          >
-            Dashboard Penjual
-          </Link>
+          <>
+            <Link 
+              href="/tenant" 
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-neutral-800"
+              onClick={() => setIsOpen(false)}
+            >
+              Dashboard Penjual
+            </Link>
+            <Link 
+              href="/tenant/products/create" 
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-neutral-800"
+              onClick={() => setIsOpen(false)}
+            >
+              Tambah Produk Baru
+            </Link>
+          </>
         )}
         <button
           onClick={handleLogout}
@@ -160,7 +169,7 @@ export default function UserNavMenu({ user, isMobile = false }) {
             {(user.role === 'admin' || user.role === 'developer' || user.role === 'operator') && (
               <Link 
                 href="/admin" 
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors md:hidden"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors"
                 role="menuitem"
                 onClick={() => setIsOpen(false)}
               >
@@ -168,14 +177,24 @@ export default function UserNavMenu({ user, isMobile = false }) {
               </Link>
             )}
             {(user.role === 'tenant' || user.role === 'admin' || user.role === 'developer' || user.role === 'operator') && (
-              <Link 
-                href="/tenant" 
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors md:hidden"
-                role="menuitem"
-                onClick={() => setIsOpen(false)}
-              >
-                Dashboard Penjualan
-              </Link>
+              <>
+                <Link 
+                  href="/tenant" 
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors"
+                  role="menuitem"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Dashboard Penjualan
+                </Link>
+                <Link 
+                  href="/tenant/products/create" 
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 transition-colors"
+                  role="menuitem"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Tambah Produk Baru
+                </Link>
+              </>
             )}
             
             <button

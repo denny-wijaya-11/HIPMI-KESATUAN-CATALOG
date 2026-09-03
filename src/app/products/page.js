@@ -38,17 +38,8 @@ async function getAllProducts(category, sort, region, searchQuery, userUniversit
     conditions.push({ region: region });
   }
 
-  if (userUniversity) {
-    if (isRoaming) {
-      conditions.push({
-        $or: [
-          { university: userUniversity },
-          { isFromUniversity: false } // Non-student products
-        ]
-      });
-    } else {
-      conditions.push({ university: userUniversity });
-    }
+  if (userUniversity && !isRoaming) {
+    conditions.push({ university: userUniversity });
   }
 
   if (conditions.length > 0) {
@@ -108,8 +99,9 @@ export default async function ProductsPage({ searchParams }) {
                 </p>
               </div>
               
+              {/* Mode Roaming Desktop (Hidden on Mobile, moved below SearchBar for mobile) */}
               {actualUserUniversity && (
-                <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm">
+                <div className="hidden md:flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm">
                   <div className="flex flex-col">
                     <span className="text-sm font-bold text-gray-900">Mode ROAMING</span>
                     <span className="text-[10px] text-gray-500 leading-tight">Lihat produk di luar kampus</span>
@@ -125,6 +117,22 @@ export default async function ProductsPage({ searchParams }) {
             </div>
 
             <SearchBar initialQuery={search || ''} />
+
+            {/* Mode Roaming Mobile */}
+            {actualUserUniversity && (
+              <div className="flex md:hidden items-center justify-between bg-white px-4 py-3 rounded-xl border border-gray-200 shadow-sm mb-6">
+                <div className="flex flex-col">
+                  <span className="text-sm font-bold text-gray-900">Mode ROAMING</span>
+                  <span className="text-xs text-gray-500 leading-tight">Lihat produk di luar kampus</span>
+                </div>
+                <Link 
+                  href={`/products?${new URLSearchParams({ ...resolvedParams, roaming: isRoaming ? 'false' : 'true' }).toString()}`}
+                  className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#C62828] focus:ring-offset-2 ${isRoaming ? 'bg-[#C62828]' : 'bg-gray-200'}`}
+                >
+                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${isRoaming ? 'translate-x-6' : 'translate-x-1'}`} />
+                </Link>
+              </div>
+            )}
 
             <CategoryFilter userUniversity={user?.university} />
 

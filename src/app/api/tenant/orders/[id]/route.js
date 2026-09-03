@@ -7,7 +7,8 @@ import mongoose from 'mongoose';
 
 export async function PATCH(request, { params }) {
   try {
-    const { id } = params;
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
     const cookieStore = await cookies();
     const token = cookieStore.get('auth_token');
 

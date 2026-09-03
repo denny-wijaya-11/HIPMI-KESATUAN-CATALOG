@@ -62,6 +62,13 @@ export async function PUT(request) {
     if (data.avatar) {
       data.avatar = transformImageUrl(data.avatar);
     }
+    
+    // Clean up empty strings that might fail validation
+    Object.keys(data).forEach(key => {
+      if (data[key] === '') {
+        delete data[key];
+      }
+    });
 
     // Update user document
     const updatedUser = await User.findByIdAndUpdate(
@@ -98,7 +105,7 @@ export async function PUT(request) {
 
     return NextResponse.json({ message: 'Profile updated successfully', user: updatedUser });
   } catch (error) {
-    console.error('Update profile error:', error);
-    return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
+    console.error('Profile update error:', error);
+    return NextResponse.json({ error: error.message || 'Failed to update profile' }, { status: 500 });
   }
 }
