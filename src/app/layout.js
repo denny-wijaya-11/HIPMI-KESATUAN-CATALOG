@@ -46,7 +46,7 @@ export default function RootLayout({ children }) {
       lang="id"
       className={`${jakarta.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col pb-16 md:pb-0">
+      <body className="min-h-full flex flex-col pb-16 md:pb-0 overflow-x-hidden w-full">
         <AntiInspect />
         <PushNotificationHandler />
         <MobileUXEnhancer />

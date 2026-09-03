@@ -58,6 +58,8 @@ export async function GET(request) {
         email: existingUser.email,
         name: existingUser.name,
         role: existingUser.role,
+        university: existingUser.university,
+        avatar: existingUser.avatar
       })
         .setProtectedHeader({ alg: 'HS256' })
         .setExpirationTime('1d')

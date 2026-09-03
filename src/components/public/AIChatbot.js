@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 const formatMessage = (text) => {
   if (typeof text !== 'string') return text;
@@ -22,6 +23,12 @@ export default function AIChatbot() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const timerRef = useRef(null);
+  const pathname = usePathname();
+
+  // Hide entirely on /chat routes to avoid overlay issues
+  if (pathname && pathname.startsWith('/chat')) {
+    return null;
+  }
 
   // Auto-scroll to bottom of chat
   const scrollToBottom = () => {

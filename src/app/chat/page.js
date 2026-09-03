@@ -177,15 +177,18 @@ function ChatContent() {
       };
       setMessages(prev => [...prev, optimisticMsg]);
 
-      // 1. Upload image
-      const uploadRes = await fetch('/api/chat/upload', {
-        method: 'POST',
-        body: formData
-      });
-      const uploadData = await uploadRes.json();
+      // 1. Upload image directly to ImgBB from frontend to avoid backend FormData issues
+      const formDataApi = new FormData();
+      formDataApi.append('image', file);
       
-      if (!uploadRes.ok) {
-        alert(uploadData.error || 'Gagal mengupload gambar');
+      const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY || '2ef4c6bc48cb7fb77317eb664a773289'}`, {
+        method: 'POST',
+        body: formDataApi
+      });
+      const uploadData = await imgbbRes.json();
+      
+      if (!uploadData.success) {
+        alert(uploadData.error?.message || 'Gagal mengupload gambar');
         // Remove optimistic msg
         setMessages(prev => prev.filter(m => m._id !== optimisticMsg._id));
         return;
@@ -198,7 +201,7 @@ function ChatContent() {
         body: JSON.stringify({
           receiverId: activeContact._id,
           content: '',
-          image: uploadData.url,
+          image: uploadData.data.url,
           productId: messages.length === 0 ? productId : null 
         })
       });

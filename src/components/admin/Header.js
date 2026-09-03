@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import NotificationBell from "@/components/public/NotificationBell";
 
 export default function Header({ setIsSidebarOpen }) {
   const router = useRouter();
@@ -75,13 +76,7 @@ export default function Header({ setIsSidebarOpen }) {
           </form>
         </div>
         <div className="ml-2 md:ml-4 flex items-center space-x-2 md:space-x-4 flex-shrink-0">
-          <button
-            type="button"
-            className="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-          >
-            <span className="sr-only">View notifications</span>
-            <BellIcon className="h-6 w-6" aria-hidden="true" />
-          </button>
+          <NotificationBell />
 
           {/* Profile dropdown */}
           <div className="relative">

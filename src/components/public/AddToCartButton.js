@@ -30,10 +30,10 @@ export default function AddToCartButton({ product }) {
   return (
     <button 
       onClick={handleAdd}
-      className={`px-2.5 py-1.5 md:px-4 md:py-2.5 rounded-lg md:rounded-xl transition-all duration-300 border flex items-center justify-center gap-1.5 font-semibold text-[10px] sm:text-xs md:text-sm w-full sm:w-auto overflow-hidden whitespace-nowrap ${
+      className={`px-5 py-2.5 rounded-full transition-all duration-300 border flex items-center justify-center gap-2 font-semibold text-sm w-full sm:w-auto overflow-hidden whitespace-nowrap ${
         isAdded 
           ? 'bg-green-600/20 text-green-700 border-green-500/30' 
-          : 'bg-[#C62828] hover:bg-[#8E0000] text-white border-transparent shadow-sm'
+          : 'bg-[#C62828] hover:bg-[#8E0000] text-white border-[#C62828] shadow-sm'
       }`}
       title="Tambah ke Keranjang"
     >

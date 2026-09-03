@@ -48,7 +48,8 @@ export async function POST(req) {
       email: user.email, 
       name: user.name,
       role: user.role,
-      university: user.university
+      university: user.university,
+      avatar: user.avatar
     })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()

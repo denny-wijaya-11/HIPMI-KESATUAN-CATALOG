@@ -41,7 +41,9 @@ export default function BannerSlider() {
                 alt={banner.alt}
                 fill
                 priority={idx === 0}
-                className="object-cover object-center md:object-contain bg-[#f9f1f1]"
+                quality={100}
+                sizes="100vw"
+                className="object-contain bg-[#f9f1f1]"
               />
             </Link>
           ))}
