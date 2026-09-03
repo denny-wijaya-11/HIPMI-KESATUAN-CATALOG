@@ -84,11 +84,6 @@ export default function SearchBar({ initialQuery = '' }) {
           )}
         </form>
       </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
