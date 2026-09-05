@@ -57,7 +57,7 @@ export async function POST(request) {
       formattedContents[0].parts[0].text = SYSTEM_PROMPT + "\n\n" + formattedContents[0].parts[0].text;
     }
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
