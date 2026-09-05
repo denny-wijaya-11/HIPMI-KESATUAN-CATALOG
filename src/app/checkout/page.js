@@ -23,6 +23,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState('');
   const [isSameCampus, setIsSameCampus] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState('new');
+  const [saveNewAddress, setSaveNewAddress] = useState(false);
 
   useEffect(() => {
     fetch('/api/user/sync')
@@ -37,7 +38,9 @@ export default function CheckoutPage() {
           setFormData(prev => ({
             ...prev,
             name: data.user.name || '',
-            city: data.user.city || ''
+            city: data.user.city || '',
+            phone: data.user.whatsapp || '',
+            address: data.user.address || ''
           }));
         } else {
           router.push('/login?redirect=/checkout');
@@ -91,6 +94,25 @@ export default function CheckoutPage() {
         const savedAddr = user.savedAddresses.find(a => a._id === selectedAddressId);
         if (savedAddr) {
           finalAddress = { ...savedAddr, notes: formData.notes };
+        }
+      } else if (saveNewAddress) {
+        // Save this new address to user profile
+        try {
+          await fetch('/api/user/addresses', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              label: 'Alamat Tambahan',
+              name: formData.name,
+              phone: formData.phone,
+              address: formData.address,
+              city: formData.city,
+              postalCode: formData.postalCode,
+              notes: ''
+            })
+          });
+        } catch (e) {
+          console.error('Failed to save new address', e);
         }
       }
 
@@ -235,6 +257,16 @@ export default function CheckoutPage() {
                               <input required={selectedAddressId === 'new'} name="postalCode" value={formData.postalCode} onChange={handleInputChange} type="text" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C62828]/20 focus:border-[#C62828] transition-all" />
                             </div>
                           </div>
+                          
+                          <label className="flex items-center mt-4 cursor-pointer">
+                            <input 
+                              type="checkbox" 
+                              checked={saveNewAddress} 
+                              onChange={(e) => setSaveNewAddress(e.target.checked)} 
+                              className="rounded text-[#C62828] focus:ring-[#C62828] mr-2"
+                            />
+                            <span className="text-sm text-gray-700">Simpan sebagai Alamat Baru di profil saya</span>
+                          </label>
                         </div>
                       )}
 
