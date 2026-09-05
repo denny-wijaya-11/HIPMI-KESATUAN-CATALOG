@@ -42,8 +42,7 @@ export default function BannerSlider() {
                 fill
                 priority={idx === 0}
                 quality={100}
-                sizes="100vw"
-                className="object-contain bg-[#f9f1f1]"
+                className="object-cover bg-[#f9f1f1]"
               />
             </Link>
           ))}

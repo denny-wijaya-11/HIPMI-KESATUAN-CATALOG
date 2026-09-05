@@ -57,12 +57,21 @@ export async function POST(request) {
         };
       }
 
+      let finalPrice = product.price;
+      if (item.variantName && product.variants) {
+        const variant = product.variants.find(v => v.name === item.variantName);
+        if (variant) {
+          finalPrice += (variant.additionalPrice || 0);
+        }
+      }
+
       itemsByTenant[tenantId].items.push({
         product: product._id,
         quantity: item.quantity,
-        price: product.price
+        price: finalPrice,
+        variantName: item.variantName
       });
-      itemsByTenant[tenantId].totalAmount += (product.price * item.quantity);
+      itemsByTenant[tenantId].totalAmount += (finalPrice * item.quantity);
     }
 
     // Create an order for each tenant

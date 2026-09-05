@@ -203,7 +203,7 @@ export default async function ProductsPage({ searchParams }) {
                             )}
                           </div>
                         </div>
-                        <AddToCartButton product={JSON.parse(JSON.stringify(product))} />
+                        <AddToCartButton product={JSON.parse(JSON.stringify(product))} compact={true} />
                       </div>
                     </div>
                   </div>

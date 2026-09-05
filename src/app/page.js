@@ -192,7 +192,7 @@ export default async function Home() {
                             )}
                           </div>
                         </div>
-                        <AddToCartButton product={JSON.parse(JSON.stringify(product))} />
+                        <AddToCartButton product={JSON.parse(JSON.stringify(product))} compact={true} />
                       </div>
                     </div>
                   </SimpleCard>

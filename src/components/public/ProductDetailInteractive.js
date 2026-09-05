@@ -143,15 +143,28 @@ export default function ProductDetailInteractive({ product }) {
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto mt-2 sm:mt-0">
-              <Link
-                href={`/chat?userId=${product.owner?._id}&userName=${encodeURIComponent(product.owner?.name || '')}&userAvatar=${encodeURIComponent(product.owner?.avatar || '')}&productId=${product._id}`}
-                className="inline-flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-700 transition-colors w-full sm:w-auto"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                </svg>
-                Chat Penjual
-              </Link>
+              {product.owner && product.owner._id ? (
+                <Link 
+                  href={`/chat?productId=${product._id}&userId=${product.owner._id}&userName=${encodeURIComponent(product.owner.name)}&userAvatar=${encodeURIComponent(product.owner.avatar || '')}`}
+                  className="flex items-center justify-center border border-[#C62828] text-[#C62828] px-4 md:px-5 py-2 md:py-3 rounded-full hover:bg-red-50 transition-colors text-sm font-semibold whitespace-nowrap"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                  </svg>
+                  Chat Penjual
+                </Link>
+              ) : (
+                <button 
+                  disabled
+                  title="Penjual tidak tersedia"
+                  className="flex items-center justify-center border border-gray-300 text-gray-400 px-4 md:px-5 py-2 md:py-3 rounded-full cursor-not-allowed text-sm font-semibold whitespace-nowrap"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                  </svg>
+                  Chat Penjual (Tidak Aktif)
+                </button>
+              )}
             </div>
           </div>
         </div>

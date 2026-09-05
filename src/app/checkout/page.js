@@ -102,6 +102,7 @@ export default function CheckoutPage() {
             product: item._id,
             quantity: item.quantity || 1,
             price: item.price,
+            variantName: item.selectedVariantName,
             tenant: item.owner?._id || item.owner
           })),
           shippingAddress: finalAddress

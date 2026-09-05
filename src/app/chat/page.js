@@ -155,8 +155,14 @@ function ChatContent() {
     // Reset input
     e.target.value = '';
 
-    if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith('image/') && !file.name.toLowerCase().endsWith('.heic')) {
       alert('Hanya file gambar yang diperbolehkan.');
+      return;
+    }
+
+    if (file.name.toLowerCase().endsWith('.heic')) {
+      alert('Format gambar iPhone (HEIC) belum didukung secara sempurna. Mohon gunakan gambar JPG/PNG.');
+      // Proceeding might fail in some browsers, but we let them try or we can just return.
       return;
     }
 
@@ -399,8 +405,14 @@ function ChatContent() {
                           )}
 
                           {msg.image && (
-                            <div className="mb-1 rounded-lg overflow-hidden">
-                              <img src={msg.image} alt="Attachment" className="max-w-full h-auto object-contain max-h-64 rounded-lg" />
+                            <div className="mb-1 rounded-lg overflow-hidden relative">
+                              <img src={msg.image} alt="Gambar" className="max-w-full h-auto object-contain max-h-64 rounded-lg" 
+                                onError={(e) => {
+                                  e.target.onerror = null; 
+                                  // Fallback UI to show it's an image attachment
+                                  e.target.src = '/images/placeholder.png'; 
+                                }}
+                              />
                             </div>
                           )}
 

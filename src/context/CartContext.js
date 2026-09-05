@@ -31,11 +31,12 @@ export function CartProvider({ children }) {
           const mergedMap = new Map();
           
           const addToMap = (item) => {
-            if (mergedMap.has(item._id)) {
-              const existing = mergedMap.get(item._id);
+            const key = item.cartItemId || item._id;
+            if (mergedMap.has(key)) {
+              const existing = mergedMap.get(key);
               existing.quantity += (item.quantity || 1);
             } else {
-              mergedMap.set(item._id, { ...item });
+              mergedMap.set(key, { ...item });
             }
           };
 
@@ -98,26 +99,27 @@ export function CartProvider({ children }) {
 
   const addToCart = (product) => {
     setCart((prev) => {
-      const exists = prev.find((item) => item._id === product._id);
+      const newKey = product.cartItemId || product._id;
+      const exists = prev.find((item) => (item.cartItemId || item._id) === newKey);
       if (exists) {
         // Increment quantity if already exists
         return prev.map((item) =>
-          item._id === product._id ? { ...item, quantity: (item.quantity || 1) + 1 } : item
+          (item.cartItemId || item._id) === newKey ? { ...item, quantity: (item.quantity || 1) + 1 } : item
         );
       }
       return [...prev, { ...product, quantity: 1 }];
     });
   };
 
-  const removeFromCart = (productId) => {
-    setCart((prev) => prev.filter((item) => item._id !== productId));
+  const removeFromCart = (cartItemId) => {
+    setCart((prev) => prev.filter((item) => (item.cartItemId || item._id) !== cartItemId));
   };
 
-  const updateQuantity = (productId, quantity) => {
+  const updateQuantity = (cartItemId, quantity) => {
     if (quantity < 1) return;
     setCart((prev) => 
       prev.map((item) => 
-        item._id === productId ? { ...item, quantity } : item
+        (item.cartItemId || item._id) === cartItemId ? { ...item, quantity } : item
       )
     );
   };

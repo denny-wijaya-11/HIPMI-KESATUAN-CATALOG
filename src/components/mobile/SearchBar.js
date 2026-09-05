@@ -24,14 +24,17 @@ export default function SearchBar({ initialQuery = '' }) {
   }, []);
 
   const handleSearch = (searchQuery) => {
-    if (!searchQuery.trim()) return;
+    inputRef.current?.blur();
+
+    if (!searchQuery.trim()) {
+      router.push('/products');
+      return;
+    }
     
     // Save to history
     let newHistory = [searchQuery, ...history.filter(item => item !== searchQuery)].slice(0, 5);
     setHistory(newHistory);
     localStorage.setItem('hipmora_search_history', JSON.stringify(newHistory));
-
-    inputRef.current?.blur();
     
     // Push to URL
     router.push(`/products?search=${encodeURIComponent(searchQuery)}`);

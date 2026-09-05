@@ -17,7 +17,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (isLoaded) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelectedItems(cart.map(item => item._id));
+      setSelectedItems(cart.map(item => item.cartItemId || item._id));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded, cart.length]);
@@ -32,13 +32,13 @@ export default function CheckoutPage() {
     if (selectedItems.length === cart.length) {
       setSelectedItems([]);
     } else {
-      setSelectedItems(cart.map(item => item._id));
+      setSelectedItems(cart.map(item => item.cartItemId || item._id));
     }
   };
 
   const calculateTotal = () => {
     return cart
-      .filter(item => selectedItems.includes(item._id))
+      .filter(item => selectedItems.includes(item.cartItemId || item._id))
       .reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
@@ -47,12 +47,13 @@ export default function CheckoutPage() {
     setIsCheckingOut(true);
     
     // Generate WA message
-    const checkoutItems = cart.filter(item => selectedItems.includes(item._id));
+    const checkoutItems = cart.filter(item => selectedItems.includes(item.cartItemId || item._id));
     const total = calculateTotal();
     
     let message = `Halo Admin HIPMORA, saya ingin memesan barang berikut:%0A%0A`;
     checkoutItems.forEach((item, index) => {
-      message += `${index + 1}. ${item.name} (${item.quantity}x) - Rp ${(item.price * item.quantity).toLocaleString('id-ID')}%0A`;
+      const variantText = item.selectedVariantName ? ` [${item.selectedVariantName}]` : '';
+      message += `${index + 1}. ${item.name}${variantText} (${item.quantity}x) - Rp ${(item.price * item.quantity).toLocaleString('id-ID')}%0A`;
     });
     message += `%0ATotal Bayar: *Rp ${total.toLocaleString('id-ID')}*%0A%0ABerikut saya lampirkan bukti pembayaran QRIS saya.`;
     
@@ -126,12 +127,14 @@ export default function CheckoutPage() {
                 </button>
               </div>
 
-              {cart.map((item) => (
-                <div key={item._id} className="bg-white border border-gray-100 rounded-xl p-4 flex gap-4 items-center shadow-sm">
+              {cart.map((item) => {
+                const keyId = item.cartItemId || item._id;
+                return (
+                <div key={keyId} className="bg-white border border-gray-100 rounded-xl p-4 flex gap-4 items-center shadow-sm">
                   <input 
                     type="checkbox" 
-                    checked={selectedItems.includes(item._id)}
-                    onChange={() => toggleSelect(item._id)}
+                    checked={selectedItems.includes(keyId)}
+                    onChange={() => toggleSelect(keyId)}
                     className="w-4 h-4 rounded border-gray-300 text-[#C62828] focus:ring-[#C62828] cursor-pointer"
                   />
                   <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-50 shrink-0">
@@ -144,23 +147,34 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-gray-400 mb-0.5">{item.ownerName || 'Kategori'}</p>
-                    <h3 className="text-sm font-semibold text-gray-900 truncate">{item.name}</h3>
+                    <h3 className="text-sm font-semibold text-gray-900 truncate">
+                      {item.name} 
+                      {item.selectedVariantName && <span className="text-[#C62828] font-normal ml-1">[{item.selectedVariantName}]</span>}
+                    </h3>
                     <p className="text-[#C62828] font-bold text-sm mt-0.5">Rp {Number(item.price).toLocaleString('id-ID')}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button 
-                      onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                      onClick={() => updateQuantity(keyId, item.quantity - 1)}
                       disabled={item.quantity <= 1}
                       className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 text-sm"
                     >-</button>
                     <span className="w-5 text-center font-medium text-gray-900 text-sm">{item.quantity}</span>
                     <button 
-                      onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                      onClick={() => updateQuantity(keyId, item.quantity + 1)}
                       className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm"
                     >+</button>
+                    <button 
+                      onClick={() => removeFromCart(keyId)}
+                      className="w-7 h-7 flex items-center justify-center rounded-full text-red-500 hover:bg-red-50 text-sm ml-1"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
-              ))}
+              )})}
             </div>
 
             <div className="lg:col-span-1">

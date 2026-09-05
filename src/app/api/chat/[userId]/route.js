@@ -34,6 +34,10 @@ export async function GET(request, { params }) {
     const myUserId = user.id;
 
     // Fetch messages between me and otherUserId
+    if (!otherUserId || otherUserId === 'undefined' || !mongoose.Types.ObjectId.isValid(otherUserId)) {
+      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
+    }
+
     const messages = await Message.find({
       $or: [
         { sender: myUserId, receiver: otherUserId },

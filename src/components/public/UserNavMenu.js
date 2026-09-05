@@ -3,7 +3,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useWishlist } from '@/context/WishlistContext';
 import { useCart } from '@/context/CartContext';
 
@@ -29,7 +29,10 @@ export default function UserNavMenu({ user, isMobile = false }) {
     };
   }, []);
 
+  const pathname = usePathname();
+
   // Silently refresh token in background if data like role has changed in DB
+  // Now also runs when pathname changes, so navigating between pages triggers a check
   useEffect(() => {
     if (user) {
       fetch('/api/profile').then(res => res.json()).then(data => {
@@ -38,7 +41,7 @@ export default function UserNavMenu({ user, isMobile = false }) {
         }
       }).catch(() => {});
     }
-  }, [user, router]);
+  }, [user, router, pathname]);
 
   const handleLogout = async () => {
     try {
