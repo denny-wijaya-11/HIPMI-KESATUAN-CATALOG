@@ -52,15 +52,17 @@ export async function POST(request) {
       parts: [{ text: message }]
     });
 
+    // Prepend system prompt to the first user message
+    if (formattedContents.length > 0) {
+      formattedContents[0].parts[0].text = SYSTEM_PROMPT + "\n\n" + formattedContents[0].parts[0].text;
+    }
+
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        systemInstruction: {
-          parts: [{ text: SYSTEM_PROMPT }]
-        },
         contents: formattedContents,
         generationConfig: {
           temperature: 0.7,

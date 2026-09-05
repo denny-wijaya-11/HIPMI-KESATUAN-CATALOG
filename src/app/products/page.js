@@ -16,7 +16,7 @@ import dbConnect from '@/lib/mongodb';
 
 export const dynamic = 'force-dynamic';
 
-async function getAllProducts(category, sort, region, searchQuery, userUniversity, isRoaming) {
+async function getAllProducts(category, sort, region, searchQuery, userUniversity, isRoaming, tenantId) {
   await dbConnect();
   
   let query = { isHidden: { $ne: true } };
@@ -38,8 +38,12 @@ async function getAllProducts(category, sort, region, searchQuery, userUniversit
     conditions.push({ region: region });
   }
 
-  if (userUniversity && !isRoaming) {
+  if (userUniversity && !isRoaming && !tenantId) {
     conditions.push({ university: userUniversity });
+  }
+
+  if (tenantId) {
+    conditions.push({ owner: new mongoose.Types.ObjectId(tenantId) });
   }
 
   if (conditions.length > 0) {
@@ -61,6 +65,7 @@ export default async function ProductsPage({ searchParams }) {
   const sort = resolvedParams?.sort;
   const region = resolvedParams?.region;
   const search = resolvedParams?.search;
+  const tenantId = resolvedParams?.tenantId;
   const isRoaming = resolvedParams?.roaming === 'true'; // Default is false
   
   let actualUserUniversity = user?.university;
@@ -71,7 +76,12 @@ export default async function ProductsPage({ searchParams }) {
     actualUserUniversity = freshUser?.university || user.university;
   }
 
-  const products = await getAllProducts(category, sort, region, search, actualUserUniversity, isRoaming);
+  const products = await getAllProducts(category, sort, region, search, actualUserUniversity, isRoaming, tenantId);
+
+  let tenantDetails = null;
+  if (tenantId) {
+    tenantDetails = await User.findById(tenantId).select('name avatar university role');
+  }
 
   return (
     <div className="min-h-screen bg-[#FAFAF8] text-gray-800 font-sans">
@@ -91,12 +101,38 @@ export default async function ProductsPage({ searchParams }) {
                     Kembali ke Beranda
                   </Link>
                 </div>
-                <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">Semua Produk</h1>
-                <p className="text-gray-500 max-w-xl text-sm md:text-base">
-                  {actualUserUniversity && !isRoaming 
-                    ? `Menampilkan produk khusus dari mahasiswa ${actualUserUniversity}.` 
-                    : "Jelajahi seluruh karya dan produk inovatif dari anggota HIPMORA Kesatuan."}
-                </p>
+                {tenantDetails ? (
+                  <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mt-4">
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-red-100 border-2 border-red-200 flex items-center justify-center overflow-hidden shrink-0">
+                      {tenantDetails.avatar ? (
+                        <img 
+                          src={tenantDetails.avatar} 
+                          alt={tenantDetails.name} 
+                          className="w-full h-full object-cover" 
+                          onError={(e) => { e.target.onerror = null; e.target.src = '/images/placeholder.png'; }}
+                        />
+                      ) : (
+                        <span className="text-red-700 font-bold text-xl md:text-2xl">{tenantDetails.name.charAt(0).toUpperCase()}</span>
+                      )}
+                    </div>
+                    <div>
+                      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">{tenantDetails.name}</h1>
+                      <p className="text-sm text-gray-500 flex items-center gap-1.5">
+                        <svg className="w-4 h-4 text-[#C62828]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                        {tenantDetails.university || 'Universitas Kesatuan'}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">Semua Produk</h1>
+                    <p className="text-gray-500 max-w-xl text-sm md:text-base">
+                      {actualUserUniversity && !isRoaming 
+                        ? `Menampilkan produk khusus dari mahasiswa ${actualUserUniversity}.` 
+                        : "Jelajahi seluruh karya dan produk inovatif dari anggota HIPMORA Kesatuan."}
+                    </p>
+                  </>
+                )}
               </div>
               
               {/* Mode Roaming Desktop (Hidden on Mobile, moved below SearchBar for mobile) */}

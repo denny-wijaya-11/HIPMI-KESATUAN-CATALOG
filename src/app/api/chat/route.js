@@ -46,6 +46,8 @@ export async function GET(request) {
     const contactsMap = new Map();
 
     messages.forEach((msg) => {
+      if (!msg.sender || !msg.receiver) return; // Skip if one of them was deleted
+
       const isSender = msg.sender._id.toString() === userId.toString();
       const contact = isSender ? msg.receiver : msg.sender;
       const contactId = contact._id.toString();

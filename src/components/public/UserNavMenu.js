@@ -30,12 +30,15 @@ export default function UserNavMenu({ user, isMobile = false }) {
   }, []);
 
   const pathname = usePathname();
+  const [fullUser, setFullUser] = useState(user);
 
   // Silently refresh token in background if data like role has changed in DB
   // Now also runs when pathname changes, so navigating between pages triggers a check
+  // Also fetches full user details including university
   useEffect(() => {
     if (user) {
       fetch('/api/profile').then(res => res.json()).then(data => {
+        setFullUser(data);
         if (data.role && data.role !== user.role) {
           router.refresh(); // Reload server components to reflect new role
         }
@@ -65,14 +68,24 @@ export default function UserNavMenu({ user, isMobile = false }) {
     return (
       <div className="w-full text-left space-y-1">
         <div className="px-3 py-2 text-sm font-semibold text-neutral-400 flex items-center gap-2">
-          {user?.avatar ? (
-            <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full object-cover" />
+          {fullUser?.avatar ? (
+            <img 
+              src={fullUser.avatar} 
+              alt={fullUser.name} 
+              className="w-8 h-8 rounded-full object-cover" 
+              onError={(e) => { e.target.onerror = null; e.target.src = '/images/placeholder.png'; }}
+            />
           ) : (
             <div className="w-8 h-8 bg-neutral-700 rounded-full flex items-center justify-center text-white font-bold shrink-0">
-              {user?.name ? user.name.charAt(0).toUpperCase() : '?'}
+              {fullUser?.name ? fullUser.name.charAt(0).toUpperCase() : '?'}
             </div>
           )}
-          <span>Halo, {user?.name || 'User'}</span>
+          <div className="flex flex-col">
+            <span>Halo, {fullUser?.name || 'User'}</span>
+            {fullUser?.university && (
+              <span className="text-[10px] text-gray-500 font-normal leading-tight">{fullUser.university}</span>
+            )}
+          </div>
         </div>
         <Link 
           href="/profile" 
@@ -138,14 +151,24 @@ export default function UserNavMenu({ user, isMobile = false }) {
         onClick={() => setIsOpen(!isOpen)}
         className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 p-1 sm:pl-2 sm:pr-4 sm:py-1.5 rounded-full transition-all duration-300 hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] border border-red-500 flex items-center gap-1 sm:gap-2"
       >
-        {user?.avatar ? (
-          <img src={user.avatar} alt={user.name} className="w-7 h-7 rounded-full object-cover border border-red-400" />
+        {fullUser?.avatar ? (
+          <img 
+            src={fullUser.avatar} 
+            alt={fullUser.name} 
+            className="w-7 h-7 rounded-full object-cover border border-red-400" 
+            onError={(e) => { e.target.onerror = null; e.target.src = '/images/placeholder.png'; }}
+          />
         ) : (
           <div className="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center text-white font-bold shrink-0">
-            {user?.name ? user.name.charAt(0).toUpperCase() : '?'}
+            {fullUser?.name ? fullUser.name.charAt(0).toUpperCase() : '?'}
           </div>
         )}
-        <span className="hidden sm:block truncate sm:max-w-[150px]">{(user?.name || 'User').split(' ')[0]}</span>
+        <div className="hidden sm:flex flex-col items-start leading-none text-left">
+          <span className="truncate max-w-[150px]">{(fullUser?.name || 'User').split(' ')[0]}</span>
+          {fullUser?.university && (
+            <span className="text-[9px] text-red-200 font-normal leading-tight mt-0.5">{fullUser.university}</span>
+          )}
+        </div>
         <svg xmlns="http://www.w3.org/2000/svg" className={`hidden sm:block h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
         </svg>

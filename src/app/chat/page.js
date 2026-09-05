@@ -148,81 +148,6 @@ function ChatContent() {
     }
   }
 
-  async function handleFileUpload(e) {
-    const file = e.target.files?.[0];
-    if (!file || !activeContact) return;
-
-    // Reset input
-    e.target.value = '';
-
-    if (!file.type.startsWith('image/') && !file.name.toLowerCase().endsWith('.heic')) {
-      alert('Hanya file gambar yang diperbolehkan.');
-      return;
-    }
-
-    if (file.name.toLowerCase().endsWith('.heic')) {
-      alert('Format gambar iPhone (HEIC) belum didukung secara sempurna. Mohon gunakan gambar JPG/PNG.');
-      // Proceeding might fail in some browsers, but we let them try or we can just return.
-      return;
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-      alert('Ukuran gambar maksimal adalah 10 MB.');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      // Optimistic UI for image upload
-      const optimisticMsg = {
-        _id: 'temp_' + Date.now().toString(),
-        content: '',
-        image: URL.createObjectURL(file), // temporary local URL
-        sender: 'me',
-        createdAt: new Date().toISOString(),
-      };
-      setMessages(prev => [...prev, optimisticMsg]);
-
-      // 1. Upload image directly to ImgBB from frontend to avoid backend FormData issues
-      const formDataApi = new FormData();
-      formDataApi.append('image', file);
-      
-      const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY || '2ef4c6bc48cb7fb77317eb664a773289'}`, {
-        method: 'POST',
-        body: formDataApi
-      });
-      const uploadData = await imgbbRes.json();
-      
-      if (!uploadData.success) {
-        alert(uploadData.error?.message || 'Gagal mengupload gambar');
-        // Remove optimistic msg
-        setMessages(prev => prev.filter(m => m._id !== optimisticMsg._id));
-        return;
-      }
-
-      // 2. Send message with image URL
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          receiverId: activeContact._id,
-          content: '',
-          image: uploadData.data.url,
-          productId: messages.length === 0 ? productId : null 
-        })
-      });
-
-      if (res.ok) {
-        fetchMessages(activeContact._id);
-        fetchContacts();
-      }
-    } catch (err) {
-      console.error('Failed to upload image', err);
-      alert('Terjadi kesalahan saat mengupload gambar.');
-    }
-  }
 
   function scrollToBottom() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -404,17 +329,6 @@ function ChatContent() {
                             </div>
                           )}
 
-                          {msg.image && (
-                            <div className="mb-1 rounded-lg overflow-hidden relative">
-                              <img src={msg.image} alt="Gambar" className="max-w-full h-auto object-contain max-h-64 rounded-lg" 
-                                onError={(e) => {
-                                  e.target.onerror = null; 
-                                  // Fallback UI to show it's an image attachment
-                                  e.target.src = '/images/placeholder.png'; 
-                                }}
-                              />
-                            </div>
-                          )}
 
                           {msg.content && (
                             <p className="text-[14.5px] whitespace-pre-wrap break-words leading-relaxed pr-10">{msg.content}</p>
@@ -458,14 +372,6 @@ function ChatContent() {
                 </div>
               )}
 
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={handleFileUpload} 
-                accept="image/*" 
-                className="hidden" 
-              />
-
               <form onSubmit={handleSendMessage} className="flex gap-2 max-w-4xl mx-auto items-end">
                 <button 
                   type="button" 
@@ -474,14 +380,6 @@ function ChatContent() {
                 >
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 </button>
-                <button 
-                  type="button" 
-                  onClick={() => fileInputRef.current?.click()}
-                  className="p-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors shrink-0"
-                >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
-                </button>
-                
                 <div className="flex-1 bg-white rounded-3xl border border-transparent focus-within:border-gray-300 shadow-sm flex items-end">
                   <textarea
                     value={newMessage}

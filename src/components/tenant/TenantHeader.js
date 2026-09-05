@@ -96,7 +96,15 @@ export default function TenantHeader({ setIsSidebarOpen = () => {} }) {
               <span className="sr-only">Open user menu</span>
               <div className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-red-100 flex items-center justify-center overflow-hidden border border-red-200">
                  {user?.avatar ? (
-                   <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                   <img 
+                     src={user.avatar} 
+                     alt="Avatar" 
+                     className="w-full h-full object-cover" 
+                     onError={(e) => {
+                       e.target.onerror = null;
+                       e.target.src = '/images/placeholder.png';
+                     }}
+                   />
                  ) : (
                    <span className="text-red-700 font-bold text-xs md:text-sm">
                      {user?.name ? user.name.charAt(0).toUpperCase() : 'TN'}
@@ -112,12 +120,20 @@ export default function TenantHeader({ setIsSidebarOpen = () => {} }) {
               <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                 <div className="py-1" role="menu" aria-orientation="vertical">
                   <a
-                    href={`/products?search=${encodeURIComponent(user?.name || '')}`}
+                    href={`/products?tenantId=${user?.id}`}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600"
                     role="menuitem"
                     onClick={() => setIsDropdownOpen(false)}
                   >
                     Lihat Toko Saya
+                  </a>
+                  <a
+                    href="/#tentang"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600"
+                    role="menuitem"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    Tentang Kami
                   </a>
                   <button
                     onClick={handleLogout}
