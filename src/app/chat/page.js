@@ -191,12 +191,12 @@ function ChatContent() {
                   <img src={contact.avatar} alt={contact.name} className="w-12 h-12 rounded-full object-cover shrink-0 border border-gray-100 shadow-sm" />
                 ) : (
                   <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-red-50 rounded-full flex items-center justify-center text-[#C62828] font-bold shrink-0 border border-red-100">
-                    {contact.name.charAt(0).toUpperCase()}
+                    {(contact?.name || 'User').charAt(0).toUpperCase()}
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-baseline mb-0.5">
-                    <h3 className="text-[15px] font-semibold text-gray-900 truncate">{contact.name}</h3>
+                    <h3 className="text-[15px] font-semibold text-gray-900 truncate">{contact?.name || 'User'}</h3>
                     {lastMessage && (
                       <span className={`text-[11px] shrink-0 ${unreadCount > 0 ? 'text-[#C62828] font-semibold' : 'text-gray-400'}`}>
                         {new Date(lastMessage.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
@@ -242,7 +242,7 @@ function ChatContent() {
                   <img src={activeContact.avatar} alt={activeContact.name} className="w-10 h-10 rounded-full object-cover border border-gray-200" />
                 ) : (
                   <div className="w-10 h-10 bg-gradient-to-br from-red-100 to-red-50 rounded-full flex items-center justify-center text-[#C62828] font-bold">
-                    {activeContact.name.charAt(0).toUpperCase()}
+                    {(activeContact?.name || 'User').charAt(0).toUpperCase()}
                   </div>
                 )}
                 {activeContact.lastActive && (Math.abs(now - new Date(activeContact.lastActive).getTime()) < 60000) ? (
@@ -253,7 +253,7 @@ function ChatContent() {
               </div>
               
               <div className="flex-1 min-w-0">
-                <h2 className="text-[15px] font-semibold text-gray-900 truncate leading-tight">{activeContact.name}</h2>
+                <h2 className="text-[15px] font-semibold text-gray-900 truncate leading-tight">{activeContact?.name || 'User'}</h2>
                 {activeContact.lastActive && (Math.abs(now - new Date(activeContact.lastActive).getTime()) < 60000) ? (
                   <p className="text-[12px] text-green-600 font-medium">Sedang Online</p>
                 ) : (
@@ -272,7 +272,7 @@ function ChatContent() {
               {messages.length === 0 && (
                 <div className="flex justify-center mb-6 mt-4">
                   <div className="bg-[#fff3c4] text-[#856404] px-4 py-2 rounded-lg text-xs md:text-sm text-center shadow-sm max-w-sm">
-                    Mulai obrolan dengan {activeContact.name}. Pesan Anda dienkripsi secara end-to-end.
+                    Mulai obrolan dengan {activeContact?.name || 'User'}. Pesan Anda dienkripsi secara end-to-end.
                   </div>
                 </div>
               )}

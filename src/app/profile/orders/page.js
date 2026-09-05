@@ -162,7 +162,7 @@ export default async function BuyerOrdersPage() {
                         <CancelOrderButton orderId={order._id.toString()} />
                       )}
                       <Link 
-                        href={`/chat?userId=${order.tenant?._id}&userName=${order.tenant?.name}`}
+                        href={`/chat?userId=${order.tenant?._id}&userName=${encodeURIComponent(order.tenant?.name || '')}`}
                         className="inline-flex justify-center items-center bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold py-2 px-5 rounded-lg transition-colors"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

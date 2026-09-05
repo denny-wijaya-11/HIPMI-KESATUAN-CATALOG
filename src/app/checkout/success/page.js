@@ -84,7 +84,7 @@ export default async function CheckoutSuccessPage({ searchParams }) {
                       <div className="mt-6 pt-6 border-t border-gray-100">
                         <p className="text-sm text-gray-600 mb-3">Setelah melakukan transfer, silakan konfirmasi dengan mengirimkan bukti transfer via Chat ke penjual.</p>
                         <Link 
-                          href={`/chat?userId=${order.tenant?._id}&userName=${order.tenant?.name}`}
+                          href={`/chat?userId=${order.tenant?._id}&userName=${encodeURIComponent(order.tenant?.name || '')}`}
                           className="inline-flex justify-center items-center w-full sm:w-auto bg-gray-900 hover:bg-black text-white text-sm font-semibold py-2.5 px-6 rounded-lg transition-colors"
                         >
                           Chat Penjual Sekarang
@@ -95,7 +95,7 @@ export default async function CheckoutSuccessPage({ searchParams }) {
                     <div className="text-center py-6">
                       <p className="text-sm text-gray-600 mb-3">Penjual ini belum mencantumkan metode pembayaran otomatis.</p>
                       <Link 
-                        href={`/chat?userId=${order.tenant?._id}&userName=${order.tenant?.name}`}
+                        href={`/chat?userId=${order.tenant?._id}&userName=${encodeURIComponent(order.tenant?.name || '')}`}
                         className="inline-flex justify-center items-center bg-[#C62828] hover:bg-[#8E0000] text-white text-sm font-semibold py-2.5 px-6 rounded-lg transition-colors"
                       >
                         Tanya Rekening via Chat
