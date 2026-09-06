@@ -11,7 +11,7 @@ function ChatContent() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   
   const commonEmojis = ['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😝','😜','🤪','🤨','🧐','🤓','😎','🤩','🥳','😏','😒','😞','😔','😟','😕','🙁','☹️','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','👍','👎','👏','🙌','👐','🤲','🤝','🙏','❤️','💔','🔥','✨','🎉','🎊','🌟','💯','👍🏻','👍🏼','👍🏽','👍🏾','👍🏿'];
@@ -28,6 +28,7 @@ function ChatContent() {
   useEffect(() => {
     fetchContacts();
     
+    setNow(Date.now());
     // Timer to update 'now' every 30s for presence tracking
     const interval = setInterval(() => setNow(Date.now()), 30000);
     return () => clearInterval(interval);
@@ -57,25 +58,26 @@ function ChatContent() {
       const res = await fetch('/api/chat');
       if (res.ok) {
         const data = await res.json();
-        setContacts(data);
+        let finalContacts = [...data];
         
-        if (presetUserId && !isSilent) {
-          // If navigating from a product with a specific user
-          const existingContact = data.find(c => c.contact._id === presetUserId);
-          if (existingContact) {
-            setActiveContact(existingContact.contact);
-          } else {
-            // New chat session
-            setActiveContact({
+        if (presetUserId) {
+          const existingContact = data.find(c => c?.contact?._id === presetUserId);
+          if (!existingContact) {
+            const fakeContact = {
               _id: presetUserId,
               name: presetUserName || 'Penjual',
               avatar: presetUserAvatar || ''
-            });
+            };
+            finalContacts = [{ contact: fakeContact, lastMessage: null, unreadCount: 0 }, ...data];
+            if (!isSilent) setActiveContact(fakeContact);
+          } else if (!isSilent) {
+            setActiveContact(existingContact.contact);
           }
         } else if (data.length > 0 && !activeContact && !isSilent) {
-          // No preset user, just load the first contact
           setActiveContact(data[0].contact);
         }
+        
+        setContacts(finalContacts);
       }
     } catch (err) {
       console.error('Failed to fetch contacts', err);
@@ -255,7 +257,7 @@ function ChatContent() {
                     {(activeContact?.name || 'User').charAt(0).toUpperCase()}
                   </div>
                 )}
-                {activeContact.lastActive && (Math.abs(now - new Date(activeContact.lastActive).getTime()) < 60000) ? (
+                {now && activeContact.lastActive && (Math.abs(now - new Date(activeContact.lastActive).getTime()) < 60000) ? (
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
                 ) : (
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 border-2 border-white rounded-full"></div>
@@ -264,7 +266,7 @@ function ChatContent() {
               
               <div className="flex-1 min-w-0">
                 <h2 className="text-[15px] font-semibold text-gray-900 truncate leading-tight">{activeContact?.name || 'User'}</h2>
-                {activeContact.lastActive && (Math.abs(now - new Date(activeContact.lastActive).getTime()) < 60000) ? (
+                {now && activeContact.lastActive && (Math.abs(now - new Date(activeContact.lastActive).getTime()) < 60000) ? (
                   <p className="text-[12px] text-green-600 font-medium">Sedang Online</p>
                 ) : (
                   <p className="text-[12px] text-gray-400 font-medium">Offline</p>
