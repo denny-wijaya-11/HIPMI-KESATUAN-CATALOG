@@ -188,7 +188,12 @@ function ChatContent() {
                 className={`px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors flex items-center gap-3 border-b border-gray-100 ${activeContact?._id === contact._id ? 'bg-gray-100/60' : ''}`}
               >
                 {contact.avatar ? (
-                  <img src={contact.avatar} alt={contact.name} className="w-12 h-12 rounded-full object-cover shrink-0 border border-gray-100 shadow-sm" />
+                  <img 
+                    src={contact.avatar} 
+                    alt={contact.name} 
+                    className="w-12 h-12 rounded-full object-cover shrink-0 border border-gray-100 shadow-sm" 
+                    onError={(e) => { e.target.onerror = null; e.target.src = '/images/placeholder.png'; }}
+                  />
                 ) : (
                   <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-red-50 rounded-full flex items-center justify-center text-[#C62828] font-bold shrink-0 border border-red-100">
                     {(contact?.name || 'User').charAt(0).toUpperCase()}
@@ -197,11 +202,11 @@ function ChatContent() {
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-baseline mb-0.5">
                     <h3 className="text-[15px] font-semibold text-gray-900 truncate">{contact?.name || 'User'}</h3>
-                    {lastMessage && (
-                      <span className={`text-[11px] shrink-0 ${unreadCount > 0 ? 'text-[#C62828] font-semibold' : 'text-gray-400'}`}>
-                        {new Date(lastMessage.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                      </span>
-                    )}
+                      {lastMessage && lastMessage.createdAt && !isNaN(new Date(lastMessage.createdAt).getTime()) && (
+                        <span className={`text-[11px] shrink-0 ${unreadCount > 0 ? 'text-[#C62828] font-semibold' : 'text-gray-400'}`}>
+                          {new Date(lastMessage.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </span>
+                      )}
                   </div>
                   <p className={`text-sm truncate ${unreadCount > 0 ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
                     {lastMessage ? (lastMessage.isDeleted ? '🚫 Pesan dihapus' : lastMessage.content) : 'Mulai obrolan baru...'}
@@ -239,7 +244,12 @@ function ChatContent() {
               
               <div className="relative mr-3">
                 {activeContact.avatar ? (
-                  <img src={activeContact.avatar} alt={activeContact.name} className="w-10 h-10 rounded-full object-cover border border-gray-200" />
+                  <img 
+                    src={activeContact.avatar} 
+                    alt={activeContact.name} 
+                    className="w-10 h-10 rounded-full object-cover border border-gray-200" 
+                    onError={(e) => { e.target.onerror = null; e.target.src = '/images/placeholder.png'; }}
+                  />
                 ) : (
                   <div className="w-10 h-10 bg-gradient-to-br from-red-100 to-red-50 rounded-full flex items-center justify-center text-[#C62828] font-bold">
                     {(activeContact?.name || 'User').charAt(0).toUpperCase()}
@@ -337,7 +347,9 @@ function ChatContent() {
                       )}
                       
                       <div className={`float-right -mb-1 ml-2 text-[10px] font-medium flex items-center gap-1 ${isMe ? 'text-green-700' : 'text-gray-400'}`}>
-                        {new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        {msg.createdAt && !isNaN(new Date(msg.createdAt).getTime()) 
+                          ? new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                          : ''}
                         {isMe && (
                           <svg className="w-3.5 h-3.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7M5 13l4 4L19 7" /></svg>
                         )}

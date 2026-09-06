@@ -17,7 +17,7 @@ export default function EditUserPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    role: 'operator',
+    role: 'user',
     whatsapp: '',
     university: '',
     city: '',
@@ -60,7 +60,7 @@ export default function EditUserPage() {
         setFormData({
           name: data.user.name || '',
           email: data.user.email || '',
-          role: data.user.role || 'operator',
+          role: data.user.role || 'user',
           whatsapp: data.user.whatsapp || '',
           university: data.user.university || '',
           city: data.user.city || '',

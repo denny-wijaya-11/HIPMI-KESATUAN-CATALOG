@@ -39,7 +39,11 @@ export default async function Home() {
     { upsert: true, returnDocument: 'after' }
   ).exec().catch(err => console.error("Failed to update visitor count:", err));
 
-  const [products, stats] = await Promise.all([getProducts(), getStats()]);
+  const [products, stats, fullUser] = await Promise.all([
+    getProducts(), 
+    getStats(),
+    user ? User.findById(user.id).select('university name').lean() : Promise.resolve(null)
+  ]);
 
   return (
     <div className="min-h-screen bg-[#FAFAF8] text-gray-800 font-sans">
@@ -60,6 +64,14 @@ export default async function Home() {
               <div className="flex-1 text-center md:text-left">
 
                 <FadeInUp delay={0.2}>
+                  {fullUser && fullUser.university && (
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 border border-red-100 text-[#C62828] text-xs font-semibold mb-4 mx-auto md:mx-0 shadow-sm animate-in fade-in zoom-in duration-500">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                      Halo, {fullUser.name.split(' ')[0]}! Anda di zona {fullUser.university}
+                    </div>
+                  )}
                   <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-[1.15] mb-6">
                     Mendukung Ekosistem{' '}
                     <span className="text-[#C62828]">Pengusaha Muda</span>

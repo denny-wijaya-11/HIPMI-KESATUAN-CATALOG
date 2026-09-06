@@ -18,7 +18,7 @@ export default function CreateUserPage() {
     email: '',
     password: '',
     whatsapp: '',
-    role: 'operator',
+    role: 'user',
     isStudent: true,
     university: UNIVERSITIES[0],
     city: REGIONS[0],
