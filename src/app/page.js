@@ -54,7 +54,9 @@ export default async function Home() {
 
       <main className="relative z-10">
         {/* Banner Slide Show */}
-        <BannerSlider />
+        <div className="hidden md:block">
+          <BannerSlider />
+        </div>
 
         {/* Hero Section — Split Layout */}
         <section className="relative pt-6 pb-12 md:pt-10 md:pb-20 overflow-hidden">

@@ -204,7 +204,7 @@ function ChatContent() {
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-baseline mb-0.5">
                     <h3 className="text-[15px] font-semibold text-gray-900 truncate">{contact?.name || 'User'}</h3>
-                      {lastMessage && lastMessage.createdAt && !isNaN(new Date(lastMessage.createdAt).getTime()) && (
+                      {now && lastMessage && lastMessage.createdAt && !isNaN(new Date(lastMessage.createdAt).getTime()) && (
                         <span className={`text-[11px] shrink-0 ${unreadCount > 0 ? 'text-[#C62828] font-semibold' : 'text-gray-400'}`}>
                           {new Date(lastMessage.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                         </span>
@@ -349,7 +349,7 @@ function ChatContent() {
                       )}
                       
                       <div className={`float-right -mb-1 ml-2 text-[10px] font-medium flex items-center gap-1 ${isMe ? 'text-green-700' : 'text-gray-400'}`}>
-                        {msg.createdAt && !isNaN(new Date(msg.createdAt).getTime()) 
+                        {now && msg.createdAt && !isNaN(new Date(msg.createdAt).getTime()) 
                           ? new Date(msg.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
                           : ''}
                         {isMe && (
