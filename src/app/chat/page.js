@@ -31,11 +31,14 @@ function ChatContent() {
   const [loading, setLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [imageAttachment, setImageAttachment] = useState(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
-  const commonEmojis = ['??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','??','?','??','??','??','??'];
+  const commonEmojis = ['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😌','😍','🥰','😘','😗','😙','😚','😋','😛','😝','😜','🤪','🤨','🧐','🤓','😎','🤩','🥳','😏','😒','😞','😔','😟','😕','🙁','☹️','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','👍','👎','👏','🙌','👐','🤲','🤝','🙏','❤️','💔','🔥','✨','🎉','🎊','🌟','💯'];
 
   const messagesEndRef = useRef(null);
   const activeContactRef = useRef(null);
+  const fileInputRef = useRef(null);
   const searchParams = useSearchParams();
 
   const presetUserId = searchParams.get('userId') || '';
@@ -131,15 +134,56 @@ function ChatContent() {
     }
   }
 
+  async function handleImageUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Validate file size and type client-side
+    if (!file.type.startsWith('image/')) {
+      alert('Hanya file gambar yang diperbolehkan');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Ukuran file maksimal 10MB');
+      return;
+    }
+
+    setIsUploadingImage(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/chat/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setImageAttachment(data.url);
+      } else {
+        alert(data.error || 'Gagal mengupload gambar');
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      alert('Terjadi kesalahan saat mengupload gambar');
+    } finally {
+      setIsUploadingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  }
+
   async function handleSendMessage(e) {
     e.preventDefault();
-    if (!newMessage.trim() || !activeContact?._id) return;
+    if ((!newMessage.trim() && !imageAttachment) || !activeContact?._id) return;
     const content = newMessage.trim();
+    const image = imageAttachment;
     setNewMessage('');
+    setImageAttachment(null);
     const optimisticId = `temp-${Date.now()}`;
     const optimisticMsg = {
       _id: optimisticId,
       content,
+      image,
       sender: 'me',
       createdAt: new Date().toISOString(),
       productContext: messages.length === 0 && productId ? { _id: productId, name: 'Produk Terkait' } : null,
@@ -149,7 +193,7 @@ function ChatContent() {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ receiverId: activeContact._id, content, productId: messages.length === 0 ? productId || null : null }),
+        body: JSON.stringify({ receiverId: activeContact._id, content, image, productId: messages.length === 0 ? productId || null : null }),
       });
       if (res.ok) { fetchMessages(activeContact._id); fetchContacts(true); }
     } catch (err) { console.error('Failed to send message:', err); }
@@ -292,6 +336,13 @@ function ChatContent() {
                               </div>
                             </div>
                           )}
+                          {msg.image && (
+                            <div className="mb-1">
+                              <a href={msg.image} target="_blank" rel="noopener noreferrer">
+                                <img src={msg.image} alt="Attachment" className="max-w-full rounded-xl object-cover max-h-64 border border-gray-200" />
+                              </a>
+                            </div>
+                          )}
                           {msg.content && <p className="text-[14.5px] whitespace-pre-wrap break-words leading-relaxed pr-10">{msg.content}</p>}
                         </>
                       )}
@@ -307,7 +358,17 @@ function ChatContent() {
               <div ref={messagesEndRef} className="h-2" />
             </div>
 
-            <div className="p-3 md:p-4 bg-[#f0f2f5] z-10 shrink-0 relative">
+            <div className="p-3 md:p-4 bg-[#f0f2f5] z-10 shrink-0 relative flex flex-col">
+              {imageAttachment && (
+                <div className="mx-auto max-w-4xl w-full mb-3 px-2">
+                  <div className="relative inline-block border border-gray-300 rounded-xl bg-white p-2 shadow-sm">
+                    <button type="button" onClick={() => setImageAttachment(null)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-md">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                    <img src={imageAttachment} alt="Preview" className="h-20 object-contain rounded-lg" />
+                  </div>
+                </div>
+              )}
               {showEmojiPicker && (
                 <div className="absolute bottom-full left-4 mb-2 bg-white border border-gray-200 rounded-xl shadow-lg p-2 w-64 max-h-48 overflow-y-auto z-50 grid grid-cols-6 gap-1">
                   {commonEmojis.map(emoji => (
@@ -315,7 +376,15 @@ function ChatContent() {
                   ))}
                 </div>
               )}
-              <form onSubmit={handleSendMessage} className="flex gap-2 max-w-4xl mx-auto items-end">
+              <form onSubmit={handleSendMessage} className="flex gap-2 max-w-4xl mx-auto items-end w-full">
+                <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
+                <button type="button" onClick={() => fileInputRef.current?.click()} disabled={isUploadingImage} className="p-2.5 hover:bg-gray-200 rounded-full transition-colors shrink-0 text-gray-500 disabled:opacity-50">
+                  {isUploadingImage ? (
+                    <svg className="w-6 h-6 animate-spin text-[#C62828]" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-16 0z"></path></svg>
+                  ) : (
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  )}
+                </button>
                 <button type="button" onClick={() => setShowEmojiPicker(v => !v)} className={`p-2.5 hover:bg-gray-200 rounded-full transition-colors shrink-0 ${showEmojiPicker ? 'text-[#C62828] bg-gray-200' : 'text-gray-500'}`}>
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 </button>
@@ -330,7 +399,7 @@ function ChatContent() {
                     style={{ height: '44px' }}
                   />
                 </div>
-                <button type="submit" disabled={!newMessage.trim()} className={`rounded-full p-2.5 w-[44px] h-[44px] flex items-center justify-center shrink-0 transition-colors ${newMessage.trim() ? 'bg-[#C62828] text-white hover:bg-[#8E0000] shadow-sm' : 'bg-gray-200 text-gray-400'}`}>
+                <button type="submit" disabled={(!newMessage.trim() && !imageAttachment) || isUploadingImage} className={`rounded-full p-2.5 w-[44px] h-[44px] flex items-center justify-center shrink-0 transition-colors ${newMessage.trim() || imageAttachment ? 'bg-[#C62828] text-white hover:bg-[#8E0000] shadow-sm' : 'bg-gray-200 text-gray-400'}`}>
                   <svg className="w-5 h-5 -ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" /></svg>
                 </button>
               </form>

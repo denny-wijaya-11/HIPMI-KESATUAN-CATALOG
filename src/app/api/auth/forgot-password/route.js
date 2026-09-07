@@ -36,11 +36,13 @@ export async function POST(request) {
 
     // Save the new OTP
     // We don't need to save a dummy password here because this is just a reset token,
-    // but the VerificationToken schema requires `password` and `name` temporarily.
-    // Let's pass dummy values for those required fields since we only need the token.
+    // but the VerificationToken schema requires password, name, whatsapp, university, and city temporarily.
     await VerificationToken.create({
       email,
-      name: user.name,
+      name: user.name || "User",
+      whatsapp: user.whatsapp || "-",
+      university: user.university || "-",
+      city: user.city || "-",
       password: "RESET_PASSWORD_TOKEN", // dummy
       token: otp,
       expiresAt,

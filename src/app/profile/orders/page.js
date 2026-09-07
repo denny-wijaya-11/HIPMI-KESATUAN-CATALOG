@@ -146,6 +146,14 @@ export default async function BuyerOrdersPage() {
                               <p className="text-lg font-mono text-gray-800 tracking-wider my-0.5">{method.accountNumber}</p>
                               <p className="text-xs text-gray-500 uppercase">a.n. {method.accountName}</p>
                             </div>
+                            {method.qrisImage && (
+                              <div className="shrink-0">
+                                <a href={method.qrisImage} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-100 p-2 rounded-lg text-xs font-semibold transition-colors">
+                                  <svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
+                                  Lihat QRIS
+                                </a>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>

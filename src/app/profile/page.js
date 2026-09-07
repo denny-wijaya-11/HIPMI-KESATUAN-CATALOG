@@ -66,7 +66,7 @@ export default function ProfilePage() {
   const handleAddPaymentMethod = () => {
     setFormData({
       ...formData,
-      paymentMethods: [...formData.paymentMethods, { provider: '', accountNumber: '', accountName: '' }]
+      paymentMethods: [...formData.paymentMethods, { provider: '', accountNumber: '', accountName: '', qrisImage: '' }]
     });
   };
 
@@ -372,6 +372,16 @@ export default function ProfilePage() {
                               onChange={(e) => handlePaymentMethodChange(index, 'accountName', e.target.value)}
                               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
                               placeholder="Budi Santoso"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">Link/URL QRIS (Opsional)</label>
+                            <input
+                              type="text"
+                              value={method.qrisImage || ''}
+                              onChange={(e) => handlePaymentMethodChange(index, 'qrisImage', e.target.value)}
+                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
+                              placeholder="https://imgur.com/... (atau ImgBB)"
                             />
                           </div>
                         </div>

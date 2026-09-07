@@ -34,6 +34,14 @@ export async function POST(req) {
       );
     }
 
+    // Check if account is suspended
+    if (user.tenantStatus === 'suspended') {
+      return NextResponse.json(
+        { error: 'Akun Anda disuspend untuk sementara waktu. Silakan hubungi admin untuk informasi lebih lanjut.' },
+        { status: 403 }
+      );
+    }
+
     // Create JWT Token
     const secret = new TextEncoder().encode(
       process.env.JWT_SECRET || 'default_secret_key_change_this_in_production'
