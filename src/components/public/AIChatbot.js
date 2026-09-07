@@ -25,11 +25,6 @@ export default function AIChatbot() {
   const timerRef = useRef(null);
   const pathname = usePathname();
 
-  // Hide entirely on /chat routes to avoid overlay issues
-  if (pathname && pathname.startsWith('/chat')) {
-    return null;
-  }
-
   // Auto-scroll to bottom of chat
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -57,6 +52,11 @@ export default function AIChatbot() {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [messages, isOpen]);
+
+  // Hide entirely on /chat routes to avoid overlay issues
+  if (pathname && pathname.startsWith('/chat')) {
+    return null;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
