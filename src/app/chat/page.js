@@ -339,7 +339,17 @@ function ChatContent() {
                           {msg.image && (
                             <div className="mb-1">
                               <a href={msg.image} target="_blank" rel="noopener noreferrer">
-                                <img src={msg.image} alt="Attachment" className="max-w-full rounded-xl object-cover max-h-64 border border-gray-200" />
+                                <img 
+                                  src={msg.image.startsWith('http') ? `/_next/image?url=${encodeURIComponent(msg.image)}&w=800&q=75` : msg.image} 
+                                  alt="Attachment" 
+                                  className="max-w-full rounded-xl object-cover max-h-64 border border-gray-200" 
+                                  onError={(e) => {
+                                    // Fallback if proxy fails
+                                    if (e.target.src.includes('/_next/image')) {
+                                      e.target.src = msg.image;
+                                    }
+                                  }}
+                                />
                               </a>
                             </div>
                           )}
@@ -365,7 +375,16 @@ function ChatContent() {
                     <button type="button" onClick={() => setImageAttachment(null)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow-md">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
-                    <img src={imageAttachment} alt="Preview" className="h-20 object-contain rounded-lg" />
+                    <img 
+                      src={imageAttachment.startsWith('http') ? `/_next/image?url=${encodeURIComponent(imageAttachment)}&w=800&q=75` : imageAttachment} 
+                      alt="Preview" 
+                      className="h-20 object-contain rounded-lg" 
+                      onError={(e) => {
+                        if (e.target.src.includes('/_next/image')) {
+                          e.target.src = imageAttachment;
+                        }
+                      }}
+                    />
                   </div>
                 </div>
               )}

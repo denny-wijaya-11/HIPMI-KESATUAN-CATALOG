@@ -40,11 +40,8 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Ukuran file maksimal adalah 10MB' }, { status: 400 });
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const base64Image = buffer.toString('base64');
-    
-    const formDataApi = new URLSearchParams();
-    formDataApi.append('image', base64Image);
+    const formDataApi = new FormData();
+    formDataApi.append('image', file);
 
     const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY || '2ef4c6bc48cb7fb77317eb664a773289'}`, {
       method: 'POST',
