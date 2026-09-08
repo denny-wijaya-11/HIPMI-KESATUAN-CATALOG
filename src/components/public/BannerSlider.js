@@ -42,6 +42,8 @@ export default function BannerSlider() {
                 fill
                 priority={idx === 0}
                 quality={100}
+                sizes="(max-width: 1280px) 100vw, 1280px"
+                unoptimized
                 className="object-cover bg-[#f9f1f1]"
               />
             </Link>

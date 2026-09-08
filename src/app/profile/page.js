@@ -332,57 +332,59 @@ export default function ProfilePage() {
                   ) : (
                     <div className="space-y-4">
                       {formData.paymentMethods.map((method, index) => (
-                        <div key={index} className="flex flex-col sm:flex-row gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200 relative">
+                        <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200 relative">
                           <button
                             type="button"
                             onClick={() => handleRemovePaymentMethod(index)}
-                            className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+                            className="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10"
                           >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                           </button>
                           
-                          <div className="flex-1">
-                            <label className="block text-xs font-medium text-gray-700 mb-1">Bank / E-Wallet (mis. BCA, GoPay)</label>
-                            <input
-                              type="text"
-                              required
-                              value={method.provider}
-                              onChange={(e) => handlePaymentMethodChange(index, 'provider', e.target.value)}
-                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
-                              placeholder="BCA"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <label className="block text-xs font-medium text-gray-700 mb-1">Nomor Rekening / HP</label>
-                            <input
-                              type="text"
-                              required
-                              value={method.accountNumber}
-                              onChange={(e) => handlePaymentMethodChange(index, 'accountNumber', e.target.value)}
-                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
-                              placeholder="1234567890"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <label className="block text-xs font-medium text-gray-700 mb-1">Atas Nama (A/N)</label>
-                            <input
-                              type="text"
-                              required
-                              value={method.accountName}
-                              onChange={(e) => handlePaymentMethodChange(index, 'accountName', e.target.value)}
-                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
-                              placeholder="Budi Santoso"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <label className="block text-xs font-medium text-gray-700 mb-1">Link/URL QRIS (Opsional)</label>
-                            <input
-                              type="text"
-                              value={method.qrisImage || ''}
-                              onChange={(e) => handlePaymentMethodChange(index, 'qrisImage', e.target.value)}
-                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
-                              placeholder="https://imgur.com/... (atau ImgBB)"
-                            />
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pr-6">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Bank / E-Wallet</label>
+                              <input
+                                type="text"
+                                required
+                                value={method.provider}
+                                onChange={(e) => handlePaymentMethodChange(index, 'provider', e.target.value)}
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
+                                placeholder="BCA, GoPay, dll"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Nomor Rekening / HP</label>
+                              <input
+                                type="text"
+                                required
+                                value={method.accountNumber}
+                                onChange={(e) => handlePaymentMethodChange(index, 'accountNumber', e.target.value)}
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
+                                placeholder="1234567890"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Atas Nama (A/N)</label>
+                              <input
+                                type="text"
+                                required
+                                value={method.accountName}
+                                onChange={(e) => handlePaymentMethodChange(index, 'accountName', e.target.value)}
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
+                                placeholder="Budi Santoso"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Link/URL QRIS (Opsional)</label>
+                              <input
+                                type="text"
+                                value={method.qrisImage || ''}
+                                onChange={(e) => handlePaymentMethodChange(index, 'qrisImage', e.target.value)}
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-3 py-2 border"
+                                placeholder="https://imgur.com/..."
+                              />
+                            </div>
                           </div>
                         </div>
                       ))}
