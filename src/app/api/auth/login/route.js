@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
 import { SignJWT } from 'jose';
+import { getJwtSecret } from '@/lib/auth';
 
 export async function POST(req) {
   try {
@@ -43,9 +44,7 @@ export async function POST(req) {
     }
 
     // Create JWT Token
-    const secret = new TextEncoder().encode(
-      process.env.JWT_SECRET || 'default_secret_key_change_this_in_production'
-    );
+    const secret = getJwtSecret();
     
     // Define expiration times
     const jwtExp = rememberMe ? '30d' : '1d';
@@ -74,7 +73,7 @@ export async function POST(req) {
       name: 'auth_token',
       value: token,
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       sameSite: 'strict',
       maxAge: cookieMaxAge,
       path: '/',
@@ -84,7 +83,7 @@ export async function POST(req) {
   } catch (error) {
     console.error('Login Error:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error: ' + error.message },
+      { error: 'Internal Server Error' },
       { status: 500 }
     );
   }

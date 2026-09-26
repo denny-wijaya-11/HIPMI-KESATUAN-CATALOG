@@ -7,8 +7,10 @@ import Product from '@/models/Product';
 import User from '@/models/User';
 import Notification from '@/models/Notification';
 import { Resend } from 'resend';
+import { getJwtSecret } from '@/lib/auth';
 
-const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy');
+const resendApiKey = process.env.RESEND_API_KEY;
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 export async function POST(request) {
   try {
@@ -19,7 +21,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Tidak ada akses' }, { status: 401 });
     }
 
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback_secret');
+    const secret = getJwtSecret();
     const { payload } = await jose.jwtVerify(token.value, secret);
 
     if (!payload) {
@@ -131,7 +133,7 @@ export async function POST(request) {
         }
 
         // 2. Kirim Email ke Tenant (Notifikasi pesanan baru)
-        if (tenantUser && tenantUser.email && process.env.RESEND_API_KEY) {
+        if (tenantUser && tenantUser.email && resend) {
           await resend.emails.send({
             from: 'HIPMORA <sistem@hipmora.my.id>',
             reply_to: 'hipmikatalog@gmail.com',
@@ -152,7 +154,7 @@ export async function POST(request) {
     }
 
     // 3. Kirim Email Konfirmasi ke Pembeli menggunakan Template "hipmora-order-confirm"
-    if (buyerUser && buyerUser.email && process.env.RESEND_API_KEY) {
+    if (buyerUser && buyerUser.email && resend) {
       const totalSemuaPesanan = savedOrders.reduce((total, order) => total + order.totalAmount, 0);
       
       try {
@@ -202,6 +204,6 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('Checkout error:', error);
-    return NextResponse.json({ error: error.message || 'Gagal memproses pesanan' }, { status: 500 });
+    return NextResponse.json({ error: 'Gagal memproses pesanan' }, { status: 500 });
   }
 }

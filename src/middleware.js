@@ -1,6 +1,14 @@
 import { NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
+function getJwtSecret() {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable is required but not set');
+  }
+  return new TextEncoder().encode(secret);
+}
+
 export async function middleware(request) {
   // Check if it's the admin path, but NOT the login page or API routes
   if (request.nextUrl.pathname.startsWith('/admin')) {
@@ -11,9 +19,7 @@ export async function middleware(request) {
     }
 
     try {
-      const secret = new TextEncoder().encode(
-        process.env.JWT_SECRET || 'default_secret_key_change_this_in_production'
-      );
+      const secret = getJwtSecret();
       const { payload } = await jwtVerify(token, secret);
       
       // Basic RBAC Example in Middleware

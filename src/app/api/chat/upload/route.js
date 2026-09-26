@@ -1,15 +1,14 @@
 import { NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
-import path from 'path';
-import { promises as fs } from 'fs';
+import { getJwtSecret } from '@/lib/auth';
 
 async function getUserPayload() {
   const cookieStore = await cookies();
   const token = cookieStore.get('auth_token')?.value;
   if (!token) return null;
   try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const secret = getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
     return payload; 
   } catch (err) {
@@ -40,10 +39,16 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Ukuran file maksimal adalah 10MB' }, { status: 400 });
     }
 
+    const imgbbApiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
+    if (!imgbbApiKey) {
+      console.error('NEXT_PUBLIC_IMGBB_API_KEY is not configured');
+      return NextResponse.json({ error: 'Upload service not configured' }, { status: 500 });
+    }
+
     const formDataApi = new FormData();
     formDataApi.append('image', file);
 
-    const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY || '2ef4c6bc48cb7fb77317eb664a773289'}`, {
+    const imgbbRes = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
       method: 'POST',
       body: formDataApi
     });
