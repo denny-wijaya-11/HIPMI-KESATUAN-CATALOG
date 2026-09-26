@@ -37,13 +37,15 @@ related:
   - Extracted `formatPrice()`, `getStatusBadge()` helpers
 - **Status**: Build passed, deployed to preview
 
-### ✅ 2026-09-26 — P0 Tenant Orders Mobile Card View + Status Action Sheet (Commit 7cd42c8)
-- **Files**: `src/app/tenant/orders/page.js`, `src/app/globals.css`
+### ✅ 2026-09-26 — P0 Tenant Dashboard Charts Responsive (Commit 2d9a18d)
+- **File**: `src/components/tenant/DashboardCharts.js`
 - **Changes**:
-  - Mobile: card list with expandable buyer info, product chips, "Ubah Status" button
-  - Mobile: bottom action sheet modal for status change (replaces native `<select>`)
-  - Desktop: table with chip-style products, shared `STATUS_OPTIONS` constant
-  - Added `slide-up` animation in `globals.css`
+  - Single column mobile (`grid-cols-1`), 2-col `lg:grid-cols-2`
+  - Responsive chart heights: `h-56 sm:h-64 md:h-72`
+  - Smaller tick fonts (10px), `dy: 4` for spacing
+  - `interval={preserveStartEnd}` prevents label overlap
+  - Reduced `barSize={24}`, added `maxBarSize={32}`
+  - Responsive padding `p-4 sm:p-6`, margins `mt-6 sm:mt-8`, gaps `gap-4 sm:gap-6`
 - **Status**: Build passed, deployed to preview
 
 ---
@@ -53,12 +55,12 @@ related:
 | Area | Mobile | Desktop | Prioritas |
 |------|--------|---------|-----------|
 | Admin Dashboard | 6.5/10 | 8/10 | P1 |
-| Tenant Dashboard | 6/10 | 7.5/10 | P0 (Charts) |
+| Tenant Dashboard | **7/10** ✅ | 7.5/10 | **P0 DONE** |
 | Tenant Products | **7/10** ✅ | 7/10 | **P0 DONE** |
 | Tenant Orders | **7/10** ✅ | 7/10 | **P0 DONE** |
 | Chat | 7.5/10 | 8.5/10 | P1 (Delete, Polling) |
 
-**Kesimpulan**: Tenant Products & Orders mobile fixed. Both P0 complete. Next: P1 Admin Dashboard, Tenant Dashboard Charts, Chat improvements.
+**Kesimpulan**: **Semua P0 selesai** (Tenant Dashboard, Products, Orders). Next: P1 Admin Dashboard sidebar/stats, Chat improvements.
 
 ---
 
