@@ -44,7 +44,7 @@ export async function POST(req) {
     }
 
     // Create JWT Token
-    const secret = getJwtSecret();
+        const secret = await getJwtSecret();
     
     // Define expiration times
     const jwtExp = rememberMe ? '30d' : '1d';

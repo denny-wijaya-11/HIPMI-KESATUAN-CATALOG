@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
-function getJwtSecret() {
+async function getJwtSecret() {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
     throw new Error('JWT_SECRET environment variable is required but not set');
@@ -19,8 +19,8 @@ export async function middleware(request) {
     }
 
     try {
-      const secret = getJwtSecret();
-      const { payload } = await jwtVerify(token, secret);
+          const secret = await getJwtSecret();
+          const { payload } = await jwtVerify(token, secret);
       
       // Basic RBAC Example in Middleware
       const userRole = payload.role;
