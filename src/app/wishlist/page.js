@@ -9,7 +9,6 @@ import CartIcon from "@/components/public/CartIcon";
 import WishlistNavIcon from "@/components/public/WishlistNavIcon";
 import UserNavMenu from "@/components/public/UserNavMenu";
 import PublicHeader from "@/components/public/PublicHeader";
-import { getUserPayload } from "@/lib/auth";
 import { useState, useEffect } from "react";
 
 export default function WishlistPage() {
@@ -18,8 +17,9 @@ export default function WishlistPage() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const payload = await getUserPayload();
-      setUser(payload);
+      const res = await fetch("/api/auth/me");
+      const data = await res.json();
+      setUser(data.user);
     };
     fetchUser();
   }, []);
