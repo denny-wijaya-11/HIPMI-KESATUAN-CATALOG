@@ -4,6 +4,7 @@ import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 import VerificationToken from "@/models/VerificationToken";
 import { cookies } from "next/headers";
+import { getJwtSecret } from "@/lib/auth";
 
 export async function POST(request) {
   try {
@@ -22,8 +23,22 @@ export async function POST(request) {
     const verificationRecord = await VerificationToken.findOne({ email, token: otp });
 
     if (!verificationRecord) {
+      // Increment attempts for rate limiting (but don't reveal if email exists)
+      await VerificationToken.updateOne(
+        { email },
+        { $inc: { attempts: 1 } }
+      );
       return NextResponse.json(
         { error: "OTP salah atau sudah kedaluwarsa" },
+        { status: 400 }
+      );
+    }
+
+    // Check max attempts (5)
+    if (verificationRecord.attempts >= 5) {
+      await VerificationToken.deleteOne({ _id: verificationRecord._id });
+      return NextResponse.json(
+        { error: "Terlalu banyak percobaan gagal. Silakan minta OTP baru." },
         { status: 400 }
       );
     }
@@ -54,7 +69,7 @@ export async function POST(request) {
     await VerificationToken.deleteOne({ _id: verificationRecord._id });
 
     // Login user otomatis (set cookie JWT)
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback_secret');
+    const secret = getJwtSecret();
     const token = await new jose.SignJWT({
       id: newUser._id.toString(),
       email: newUser.email,
@@ -68,8 +83,8 @@ export async function POST(request) {
     const cookieStore = await cookies();
     cookieStore.set('auth_token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'strict',
       path: '/',
       maxAge: 7 * 24 * 60 * 60, // 7 days
     });

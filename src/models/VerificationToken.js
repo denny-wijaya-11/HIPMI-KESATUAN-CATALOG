@@ -32,7 +32,12 @@ const verificationTokenSchema = new mongoose.Schema({
   expiresAt: {
     type: Date,
     required: true,
-  }
+  },
+  attempts: {
+    type: Number,
+    default: 0,
+    max: 5,
+  },
 }, { timestamps: true });
 
 // Buat index yang akan otomatis menghapus dokumen ketika expiresAt lewat (TTL index)

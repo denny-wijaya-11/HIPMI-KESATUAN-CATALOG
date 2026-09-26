@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 import VerificationToken from "@/models/VerificationToken";
@@ -18,17 +19,8 @@ export async function POST(request) {
 
     await dbConnect();
 
-    // Cek apakah user sudah terdaftar
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return NextResponse.json(
-        { error: "Email sudah terdaftar. Silakan login." },
-        { status: 400 }
-      );
-    }
-
-    // Generate 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    // Generate 6-digit OTP using crypto for better randomness
+    const otp = crypto.randomInt(100000, 999999).toString();
 
     // Hash the password for temporary storage
     const salt = await bcrypt.genSalt(10);
@@ -36,6 +28,19 @@ export async function POST(request) {
 
     // Expire in 10 minutes
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    // Check rate limit: max 3 OTP requests per hour per email
+    const recentTokens = await VerificationToken.find({ 
+      email, 
+      createdAt: { $gte: new Date(Date.now() - 60 * 60 * 1000) } 
+    }).sort({ createdAt: -1 }).limit(3);
+    
+    if (recentTokens.length >= 3) {
+      return NextResponse.json(
+        { message: "Jika email terdaftar, OTP telah dikirim. Silakan cek inbox atau tunggu 1 jam sebelum meminta ulang." },
+        { status: 200 }
+      );
+    }
 
     // Delete any existing OTP for this email to prevent spam
     await VerificationToken.deleteMany({ email });
@@ -50,6 +55,7 @@ export async function POST(request) {
       password: hashedPassword,
       token: otp,
       expiresAt,
+      attempts: 0,
     });
 
     // Send email via Nodemailer
@@ -57,12 +63,11 @@ export async function POST(request) {
     
     if (!emailResult.success) {
       console.error('Failed to send OTP via Nodemailer:', emailResult.error);
-      // We still return 200 so the user can see the form (for development mode), 
-      // but in production we might want to return an error if email sending is critical and fails.
     }
 
+    // Always return generic message to prevent user enumeration
     return NextResponse.json(
-      { message: "OTP berhasil dikirim ke email" },
+      { message: "Jika email terdaftar, OTP telah dikirim ke email Anda" },
       { status: 200 }
     );
   } catch (error) {

@@ -16,9 +16,16 @@ export async function POST(request) {
       );
     }
 
-    if (newPassword.length < 6) {
+    // Password strength validation
+    if (newPassword.length < 8) {
       return NextResponse.json(
-        { error: "Password minimal 6 karakter" },
+        { error: "Password minimal 8 karakter" },
+        { status: 400 }
+      );
+    }
+    if (!/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/[0-9]/.test(newPassword) || !/[^A-Za-z0-9]/.test(newPassword)) {
+      return NextResponse.json(
+        { error: "Password harus mengandung huruf besar, huruf kecil, angka, dan simbol" },
         { status: 400 }
       );
     }
@@ -27,8 +34,22 @@ export async function POST(request) {
     const verificationRecord = await VerificationToken.findOne({ email, token: otp });
     
     if (!verificationRecord) {
+      // Increment attempts for rate limiting
+      await VerificationToken.updateOne(
+        { email },
+        { $inc: { attempts: 1 } }
+      );
       return NextResponse.json(
         { error: "OTP salah atau tidak ditemukan" },
+        { status: 400 }
+      );
+    }
+
+    // Check max attempts (5)
+    if (verificationRecord.attempts >= 5) {
+      await VerificationToken.deleteOne({ _id: verificationRecord._id });
+      return NextResponse.json(
+        { error: "Terlalu banyak percobaan gagal. Silakan minta OTP baru." },
         { status: 400 }
       );
     }
@@ -53,7 +74,7 @@ export async function POST(request) {
     }
 
     // 4. Update Password
-    const salt = await bcryptjs.genSalt(10);
+    const salt = await bcryptjs.genSalt(12); // Increased cost factor
     const hashedPassword = await bcryptjs.hash(newPassword, salt);
     
     user.password = hashedPassword;
