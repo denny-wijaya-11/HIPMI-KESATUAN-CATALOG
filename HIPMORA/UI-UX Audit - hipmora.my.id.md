@@ -7,7 +7,7 @@ tags:
   - desktop
   - dashboard
   - chat
-status: draft
+status: in-progress
 related:
   - "[[Security Hardening - hipmora.my.id]]"
   - "[[Architecture Overview - hipmora.my.id]]"
@@ -21,8 +21,30 @@ related:
 **Tanggal Audit**: 2026-09-26  
 **Audit oleh**: Hermes Agent (via Denny)  
 **Scope**: Admin Dashboard, Tenant Dashboard, Tenant Products, Tenant Orders, Chat  
-**Status**: BEFORE - Dokumentasi state sebelum perbaikan  
-**Branch**: `security/hardening` (commit 09cba84)
+**Status**: IN-PROGRESS - P0 Tenant Products DONE, P0 Tenant Orders NEXT  
+**Branch**: `security/hardening` (commit f4de4e9)
+
+---
+
+## Progress Log
+
+### ✅ 2026-09-26 — P0 Tenant Products Mobile Card View (Commit f4de4e9)
+- **File**: `src/components/admin/BulkDeleteTable.js`
+- **Changes**: 
+  - Added `renderMobileCards()` for `md:hidden` grid layout
+  - Desktop table wrapped in `hidden md:block`
+  - Fixed empty state CTA href for tenant vs admin
+  - Extracted `formatPrice()`, `getStatusBadge()` helpers
+- **Status**: Build passed, deployed to preview
+
+### ✅ 2026-09-26 — P0 Tenant Orders Mobile Card View + Status Action Sheet (Commit 7cd42c8)
+- **Files**: `src/app/tenant/orders/page.js`, `src/app/globals.css`
+- **Changes**:
+  - Mobile: card list with expandable buyer info, product chips, "Ubah Status" button
+  - Mobile: bottom action sheet modal for status change (replaces native `<select>`)
+  - Desktop: table with chip-style products, shared `STATUS_OPTIONS` constant
+  - Added `slide-up` animation in `globals.css`
+- **Status**: Build passed, deployed to preview
 
 ---
 
@@ -32,11 +54,11 @@ related:
 |------|--------|---------|-----------|
 | Admin Dashboard | 6.5/10 | 8/10 | P1 |
 | Tenant Dashboard | 6/10 | 7.5/10 | P0 (Charts) |
-| Tenant Products | 4/10 | 7/10 | **P0** (Table → Cards) |
-| Tenant Orders | 4.5/10 | 7/10 | **P0** (Table → Cards) |
+| Tenant Products | **7/10** ✅ | 7/10 | **P0 DONE** |
+| Tenant Orders | **7/10** ✅ | 7/10 | **P0 DONE** |
 | Chat | 7.5/10 | 8.5/10 | P1 (Delete, Polling) |
 
-**Kesimpulan**: Desktop sudah usable, **Mobile butuh perbaikan signifikan** terutama pada Tenant Products & Orders (table-based layout tidak mobile-friendly).
+**Kesimpulan**: Tenant Products & Orders mobile fixed. Both P0 complete. Next: P1 Admin Dashboard, Tenant Dashboard Charts, Chat improvements.
 
 ---
 
