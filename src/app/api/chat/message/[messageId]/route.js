@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getJwtSecret } from '@/lib/auth';
 import { jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import Message from '@/models/Message';
@@ -13,7 +14,7 @@ async function getUserPayload() {
   const token = cookieStore.get('auth_token')?.value;
   if (!token) return null;
   try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const secret = await getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
     return payload; // { id, email, role, name }
   } catch (err) {

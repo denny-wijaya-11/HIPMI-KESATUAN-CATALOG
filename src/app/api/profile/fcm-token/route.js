@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getJwtSecret } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import * as jose from 'jose';
 import dbConnect from '@/lib/mongodb';
@@ -13,7 +14,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback_secret');
+    const secret = await getJwtSecret();
     const { payload } = await jose.jwtVerify(token.value, secret);
 
     const { fcmToken } = await request.json();

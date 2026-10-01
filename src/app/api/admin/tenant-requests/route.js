@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getJwtSecret } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
 import User from '@/models/User';
@@ -10,7 +11,7 @@ async function getAuthorizedPayload() {
   const token = cookieStore.get('auth_token')?.value;
   if (!token) return null;
   try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const secret = await getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
     if (payload.role === 'admin' || payload.role === 'developer' || payload.role === 'operator') {
       return payload;

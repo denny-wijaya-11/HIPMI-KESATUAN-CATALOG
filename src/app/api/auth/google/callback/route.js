@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getJwtSecret } from '@/lib/auth';
 import mongoose from 'mongoose';
 import User from '@/models/User';
 import { SignJWT } from 'jose';
@@ -49,7 +50,7 @@ export async function GET(request) {
     
     // 3. Check if user exists
     let existingUser = await User.findOne({ email: googleUser.email });
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const secret = await getJwtSecret();
 
     if (existingUser) {
       // User exists, log them in
