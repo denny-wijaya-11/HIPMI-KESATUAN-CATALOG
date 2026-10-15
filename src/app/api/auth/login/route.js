@@ -4,6 +4,7 @@ import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
 import { SignJWT } from 'jose';
 import { getJwtSecret } from '@/lib/auth';
+import { logAuditEvent, getClientInfo } from '@/lib/audit';
 
 export async function POST(req) {
   try {
@@ -64,27 +65,57 @@ export async function POST(req) {
       .sign(secret);
 
     // Set cookie
-    const response = NextResponse.json(
-      { success: true, message: 'Logged in successfully' },
-      { status: 200 }
-    );
+        const response = NextResponse.json(
+          { success: true, message: 'Logged in successfully' },
+          { status: 200 }
+        );
 
-    response.cookies.set({
-      name: 'auth_token',
-      value: token,
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      maxAge: cookieMaxAge,
-      path: '/',
-    });
+        response.cookies.set({
+          name: 'auth_token',
+          value: token,
+          httpOnly: true,
+          secure: true,
+          sameSite: 'strict',
+          maxAge: cookieMaxAge,
+          path: '/',
+        });
 
-    return response;
+        // Log audit event
+        const { ipAddress, userAgent } = getClientInfo(req);
+        await logAuditEvent({
+          userId: user._id.toString(),
+          userEmail: user.email,
+          userRole: user.role,
+          action: 'LOGIN',
+          resourceType: 'Auth',
+          details: { rememberMe: !!rememberMe },
+          ipAddress,
+          userAgent,
+          success: true,
+        });
+
+        return response;
   } catch (error) {
-    console.error('Login Error:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
-  }
+      console.error('Login Error:', error);
+    
+      // Log failed login attempt
+      const { ipAddress, userAgent } = getClientInfo(req);
+      await logAuditEvent({
+        userId: 'unknown',
+        userEmail: email || 'unknown',
+        userRole: 'unknown',
+        action: 'LOGIN',
+        resourceType: 'Auth',
+        details: { error: error.message },
+        ipAddress,
+        userAgent,
+        success: false,
+        errorMessage: error.message,
+      });
+    
+      return NextResponse.json(
+        { error: 'Internal Server Error' },
+        { status: 500 }
+      );
+    }
 }

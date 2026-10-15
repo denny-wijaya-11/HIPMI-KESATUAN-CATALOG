@@ -6,6 +6,7 @@ import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import Product from '@/models/Product';
 import dbConnect from '@/lib/mongodb';
+import { logAuditEvent, getClientInfo } from '@/lib/audit';
 
 async function connectDB() {
   await dbConnect();
@@ -50,9 +51,23 @@ export async function POST(request) {
     }
 
     // Delete all products that match the filter
-    await Product.deleteMany(filter);
+        const deletedProducts = await Product.deleteMany(filter);
 
-    // Revalidate paths so UI updates instantly
+        // Log audit event
+        const { ipAddress, userAgent } = getClientInfo(request);
+        await logAuditEvent({
+          userId: user.id,
+          userEmail: user.email,
+          userRole: user.role,
+          action: 'PRODUCT_BULK_DELETE',
+          resourceType: 'Product',
+          details: { productIds, deletedCount: deletedProducts.deletedCount },
+          ipAddress,
+          userAgent,
+          success: true,
+        });
+
+        // Revalidate paths so UI updates instantly
     revalidatePath('/', 'layout');
     revalidatePath('/admin', 'layout');
     revalidatePath('/admin/products', 'page');

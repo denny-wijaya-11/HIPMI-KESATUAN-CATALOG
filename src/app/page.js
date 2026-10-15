@@ -7,31 +7,55 @@ import SiteStat from "@/models/SiteStat";
 import AddToCartButton from "@/components/public/AddToCartButton";
 import WishlistButton from "@/components/public/WishlistButton";
 import PublicHeader from "@/components/public/PublicHeader";
-import { FadeInUp, StaggerContainer, HoverScale } from "@/components/public/MotionWrappers";
-import { SimpleCard, SolidButton, WarmBackground, StatItem } from "@/components/public/Web3Components";
-import MascotWithQuote from "@/components/public/MascotWithQuote";
 import BannerSlider from "@/components/public/BannerSlider";
+import CategoryIconStrip from "@/components/public/CategoryIconStrip";
+import FlashDealsRow from "@/components/public/FlashDealsRow";
+import EditorialHero from "@/components/public/EditorialHero";
 import { getUserPayload } from "@/lib/auth";
 
 export const dynamic = 'force-dynamic';
 
 async function getProducts() {
   await dbConnect();
-  const products = await Product.find({ isFeatured: true, isHidden: { $ne: true } }).populate('owner', 'name tenantStatus').sort({ createdAt: -1 });
-  return products.filter(p => p.owner?.tenantStatus !== 'suspended').slice(0, 6);
+  let products = await Product.find({ isHidden: { $ne: true } })
+    .populate('owner', 'name tenantStatus')
+    .sort({ isFeatured: -1, createdAt: -1 })
+    .lean();
+
+  return products
+    .filter(p => p.owner && p.owner.tenantStatus !== 'suspended')
+    .slice(0, 12);
 }
 
-async function getStats() {
+async function getFlashDeals() {
   await dbConnect();
-  const totalProducts = await Product.countDocuments({ isHidden: { $ne: true } });
-  const totalTenants = await User.countDocuments({ role: 'tenant', tenantStatus: { $ne: 'suspended' } });
-  return { totalProducts, totalTenants };
+  // Find products that have a discount or are featured
+  let deals = await Product.find({
+    isHidden: { $ne: true },
+    $or: [
+      { originalPrice: { $gt: 0 } },
+      { isFeatured: true }
+    ]
+  })
+    .populate('owner', 'name tenantStatus')
+    .sort({ updatedAt: -1 })
+    .limit(6)
+    .lean();
+
+  if (!deals || deals.length === 0) {
+    deals = await Product.find({ isHidden: { $ne: true } })
+      .populate('owner', 'name tenantStatus')
+      .limit(4)
+      .lean();
+  }
+
+  return deals.filter(p => p.owner && p.owner.tenantStatus !== 'suspended');
 }
 
 export default async function Home() {
   const user = await getUserPayload();
 
-  // Increment total visitors in background without awaiting
+  // Increment total visitors in background
   await dbConnect();
   SiteStat.findOneAndUpdate(
     { id: 'global' },
@@ -39,207 +63,237 @@ export default async function Home() {
     { upsert: true, returnDocument: 'after' }
   ).exec().catch(err => console.error("Failed to update visitor count:", err));
 
-  const [products, stats, fullUser] = await Promise.all([
-    getProducts(), 
-    getStats(),
-    user ? User.findById(user.id).select('university name').lean() : Promise.resolve(null)
+  const [products, flashDeals] = await Promise.all([
+    getProducts(),
+    getFlashDeals()
   ]);
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8] text-gray-800 font-sans">
-      <WarmBackground />
-
-      {/* Navbar */}
+    <div className="min-h-screen bg-[#F8F9FA] text-gray-800 font-sans">
+      {/* Header with Search Bar */}
       <PublicHeader user={user} />
 
-      <main className="relative z-10">
-        {/* Banner Slide Show */}
-        <div className="hidden md:block">
-          <BannerSlider />
-        </div>
+      <main className="pb-16">
+        {/* 1. Flagship Editorial Hero with Pose 2 & HIPMORA typography */}
+        <EditorialHero />
 
-        {/* Hero Section — Split Layout */}
-        <section className="relative pt-6 pb-12 md:pt-10 md:pb-20 overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
-              {/* Left — Text Content */}
-              <div className="flex-1 text-center md:text-left">
+        {/* 2. Compact Category Strip (Icon Lingkaran) */}
+        <CategoryIconStrip />
 
-                <FadeInUp delay={0.2}>
-                  {fullUser && fullUser.university && (
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 border border-red-100 text-[#C62828] text-xs font-semibold mb-4 mx-auto md:mx-0 shadow-sm animate-in fade-in zoom-in duration-500">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                      </svg>
-                      Halo, {fullUser.name.split(' ')[0]}! Anda di zona {fullUser.university}
-                    </div>
-                  )}
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-[1.15] mb-6">
-                    Mendukung Ekosistem{' '}
-                    <span className="text-[#C62828]">Pengusaha Muda</span>
-                  </h1>
-                </FadeInUp>
-                <FadeInUp delay={0.3}>
-                  <p className="text-base md:text-lg text-gray-500 max-w-lg mx-auto md:mx-0 leading-relaxed mb-8">
-                    Temukan dan dukung produk-produk kreatif hasil karya mahasiswa pengusaha dari HIPMORA. Inovasi berawal dari sini.
-                  </p>
-                </FadeInUp>
-                <FadeInUp delay={0.4}>
-                  <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-3">
-                    <SolidButton href="/products">
-                      Eksplorasi Katalog
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
-                    </SolidButton>
-                  </div>
-                </FadeInUp>
+        {/* 3. Flash Deals Mahasiswa (Diskon & Promo Terbatas) */}
+        <FlashDealsRow products={JSON.parse(JSON.stringify(flashDeals))} />
 
-                {/* Stats */}
-                <FadeInUp delay={0.5}>
-                  <div className="flex justify-center md:justify-start gap-8 mt-10 pt-8 border-t border-gray-200">
-                    <StatItem value={`${stats.totalProducts}+`} label="Produk" />
-                    <StatItem value={`${stats.totalTenants}+`} label="Tenant" />
-                    <StatItem value="3+" label="Kampus" />
-                  </div>
-                </FadeInUp>
+        {/* 4. Rekomendasi Produk Utama (Marketplace Grid) */}
+        <section id="produk" className="py-4 md:py-6">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            
+            {/* Section Header with Quick Category Tabs */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-2 border-b border-gray-200/80">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-6 bg-[#C62828] rounded-full inline-block"></span>
+                <h2 className="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">
+                  Rekomendasi Untukmu
+                </h2>
               </div>
 
-              {/* Right — Mascot with Quote */}
-              <div className="flex-1 flex justify-center items-center">
-                <FadeInUp delay={0.3}>
-                  <MascotWithQuote />
-                </FadeInUp>
+              {/* Quick Filter Links */}
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs">
+                <Link
+                  href="/products"
+                  className="px-3 py-1.5 rounded-lg bg-[#C62828] text-white font-semibold whitespace-nowrap shadow-2xs"
+                >
+                  Semua
+                </Link>
+                <Link
+                  href="/products?category=Makanan"
+                  className="px-3 py-1.5 rounded-lg bg-white hover:bg-gray-100 text-gray-700 font-medium border border-gray-200 whitespace-nowrap transition-colors"
+                >
+                  Makanan
+                </Link>
+                <Link
+                  href="/products?category=Minuman"
+                  className="px-3 py-1.5 rounded-lg bg-white hover:bg-gray-100 text-gray-700 font-medium border border-gray-200 whitespace-nowrap transition-colors"
+                >
+                  Minuman
+                </Link>
+                <Link
+                  href="/products?category=Fashion"
+                  className="px-3 py-1.5 rounded-lg bg-white hover:bg-gray-100 text-gray-700 font-medium border border-gray-200 whitespace-nowrap transition-colors"
+                >
+                  Fashion
+                </Link>
+                <Link
+                  href="/products?category=Jasa"
+                  className="px-3 py-1.5 rounded-lg bg-white hover:bg-gray-100 text-gray-700 font-medium border border-gray-200 whitespace-nowrap transition-colors"
+                >
+                  Jasa & Print
+                </Link>
+                <Link
+                  href="/products"
+                  className="text-xs font-bold text-[#C62828] hover:underline whitespace-nowrap ml-2 flex items-center gap-0.5"
+                >
+                  Lihat Semua &rarr;
+                </Link>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* Featured Products Section */}
-        <section id="produk" className="py-16 md:py-24 relative">
-          <div className="absolute inset-0 bg-white border-y border-gray-100" />
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 md:mb-14 gap-4">
-              <div>
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Katalog Unggulan</h2>
-                <p className="text-gray-500 max-w-xl text-sm md:text-base">
-                  Kurasi produk terbaik dari anggota HIPMORA minggu ini.
-                </p>
-              </div>
-              <Link href="/products" className="inline-flex items-center gap-1.5 text-[#C62828] hover:text-[#8E0000] text-sm font-semibold transition-colors group">
-                Lihat Semua
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+            {/* Product Grid (Tokopedia Density: 2 cols on mobile, 4-5 cols on desktop) */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-4">
+              {products.length === 0 ? (
+                <div className="col-span-full text-center py-16 bg-white rounded-2xl border border-gray-200">
+                  <div className="w-12 h-12 mx-auto mb-3 text-gray-300">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                  </div>
+                  <p className="text-sm font-semibold text-gray-500">Belum ada produk yang tersedia saat ini.</p>
+                  <Link href="/products" className="inline-block mt-3 text-xs font-bold text-[#C62828] hover:underline">
+                    Eksplorasi Katalog &rarr;
+                  </Link>
+                </div>
+              ) : (
+                products.map((product) => {
+                  const hasDiscount = product.originalPrice > product.price;
+                  const discountPercent = hasDiscount
+                    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+                    : null;
+
+                  return (
+                    <div
+                      key={product._id.toString()}
+                      className="group bg-white rounded-xl border border-gray-200/90 hover:border-red-300 hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden"
+                    >
+                      {/* Product Image */}
+                      <div className="relative aspect-square w-full bg-gray-50 overflow-hidden">
+                        <Link href={`/products/${product._id}`}>
+                          <Image
+                            src={
+                              product.images && product.images.length > 0
+                                ? product.images[0]
+                                : product.image && product.image.startsWith('http')
+                                ? product.image
+                                : '/images/placeholder.png'
+                            }
+                            alt={product.name || 'Produk'}
+                            fill
+                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+                            className="object-cover group-hover:scale-104 transition-transform duration-300 cursor-pointer"
+                          />
+                        </Link>
+
+                        {/* Top Badges */}
+                        <div className="absolute top-2 left-2 flex flex-col gap-1">
+                          {discountPercent && (
+                            <span className="bg-[#C62828] text-white text-[9px] sm:text-[10px] font-black px-1.5 py-0.5 rounded-sm shadow-2xs">
+                              -{discountPercent}%
+                            </span>
+                          )}
+                          {product.isFeatured && (
+                            <span className="bg-amber-400 text-amber-950 text-[9px] font-bold px-1.5 py-0.2 rounded-xs shadow-2xs">
+                              ⭐ Unggulan
+                            </span>
+                          )}
+                        </div>
+
+                        <WishlistButton product={JSON.parse(JSON.stringify(product))} />
+                      </div>
+
+                      {/* Details */}
+                      <div className="p-2.5 sm:p-3 flex-1 flex flex-col justify-between">
+                        <div>
+                          {/* Title */}
+                          <Link href={`/products/${product._id}`}>
+                            <h3 className="text-xs sm:text-sm font-semibold text-gray-900 group-hover:text-[#C62828] transition-colors line-clamp-2 leading-snug cursor-pointer">
+                              {product.name}
+                            </h3>
+                          </Link>
+
+                          {/* Pricing */}
+                          <div className="mt-1.5">
+                            {hasDiscount && (
+                              <div className="text-[10px] sm:text-[11px] text-gray-400 line-through leading-none">
+                                Rp {Number(product.originalPrice).toLocaleString('id-ID')}
+                              </div>
+                            )}
+                            <div className="text-sm sm:text-base font-extrabold text-[#C62828] leading-tight">
+                              Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Meta: Location, Rating, & Quick Cart */}
+                        <div className="mt-2 pt-2 border-t border-gray-100 flex items-center justify-between gap-1 text-[10px] sm:text-[11px] text-gray-500">
+                          <div className="flex flex-col truncate">
+                            <span className="font-medium text-gray-600 truncate">
+                              {product.owner?.name || 'Tenant Kampus'}
+                            </span>
+                            <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-gray-400 mt-0.5">
+                              {product.region && (
+                                <span className="truncate">📍 {product.region}</span>
+                              )}
+                              <span>•</span>
+                              <span className="text-amber-500 font-semibold">
+                                ★ {product.rating ? product.rating.toFixed(1) : '5.0'}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="shrink-0">
+                            <AddToCartButton product={JSON.parse(JSON.stringify(product))} compact={true} />
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Bottom "Lihat Lebih Banyak" CTA */}
+            <div className="mt-8 text-center">
+              <Link
+                href="/products"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white border border-gray-300 hover:border-[#C62828] text-gray-700 hover:text-[#C62828] text-xs sm:text-sm font-bold shadow-2xs transition-all duration-200"
+              >
+                Muat Lebih Banyak Produk
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </Link>
             </div>
 
-            <StaggerContainer className="grid gap-3 md:gap-6 grid-cols-2 lg:grid-cols-3">
-              {products.length === 0 ? (
-                <div className="col-span-full text-center py-12 text-gray-400">
-                  Belum ada produk unggulan saat ini.
-                </div>
-              ) : (
-                products.map((product) => (
-                  <SimpleCard key={product._id.toString()} className="group flex flex-col h-full">
-                    <div className="relative h-32 sm:h-40 md:h-64 w-full bg-gray-50 overflow-hidden">
-                      <Link href={`/products/${product._id}`}>
-                          <Image 
-                            src={(product.images && product.images.length > 0) ? product.images[0] : (product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png')} 
-                            alt={product.name || 'Produk'} 
-                          fill 
-                          sizes="(max-width: 768px) 50vw, 33vw"
-                          className="object-cover group-hover:scale-105 transition-transform duration-500 cursor-pointer" 
-                        />
-                      </Link>
-                      {/* Category badge */}
-                      <div className="absolute top-2 left-2 md:top-3 md:left-3">
-                        <span className="bg-white/90 backdrop-blur-sm px-2 py-0.5 md:px-3 md:py-1 rounded-full text-[9px] md:text-xs font-medium text-gray-700 shadow-sm">
-                          {product.category || 'Lainnya'}
-                        </span>
-                      </div>
-                      {product.isFeatured && (
-                        <div className="absolute top-2 right-2 md:top-3 md:right-3">
-                          <span className="bg-amber-400 px-2 py-0.5 md:px-2.5 md:py-0.5 rounded-full text-[9px] md:text-xs font-semibold text-amber-900">
-                            ⭐ Unggulan
-                          </span>
-                        </div>
-                      )}
-                      <WishlistButton product={JSON.parse(JSON.stringify(product))} />
-                    </div>
-                    <div className="p-3 sm:p-4 md:p-5 flex-1 flex flex-col">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <p className="text-[10px] md:text-xs text-gray-400 font-medium line-clamp-1">{product.owner?.name || 'HIPMORA Tenant'}</p>
-                          {product.region && (
-                            <span className="flex items-center text-[9px] md:text-xs text-gray-400">
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5 mr-0.5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                              </svg>
-                              {product.region}
-                            </span>
-                          )}
-                        </div>
-                        <Link href={`/products/${product._id}`}>
-                          <h3 className="text-xs sm:text-sm md:text-base font-semibold text-gray-900 mb-1 group-hover:text-[#C62828] transition-colors cursor-pointer line-clamp-2 leading-snug">{product.name || 'Produk Tanpa Nama'}</h3>
-                        </Link>
-                        <div className="flex items-center gap-1 mb-1.5">
-                          <svg className="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-                          <span className="text-[10px] md:text-xs font-medium text-gray-600">{product.rating ? product.rating.toFixed(1) : 'Baru'}</span>
-                          {product.numReviews > 0 && <span className="text-[10px] md:text-xs text-gray-400">({product.numReviews})</span>}
-                        </div>
-                        <p className="text-gray-400 text-[9px] sm:text-[10px] md:text-xs leading-relaxed line-clamp-2 hidden sm:block">{product.description || '-'}</p>
-                      </div>
-                      <div className="mt-2 md:mt-4 flex items-center justify-between">
-                        <div className="flex flex-col">
-                          {product.originalPrice > product.price && (
-                            <span className="text-[10px] md:text-xs text-gray-400 line-through mb-0.5">Rp {Number(product.originalPrice).toLocaleString('id-ID')}</span>
-                          )}
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-xs sm:text-sm md:text-lg font-bold text-[#C62828]">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
-                            {product.originalPrice > product.price && (
-                              <span className="bg-red-100 text-[#C62828] text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded-sm">
-                                -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <AddToCartButton product={JSON.parse(JSON.stringify(product))} compact={true} />
-                      </div>
-                    </div>
-                  </SimpleCard>
-                ))
-              )}
-            </StaggerContainer>
           </div>
         </section>
 
-        {/* CTA Section */}
+        {/* 5. Minimalist Seller Callout Banner (ala Tokopedia Mitra/Seller) */}
         {(!user || user.role !== 'tenant') && (
-          <section id="tentang" className="py-16 md:py-24 relative overflow-hidden">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-              <div className="bg-gradient-to-br from-[#C62828] to-[#8E0000] rounded-3xl p-8 md:p-16 text-center relative overflow-hidden">
-                {/* Subtle decorative elements */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-                
-                <div className="relative">
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
-                    Tentang HIPMORA
-                  </h2>
-                  <p className="text-base md:text-lg text-red-100 max-w-2xl mx-auto mb-8">
-                    HIPMORA adalah platform katalog resmi yang mewadahi inovasi dan kreasi mahasiswa pengusaha. Kami berkomitmen membangun ekosistem wirausaha yang kuat di lingkungan kampus. Punya bisnis inovatif? Bergabunglah bersama kami!
-                  </p>
-                  <div className="flex flex-col sm:flex-row justify-center gap-3">
-                    <SolidButton href="/become-tenant" className="!bg-white !text-[#C62828] hover:!bg-gray-100">
-                      Daftar Sebagai Tenant
-                    </SolidButton>
-                    <SolidButton href={`https://wa.me/${process.env.NEXT_PUBLIC_ADMIN_WA || ''}?text=Halo%20Admin%2C%20saya%20ingin%20mendaftar%20sebagai%20tenant%20di%20HIPMORA`} target="_blank" className="!bg-white/10 !text-white hover:!bg-white/20 !border-white/20">
-                      Hubungi Admin
-                    </SolidButton>
+          <section className="py-6">
+            <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+              <div className="bg-white border border-gray-200/90 rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
+                <div className="flex items-center gap-3.5 text-center sm:text-left">
+                  <div className="w-12 h-12 rounded-xl bg-red-50 text-[#C62828] flex items-center justify-center shrink-0">
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
                   </div>
+                  <div>
+                    <h3 className="text-sm sm:text-base font-bold text-gray-900">
+                      Punya Usaha atau Jualan di Kampus?
+                    </h3>
+                    <p className="text-xs text-gray-500">
+                      Buka toko online gratis di HIPMORA dan jangkau ribuan mahasiswa dengan mudah.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <Link
+                    href="/become-tenant"
+                    className="bg-[#C62828] hover:bg-[#8E0000] text-white px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-2xs transition-colors"
+                  >
+                    Daftar Jadi Tenant Gratis
+                  </Link>
                 </div>
               </div>
             </div>
@@ -248,42 +302,61 @@ export default async function Home() {
       </main>
 
       {/* Footer */}
-      <footer id="footer" className="relative bg-white border-t border-gray-100 pt-12 pb-8">
+      <footer id="footer" className="bg-white border-t border-gray-200 pt-10 pb-8 text-xs text-gray-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
-            <div className="md:col-span-2 flex flex-col items-center md:items-start text-center md:text-left">
-              <div className="flex items-center justify-center md:justify-start mb-4 w-full">
-                <div className="relative w-48 h-28 flex items-center justify-center md:-ml-2">
-                  <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain" />
-                </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+            <div className="col-span-2 md:col-span-1">
+              <div className="relative w-36 h-12 mb-3">
+                <Image
+                  src="/images/MASKOT LOGO.png"
+                  alt="HIPMORA Logo"
+                  fill
+                  sizes="144px"
+                  className="object-contain object-left"
+                />
               </div>
-              <p className="text-gray-500 text-sm leading-relaxed max-w-md">
-                Platform katalog resmi yang mewadahi inovasi dan kreasi mahasiswa pengusaha. Membangun ekosistem wirausaha yang kuat di lingkungan kampus.
+              <p className="text-gray-400 text-[11px] leading-relaxed">
+                Marketplace resmi ekosistem wirausaha mahasiswa HIPMORA. Belanja hemat karya teman satu kampus.
               </p>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Navigasi</h3>
-              <ul className="space-y-3 text-sm text-gray-500">
-                <li><Link href="/" className="hover:text-[#C62828] transition-colors">Beranda</Link></li>
-                <li><Link href="/products" className="hover:text-[#C62828] transition-colors">Katalog Produk</Link></li>
-                <li><Link href="#footer" className="hover:text-[#C62828] transition-colors">Tentang Kami</Link></li>
+              <h4 className="font-bold text-gray-800 uppercase tracking-wider mb-2.5">Kategori</h4>
+              <ul className="space-y-1.5 text-gray-500">
+                <li><Link href="/products?category=Makanan" className="hover:text-[#C62828]">Makanan & Snack</Link></li>
+                <li><Link href="/products?category=Minuman" className="hover:text-[#C62828]">Kopi & Minuman</Link></li>
+                <li><Link href="/products?category=Fashion" className="hover:text-[#C62828]">Outfit & Fashion</Link></li>
+                <li><Link href="/products?category=Jasa" className="hover:text-[#C62828]">Jasa & Print</Link></li>
               </ul>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Kontak</h3>
-              <ul className="space-y-3 text-sm text-gray-500">
-                <li className="flex items-center gap-2.5">
-                  <svg className="h-4 w-4 text-[#C62828] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                  <a href="mailto:hipmikatalog@gmail.com" className="hover:text-[#C62828] transition-colors">hipmikatalog@gmail.com</a>
-                </li>
+              <h4 className="font-bold text-gray-800 uppercase tracking-wider mb-2.5">Bantuan & Info</h4>
+              <ul className="space-y-1.5 text-gray-500">
+                <li><Link href="/products" className="hover:text-[#C62828]">Katalog Produk</Link></li>
+                <li><Link href="/become-tenant" className="hover:text-[#C62828]">Buka Toko</Link></li>
+                <li><Link href="/syarat-ketentuan" className="hover:text-[#C62828]">Syarat & Ketentuan</Link></li>
+                <li><Link href="/kebijakan-privasi" className="hover:text-[#C62828]">Kebijakan Privasi</Link></li>
               </ul>
             </div>
+            <div>
+              <h4 className="font-bold text-gray-800 uppercase tracking-wider mb-2.5">Hubungi Kami</h4>
+              <p className="text-[11px] text-gray-400 mb-2">
+                Punya pertanyaan seputar pesanan atau tenant?
+              </p>
+              <a
+                href={`https://wa.me/${process.env.NEXT_PUBLIC_ADMIN_WA || ''}?text=Halo%20Admin%20HIPMORA`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-semibold text-xs transition-colors"
+              >
+                <span>💬 WhatsApp Admin</span>
+              </a>
+            </div>
           </div>
-          <div className="pt-6 border-t border-gray-100 text-xs text-center text-gray-400 flex flex-col md:flex-row justify-between items-center gap-3">
-            <p>&copy; {new Date().getFullYear()} HIPMORA. All rights reserved.</p>
-            <div className="flex gap-6">
-              <Link href="/kebijakan-privasi" className="hover:text-gray-600 transition-colors">Kebijakan Privasi</Link>
-              <Link href="/syarat-ketentuan" className="hover:text-gray-600 transition-colors">Syarat & Ketentuan</Link>
+
+          <div className="pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-gray-400 text-[11px]">
+            <p>&copy; {new Date().getFullYear()} HIPMORA. Hak Cipta Dilindungi.</p>
+            <div className="flex gap-4">
+              <span>Platform Resmi Pengusaha Muda</span>
             </div>
           </div>
         </div>

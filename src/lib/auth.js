@@ -16,7 +16,7 @@ export async function getUserPayload() {
     
     if (!token) return null;
     
-    const secret = getJwtSecret();
+    const secret = await getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
     return payload; // { id, email, name, role }
   } catch (err) {

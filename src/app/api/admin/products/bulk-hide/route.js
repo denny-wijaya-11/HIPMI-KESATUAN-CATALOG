@@ -6,6 +6,7 @@ import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import Product from '@/models/Product';
 import dbConnect from '@/lib/mongodb';
+import { logAuditEvent, getClientInfo } from '@/lib/audit';
 
 async function connectDB() {
   await dbConnect();
@@ -48,9 +49,23 @@ export async function POST(request) {
     }
 
     // Update all matching products
-    const result = await Product.updateMany(filter, { $set: { isHidden: isHidden } });
+        const result = await Product.updateMany(filter, { $set: { isHidden: isHidden } });
 
-    // Revalidate paths so UI updates instantly
+        // Log audit event
+        const { ipAddress, userAgent } = getClientInfo(request);
+        await logAuditEvent({
+          userId: user.id,
+          userEmail: user.email,
+          userRole: user.role,
+          action: 'PRODUCT_BULK_HIDE',
+          resourceType: 'Product',
+          details: { productIds, isHidden, modifiedCount: result.modifiedCount },
+          ipAddress,
+          userAgent,
+          success: true,
+        });
+
+        // Revalidate paths so UI updates instantly
     revalidatePath('/', 'layout');
     revalidatePath('/admin', 'layout');
     revalidatePath('/admin/products', 'page');

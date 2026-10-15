@@ -7,6 +7,7 @@ import Message from '@/models/Message';
 import User from '@/models/User';
 import Product from '@/models/Product';
 import dbConnect from '@/lib/mongodb';
+import { sanitizeChatMessage } from '@/lib/sanitize';
 
 async function connectDB() {
   await dbConnect();
@@ -88,11 +89,14 @@ export async function POST(request) {
     if (!receiverId || (!content && !image)) {
       return NextResponse.json({ error: 'Receiver and content/image are required' }, { status: 400 });
     }
+    
+    // Sanitize message content
+    const sanitizedContent = content ? sanitizeChatMessage(content) : '';
 
     const newMessage = await Message.create({
       sender: user.id,
       receiver: receiverId,
-      content: content || '',
+      content: sanitizedContent,
       image: image || null,
       productContext: productId || null
     });
