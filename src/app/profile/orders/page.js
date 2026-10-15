@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { getJwtSecret } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import * as jose from 'jose';
 import dbConnect from '@/lib/mongodb';
@@ -15,7 +16,7 @@ async function getUserPayload() {
   const token = cookieStore.get('auth_token')?.value;
   if (!token) return null;
   try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const secret = await getJwtSecret();
     const { payload } = await jose.jwtVerify(token, secret);
     return payload; // { id, email, role, name }
   } catch (err) {

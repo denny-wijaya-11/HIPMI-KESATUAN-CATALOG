@@ -1,4 +1,5 @@
 import Product from "@/models/Product";
+import { getJwtSecret } from '@/lib/auth';
 import User from "@/models/User";
 import mongoose from "mongoose";
 import dbConnect from "@/lib/mongodb";
@@ -16,7 +17,7 @@ async function getUserPayload() {
   const token = cookieStore.get('auth_token')?.value;
   if (!token) return null;
   try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const secret = await getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
     return payload; // { userId, email, role }
   } catch (err) {

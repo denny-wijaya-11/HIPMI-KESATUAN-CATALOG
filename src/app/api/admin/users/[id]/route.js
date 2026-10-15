@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getJwtSecret } from '@/lib/auth';
 import mongoose from 'mongoose';
 import { jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
@@ -16,7 +17,7 @@ async function getUserPayload() {
   const token = cookieStore.get('auth_token')?.value;
   if (!token) return null;
   try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const secret = await getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
     return payload; // { userId, email, role }
   } catch (err) {
@@ -85,24 +86,33 @@ export async function PUT(request, { params }) {
     }
 
     // Prepare update data (do not update password through this route)
-    let finalRole = body.role;
-    if (user.role === 'operator') {
-      finalRole = 'tenant';
+    // Only allow specific fields to be updated - prevent mass assignment
+    const allowedFields = ['name', 'email', 'whatsapp', 'university', 'city', 'isStudent', 'paymentMethods'];
+    const allowedAdminFields = ['role', 'tenantStatus'];
+    
+    const updateData = {};
+    
+    // Regular allowed fields
+    for (const field of allowedFields) {
+      if (body[field] !== undefined) {
+        updateData[field] = body[field];
+      }
+    }
+    
+    // Admin-only fields
+    if (user.role === 'admin' || user.role === 'developer') {
+      for (const field of allowedAdminFields) {
+        if (body[field] !== undefined) {
+          updateData[field] = body[field];
+        }
+      }
     }
 
-    const updateData = {
-      name: body.name,
-      email: body.email,
-      role: finalRole,
-      whatsapp: body.whatsapp,
-      university: body.university,
-      city: body.city,
-      isStudent: body.isStudent,
-      paymentMethods: body.paymentMethods
-    };
-
-    if (body.tenantStatus) {
-      updateData.tenantStatus = body.tenantStatus;
+    // Override role if operator (they can only set tenant)
+    if (user.role === 'operator') {
+      updateData.role = 'tenant';
+    } else if (body.role !== undefined && (user.role === 'admin' || user.role === 'developer')) {
+      updateData.role = body.role;
     }
 
     if (body.password && body.password.trim() !== '') {

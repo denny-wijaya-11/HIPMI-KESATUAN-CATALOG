@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getJwtSecret } from '@/lib/auth';
 import mongoose from 'mongoose';
 import User from '@/models/User';
 import { jwtVerify, SignJWT } from 'jose';
@@ -25,7 +26,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Registration session expired. Please login with Google again.' }, { status: 401 });
     }
 
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const secret = await getJwtSecret();
     let email = '';
     
     try {

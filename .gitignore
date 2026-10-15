@@ -41,3 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 firebase-admin-key.json
+
+# Obsidian local workspace (not for production)
+HIPMORA/
+

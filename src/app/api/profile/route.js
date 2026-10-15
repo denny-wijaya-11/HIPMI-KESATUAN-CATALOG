@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getJwtSecret } from '@/lib/auth';
 import mongoose from 'mongoose';
 import { jwtVerify, SignJWT } from 'jose';
 import { cookies } from 'next/headers';
@@ -15,7 +16,7 @@ async function getUserPayload() {
   const token = cookieStore.get('auth_token')?.value;
   if (!token) return null;
   try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const secret = await getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
     return payload; // { id, email, role, name, avatar }
   } catch (err) {
@@ -47,7 +48,7 @@ export async function GET() {
 
     // Refresh token if role, name, avatar, or university changed
     if (user.role !== payload.role || user.avatar !== payload.avatar || user.university !== payload.university) {
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+      const secret = await getJwtSecret();
       const token = await new SignJWT({
         id: user._id.toString(),
         email: user.email,
@@ -111,7 +112,7 @@ export async function PUT(request) {
     }
 
     // Generate new token with updated name/avatar/university
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const secret = await getJwtSecret();
     const token = await new SignJWT({
       id: updatedUser._id.toString(),
       email: updatedUser.email,

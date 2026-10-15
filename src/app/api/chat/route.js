@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getJwtSecret } from '@/lib/auth';
 import mongoose from 'mongoose';
 import { jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
@@ -6,6 +7,7 @@ import Message from '@/models/Message';
 import User from '@/models/User';
 import Product from '@/models/Product';
 import dbConnect from '@/lib/mongodb';
+import { sanitizeChatMessage } from '@/lib/sanitize';
 
 async function connectDB() {
   await dbConnect();
@@ -16,7 +18,7 @@ async function getUserPayload() {
   const token = cookieStore.get('auth_token')?.value;
   if (!token) return null;
   try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const secret = await getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
     return payload; // { id, email, role, name }
   } catch (err) {
@@ -87,11 +89,14 @@ export async function POST(request) {
     if (!receiverId || (!content && !image)) {
       return NextResponse.json({ error: 'Receiver and content/image are required' }, { status: 400 });
     }
+    
+    // Sanitize message content
+    const sanitizedContent = content ? sanitizeChatMessage(content) : '';
 
     const newMessage = await Message.create({
       sender: user.id,
       receiver: receiverId,
-      content: content || '',
+      content: sanitizedContent,
       image: image || null,
       productContext: productId || null
     });

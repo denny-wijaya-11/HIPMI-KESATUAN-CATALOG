@@ -1,0 +1,10 @@
+# Security contact information for hipmora.my.id
+
+Contact: security@hipmora.my.id
+Encryption: https://hipmora.my.id/security/pgp-key.txt
+Acknowledgments: https://hipmora.my.id/security/hall-of-fame.html
+Policy: https://hipmora.my.id/security/policy.html
+Hiring: https://hipmora.my.id/careers/security.html
+
+# Preferred languages: en, id
+# Canonical: https://hipmora.my.id/.well-known/security.txt

@@ -1,4 +1,5 @@
 import User from "@/models/User";
+import { getJwtSecret } from '@/lib/auth';
 import mongoose from "mongoose";
 import Link from "next/link";
 import DeleteUserButton from "@/components/admin/DeleteUserButton";
@@ -14,7 +15,7 @@ async function getUserPayload() {
   const token = cookieStore.get('auth_token')?.value;
   if (!token) return null;
   try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const secret = await getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
     return payload;
   } catch (err) {

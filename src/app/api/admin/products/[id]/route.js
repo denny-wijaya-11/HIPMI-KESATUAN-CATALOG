@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getJwtSecret } from '@/lib/auth';
 import mongoose from 'mongoose';
 import { jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
@@ -28,12 +29,17 @@ async function getUserPayload() {
   const token = cookieStore.get('auth_token')?.value;
   if (!token) return null;
   try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const secret = await getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
     return payload; // { userId, email, role }
   } catch (err) {
     return null;
   }
+}
+
+// Helper to verify operator's university ownership
+function verifyOperatorUniversity(user, targetUniversity) {
+  return user.role !== 'operator' || user.university === targetUniversity;
 }
 
 export async function GET(request, { params }) {
@@ -49,9 +55,11 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
     
-    // Check if operator owns it
-    if (user.role === 'operator' && product.owner.toString() !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    // Check if operator owns it or belongs to their university
+    if (user.role === 'operator') {
+      if (!verifyOperatorUniversity(user, product.university)) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
     }
 
     return NextResponse.json({ product });

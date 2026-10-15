@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
+import { getJwtSecret } from '@/lib/auth';
 import mongoose from 'mongoose';
 import { jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import Product from '@/models/Product';
 import dbConnect from '@/lib/mongodb';
+import { logAuditEvent, getClientInfo } from '@/lib/audit';
 
 async function connectDB() {
   await dbConnect();
@@ -15,7 +17,7 @@ async function getUserPayload() {
   const token = cookieStore.get('auth_token')?.value;
   if (!token) return null;
   try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const secret = await getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
     return payload;
   } catch (err) {
@@ -47,9 +49,23 @@ export async function POST(request) {
     }
 
     // Update all matching products
-    const result = await Product.updateMany(filter, { $set: { isHidden: isHidden } });
+        const result = await Product.updateMany(filter, { $set: { isHidden: isHidden } });
 
-    // Revalidate paths so UI updates instantly
+        // Log audit event
+        const { ipAddress, userAgent } = getClientInfo(request);
+        await logAuditEvent({
+          userId: user.id,
+          userEmail: user.email,
+          userRole: user.role,
+          action: 'PRODUCT_BULK_HIDE',
+          resourceType: 'Product',
+          details: { productIds, isHidden, modifiedCount: result.modifiedCount },
+          ipAddress,
+          userAgent,
+          success: true,
+        });
+
+        // Revalidate paths so UI updates instantly
     revalidatePath('/', 'layout');
     revalidatePath('/admin', 'layout');
     revalidatePath('/admin/products', 'page');

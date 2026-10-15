@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Product from '@/models/Product';
 import { getUserPayload } from '@/lib/auth';
+import { sanitizeReviewComment } from '@/lib/sanitize';
 
 export async function POST(req, { params }) {
   try {
@@ -39,7 +40,7 @@ export async function POST(req, { params }) {
       user: user.id,
       name: user.name || user.email.split('@')[0],
       rating: Number(rating),
-      comment,
+      comment: sanitizeReviewComment(comment),
     };
 
     product.reviews.push(review);

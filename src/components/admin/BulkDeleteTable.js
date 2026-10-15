@@ -100,7 +100,7 @@ export default function BulkDeleteTable({ products, userRole }) {
         <p className="mt-1 text-sm text-gray-500">Mulai unggah produk dagangan Anda ke katalog.</p>
         <div className="mt-6">
           <Link
-            href="/admin/products/create"
+            href={userRole === 'tenant' ? '/tenant/products/create' : '/admin/products/create'}
             className="inline-flex items-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700"
           >
             Tambah Produk
@@ -109,6 +109,97 @@ export default function BulkDeleteTable({ products, userRole }) {
       </div>
     );
   }
+
+  const formatPrice = (price) => {
+    return price ? `Rp ${Number(price).toLocaleString('id-ID')}` : 'Rp 0';
+  };
+
+  const getStatusBadge = (product) => {
+    if (product.isHidden) {
+      return <span className="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold leading-5 text-gray-500">Tersembunyi</span>;
+    }
+    if (product.isFeatured) {
+      return <span className="inline-flex rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-semibold leading-5 text-yellow-800">Unggulan</span>;
+    }
+    return <span className="inline-flex rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold leading-5 text-green-800">Aktif</span>;
+  };
+
+  // Mobile Card View
+  const renderMobileCards = () => (
+    <div className="md:hidden grid grid-cols-1 gap-4">
+      {products.map((product) => {
+        const isSelected = selectedIds.includes(product._id);
+        return (
+          <div
+            key={product._id}
+            className={`bg-white rounded-xl border shadow-sm transition-all ${isSelected ? 'ring-2 ring-red-500 bg-red-50' : 'border-gray-200'} ${product.isHidden ? 'opacity-60 bg-gray-50' : ''}`}
+          >
+            <div className="p-4">
+              <div className="flex gap-3">
+                {/* Checkbox for bulk actions (non-operator) */}
+                {userRole !== 'operator' && (
+                  <div className="flex items-start pt-1">
+                    <input
+                      type="checkbox"
+                      className="mt-0.5 h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
+                      checked={isSelected}
+                      onChange={(e) => handleSelectOne(e, product._id)}
+                    />
+                  </div>
+                )}
+
+                {/* Product Image */}
+                <div className="h-20 w-20 flex-shrink-0 relative rounded-lg bg-gray-100 overflow-hidden border border-gray-200">
+                  <Image
+                    src={product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png'}
+                    alt={product.name || 'Product'}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+
+                {/* Product Info */}
+                <div className="flex-1 min-w-0 flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-semibold text-gray-900 truncate text-sm">{product.name || 'Produk Tanpa Nama'}</h3>
+                    <div className="mt-1 flex flex-wrap gap-1.5">
+                      <span className="text-gray-900 font-bold text-sm">{formatPrice(product.price)}</span>
+                      <span className="inline-flex rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold leading-5 text-red-800">
+                        {product.category || 'Lainnya'}
+                      </span>
+                      {getStatusBadge(product)}
+                    </div>
+                    {product.region && (
+                      <p className="mt-1 text-xs text-gray-500 truncate">{product.region}</p>
+                    )}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="mt-3 flex flex-wrap gap-2 pt-3 border-t border-gray-100">
+                    <ToggleHiddenButton productId={product._id} initialIsHidden={product.isHidden} />
+                    <Link
+                      href={userRole === 'tenant' ? `/tenant/products/${product._id}/edit` : `/admin/products/${product._id}/edit`}
+                      className="flex-1 text-center text-blue-600 hover:text-blue-900 text-xs bg-blue-50 px-2 py-1.5 rounded font-semibold border border-blue-100"
+                    >
+                      Edit
+                    </Link>
+                    {userRole !== 'operator' && (
+                      <div className="flex-1">
+                        <DeleteProductButton productId={product._id} />
+                      </div>
+                    )}
+                    {userRole === 'operator' && (
+                      <ToggleFeaturedButton productId={product._id} initialIsFeatured={product.isFeatured} />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
 
   return (
     <div className="flex flex-col">
@@ -150,7 +241,11 @@ export default function BulkDeleteTable({ products, userRole }) {
         </div>
       )}
 
-      <div className="overflow-x-auto">
+      {/* Mobile Card View */}
+      {renderMobileCards()}
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto">
         <div className="inline-block min-w-full py-2 align-middle">
           <div className="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-300">
@@ -211,19 +306,19 @@ export default function BulkDeleteTable({ products, userRole }) {
                       <td className={`whitespace-nowrap py-3 sm:py-4 pr-1 sm:pr-3 text-sm pl-0 sm:pl-6`}>
                         <div className="flex items-center">
                           <div className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0 relative rounded bg-gray-100 overflow-hidden border border-gray-200">
-                            <Image 
-                              src={product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png'} 
-                              alt={product.name || 'Product'} 
+                            <Image
+                              src={product.image && product.image.startsWith('http') ? product.image : '/images/placeholder.png'}
+                              alt={product.name || 'Product'}
                               fill
                               className="object-cover"
                             />
                           </div>
                           <div className="ml-2 sm:ml-4 flex-1 min-w-0 max-w-[110px] sm:max-w-xs">
                             <div className="font-semibold sm:font-medium text-gray-900 truncate text-[12px] sm:text-sm">{product.name || 'Produk Tanpa Nama'}</div>
-                            
+
                             {/* Mobile info */}
                             <div className="sm:hidden mt-0 flex flex-col">
-                              <span className="text-gray-900 font-bold text-[10px]">Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}</span>
+                              <span className="text-gray-900 font-bold text-[10px]">{formatPrice(product.price)}</span>
                               <span className="text-gray-500 text-[9px] truncate">{product.category || 'Lainnya'}</span>
                             </div>
 
@@ -241,7 +336,7 @@ export default function BulkDeleteTable({ products, userRole }) {
                         {product.region || '-'}
                       </td>
                       <td className="hidden sm:table-cell whitespace-nowrap px-3 py-4 text-sm text-gray-500 font-medium">
-                        Rp {product.price ? Number(product.price).toLocaleString('id-ID') : '0'}
+                        {formatPrice(product.price)}
                       </td>
                       <td className="hidden md:table-cell whitespace-nowrap px-3 py-4 text-sm text-center">
                         {userRole === 'operator' ? (
@@ -267,7 +362,10 @@ export default function BulkDeleteTable({ products, userRole }) {
                         <div className="flex flex-col sm:flex-row items-end sm:items-center justify-end gap-1.5 sm:gap-3">
                           <div className="flex items-center gap-1 sm:gap-3">
                             <ToggleHiddenButton productId={product._id} initialIsHidden={product.isHidden} />
-                            <Link href={userRole === 'tenant' ? `/tenant/products/${product._id}/edit` : `/admin/products/${product._id}/edit`} className="text-blue-600 hover:text-blue-900 text-[10px] sm:text-xs bg-blue-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded font-semibold border border-blue-100">
+                            <Link
+                              href={userRole === 'tenant' ? `/tenant/products/${product._id}/edit` : `/admin/products/${product._id}/edit`}
+                              className="text-blue-600 hover:text-blue-900 text-[10px] sm:text-xs bg-blue-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded font-semibold border border-blue-100"
+                            >
                               Edit
                             </Link>
                           </div>

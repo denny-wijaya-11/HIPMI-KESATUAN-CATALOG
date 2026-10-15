@@ -21,7 +21,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Tidak ada akses' }, { status: 401 });
     }
 
-    const secret = getJwtSecret();
+    const secret = await getJwtSecret();
     const { payload } = await jose.jwtVerify(token.value, secret);
 
     if (!payload) {

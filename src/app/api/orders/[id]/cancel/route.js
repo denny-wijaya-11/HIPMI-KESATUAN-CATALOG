@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getJwtSecret } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import * as jose from 'jose';
 import dbConnect from '@/lib/mongodb';
@@ -13,7 +14,7 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const secret = await getJwtSecret();
     let payload;
     try {
       const verified = await jose.jwtVerify(token, secret);

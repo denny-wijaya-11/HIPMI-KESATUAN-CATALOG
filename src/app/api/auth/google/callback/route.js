@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
+import { getJwtSecret } from '@/lib/auth';
 import mongoose from 'mongoose';
 import User from '@/models/User';
 import { SignJWT } from 'jose';
 import dbConnect from '@/lib/mongodb';
+import { cookies } from 'next/headers';
 
 async function connectDB() {
   await dbConnect();
@@ -11,9 +13,19 @@ async function connectDB() {
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
+  const state = searchParams.get('state');
+  
+  // Verify CSRF state token
+  const cookieStore = await cookies();
+  const storedState = cookieStore.get('google_oauth_state')?.value;
+  cookieStore.delete('google_oauth_state'); // Delete after use
   
   if (!code) {
     return NextResponse.redirect(new URL('/login?error=NoCodeProvided', request.url));
+  }
+  
+  if (!state || state !== storedState) {
+    return NextResponse.redirect(new URL('/login?error=InvalidState', request.url));
   }
 
   const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -49,7 +61,7 @@ export async function GET(request) {
     
     // 3. Check if user exists
     let existingUser = await User.findOne({ email: googleUser.email });
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_this_in_production');
+    const secret = await getJwtSecret();
 
     if (existingUser) {
       // User exists, log them in

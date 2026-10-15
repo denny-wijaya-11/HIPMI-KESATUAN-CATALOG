@@ -69,7 +69,7 @@ export async function POST(request) {
     await VerificationToken.deleteOne({ _id: verificationRecord._id });
 
     // Login user otomatis (set cookie JWT)
-    const secret = getJwtSecret();
+    const secret = await getJwtSecret();
     const token = await new jose.SignJWT({
       id: newUser._id.toString(),
       email: newUser.email,

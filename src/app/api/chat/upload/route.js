@@ -8,7 +8,7 @@ async function getUserPayload() {
   const token = cookieStore.get('auth_token')?.value;
   if (!token) return null;
   try {
-    const secret = getJwtSecret();
+    const secret = await getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
     return payload; 
   } catch (err) {
