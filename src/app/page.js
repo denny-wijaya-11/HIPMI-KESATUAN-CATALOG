@@ -126,7 +126,7 @@ export default async function Home() {
                   href="/products?category=Jasa"
                   className="px-3 py-1.5 rounded-lg bg-white hover:bg-gray-100 text-gray-700 font-medium border border-gray-200 whitespace-nowrap transition-colors"
                 >
-                  Jasa & Print
+                  Jasa
                 </Link>
                 <Link
                   href="/products"
@@ -266,35 +266,67 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* 5. Minimalist Seller Callout Banner (ala Tokopedia Mitra/Seller) */}
+        {/* 5. Tenant Invitation Callout Banner with Male Mascot */}
         {(!user || user.role !== 'tenant') && (
-          <section className="py-6">
+          <section className="py-8 sm:py-12">
             <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-              <div className="bg-white border border-gray-200/90 rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-2xs">
-                <div className="flex items-center gap-3.5 text-center sm:text-left">
-                  <div className="w-12 h-12 rounded-xl bg-red-50 text-[#C62828] flex items-center justify-center shrink-0">
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
+              <div className="relative overflow-hidden bg-gradient-to-br from-red-50/70 via-white to-amber-50/30 border border-red-100/90 rounded-3xl p-6 sm:p-8 lg:p-10 shadow-xs flex flex-col md:flex-row items-center justify-between gap-6">
+                
+                {/* Background decorative glow */}
+                <div className="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-red-100/50 pointer-events-none blur-3xl" aria-hidden="true" />
+                <div className="absolute -left-16 -top-16 w-64 h-64 rounded-full bg-amber-100/40 pointer-events-none blur-3xl" aria-hidden="true" />
+
+                {/* Left/Main Content */}
+                <div className="flex-1 text-center md:text-left z-10">
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">
+                    Punya Usaha atau Jualan di Kampus?
+                  </h3>
+                  <p className="text-xs sm:text-sm text-gray-600 mt-2 max-w-xl leading-relaxed">
+                    Gabung sebagai tenant resmi di HIPMORA hanya <strong className="text-gray-900 font-semibold">Rp 139.000 / bulan</strong>. Jangkau ribuan mahasiswa, kelola pesanan langsung via WhatsApp, dan kembangkan bisnis kampusmu sekarang.
+                  </p>
+
+                  <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 sm:gap-3 mt-4 text-xs font-medium text-gray-700">
+                    <div className="flex items-center gap-1.5 bg-white/95 backdrop-blur-xs px-3 py-1.5 rounded-lg border border-gray-200/80 shadow-2xs">
+                      <span className="text-emerald-600 font-bold">✓</span>
+                      <span>Rp 139.000 / Bulan</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 bg-white/95 backdrop-blur-xs px-3 py-1.5 rounded-lg border border-gray-200/80 shadow-2xs">
+                      <span className="text-emerald-600 font-bold">✓</span>
+                      <span>Etalase Digital Resmi</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 bg-white/95 backdrop-blur-xs px-3 py-1.5 rounded-lg border border-gray-200/80 shadow-2xs">
+                      <span className="text-emerald-600 font-bold">✓</span>
+                      <span>Dukungan Promosi Kampus</span>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-sm sm:text-base font-bold text-gray-900">
-                      Punya Usaha atau Jualan di Kampus?
-                    </h3>
-                    <p className="text-xs text-gray-500">
-                      Buka toko online gratis di HIPMORA dan jangkau ribuan mahasiswa dengan mudah.
-                    </p>
+
+                  <div className="mt-6 flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3">
+                    <Link
+                      href="/become-tenant"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#C62828] hover:bg-[#8E0000] text-white px-7 py-3 rounded-xl text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all active:scale-[0.98]"
+                    >
+                      <span>Daftar Jadi Tenant</span>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </Link>
+                    <span className="text-xs text-gray-500">Mulai Rp 139.000/bln • Verifikasi cepat</span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
-                  <Link
-                    href="/become-tenant"
-                    className="bg-[#C62828] hover:bg-[#8E0000] text-white px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-2xs transition-colors"
-                  >
-                    Daftar Jadi Tenant Gratis
-                  </Link>
+                {/* Right: Male Mascot */}
+                <div className="relative shrink-0 flex items-center justify-center w-full md:w-auto z-10">
+                  <div className="relative w-40 sm:w-48 lg:w-52 h-56 sm:h-64 lg:h-72">
+                    <Image
+                      src="/images/male-pose.png"
+                      alt="Maskot Tenant Mahasiswa HIPMORA"
+                      fill
+                      sizes="(max-width: 640px) 160px, (max-width: 1024px) 192px, 208px"
+                      className="object-contain drop-shadow-md"
+                    />
+                  </div>
                 </div>
+
               </div>
             </div>
           </section>
@@ -325,7 +357,7 @@ export default async function Home() {
                 <li><Link href="/products?category=Makanan" className="hover:text-[#C62828]">Makanan & Snack</Link></li>
                 <li><Link href="/products?category=Minuman" className="hover:text-[#C62828]">Kopi & Minuman</Link></li>
                 <li><Link href="/products?category=Fashion" className="hover:text-[#C62828]">Outfit & Fashion</Link></li>
-                <li><Link href="/products?category=Jasa" className="hover:text-[#C62828]">Jasa & Print</Link></li>
+                <li><Link href="/products?category=Jasa" className="hover:text-[#C62828]">Jasa</Link></li>
               </ul>
             </div>
             <div>
