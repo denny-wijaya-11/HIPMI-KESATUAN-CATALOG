@@ -38,7 +38,7 @@ const CATEGORIES = [
   },
   {
     name: 'Jasa',
-    label: 'Jasa & Print',
+    label: 'Jasa',
     href: '/products?category=Jasa',
     icon: (
       <svg className="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

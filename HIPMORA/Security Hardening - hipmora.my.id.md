@@ -95,3 +95,16 @@ Saat memperbaiki bug security, dokumentasikan:
 - **Commits**: a169dfe (critical fixes), f50791e (build fix), plus robots.txt & gitignore updates
 - **PR**: #3 security/hardening
 - **Follow-up**: Set JWT_SECRET, NEXT_PUBLIC_IMGBB_API_KEY, RESEND_API_KEY in Vercel ENV; test HTTPS locally with mkcert; monitor Vercel CI
+
+---
+
+## 2026-09-26 — Security Hardening Sprint 2 (JWT_SECRET Cleanup)
+- **Issue**: 29 files still had hardcoded JWT_SECRET fallbacks (`'default_secret_key_change_this_in_production'`, `'fallback_secret'`) — bypassed central `getJwtSecret()` validation
+- **Fix**: 
+  - Replaced all 29 occurrences with `await getJwtSecret()` from `@/lib/auth`
+  - Added import `{ getJwtSecret } from '@/lib/auth'` where missing
+  - Now **zero** hardcoded fallbacks in codebase — production **requires** JWT_SECRET env var
+- **Files Modified**: 29 API routes + pages (admin, tenant, user, chat, auth/google, profile, orders, products)
+- **Commits**: 1b395b4
+- **Build**: Passed
+- **Vercel**: Ready for deploy once ENV vars set

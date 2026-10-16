@@ -54,8 +54,8 @@ export default function EditorialHero() {
         <div className="absolute inset-x-0 bottom-0 z-20 flex justify-center items-end pointer-events-none">
           <div className="relative w-[280px] sm:w-[360px] md:w-[460px] lg:w-[520px] h-[370px] sm:h-[470px] md:h-[590px] lg:h-[670px] pointer-events-auto">
             <Image
-              src="/images/pose-2.png"
-              alt="Karakter Mahasiswa HIPMORA"
+              src="/images/female-pose.png"
+              alt="Model Mahasiswa HIPMORA"
               fill
               priority
               sizes="(max-width: 640px) 280px, (max-width: 1024px) 460px, 520px"
