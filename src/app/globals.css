@@ -61,3 +61,31 @@ html {
 .animate-slide-up {
   animation: slide-up 0.3s ease-out forwards;
 }
+
+/* Editorial Hero Bespoke Animations */
+@keyframes stripe-drift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 32px 32px;
+  }
+}
+
+.animate-stripe-drift {
+  animation: stripe-drift 8s linear infinite;
+}
+
+@keyframes editorial-breathe {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.006);
+  }
+}
+
+.animate-editorial-breathe {
+  animation: editorial-breathe 6s ease-in-out infinite;
+}
+

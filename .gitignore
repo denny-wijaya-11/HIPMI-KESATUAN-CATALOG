@@ -45,3 +45,6 @@ firebase-admin-key.json
 # Obsidian local workspace (not for production)
 HIPMORA/
 
+.vs/
+scratch/
+

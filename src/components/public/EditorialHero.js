@@ -1,20 +1,87 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function EditorialHero() {
+  const containerRef = useRef(null);
+  const [coords, setCoords] = useState({ x: 0, y: 0 }); // smoothed values from -1 to 1
+  const targetCoords = useRef({ x: 0, y: 0 });
+  const currentCoords = useRef({ x: 0, y: 0 });
+  const animFrameId = useRef(null);
+  const isTouchRef = useRef(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    // Detect touch devices
+    if (typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
+      isTouchRef.current = true;
+    }
+
+    const animate = () => {
+      // Smooth lerp damping (0.075 for silk-like organic inertia)
+      currentCoords.current.x += (targetCoords.current.x - currentCoords.current.x) * 0.075;
+      currentCoords.current.y += (targetCoords.current.y - currentCoords.current.y) * 0.075;
+
+      setCoords({
+        x: currentCoords.current.x,
+        y: currentCoords.current.y,
+      });
+
+      animFrameId.current = requestAnimationFrame(animate);
+    };
+
+    animFrameId.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animFrameId.current) cancelAnimationFrame(animFrameId.current);
+    };
+  }, []);
+
+  const handleMouseMove = (e) => {
+    if (!containerRef.current || isTouchRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1; // -1 to 1
+    const ny = ((e.clientY - rect.top) / rect.height) * 2 - 1; // -1 to 1
+    targetCoords.current = {
+      x: Math.max(-1, Math.min(1, nx)),
+      y: Math.max(-1, Math.min(1, ny)),
+    };
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    targetCoords.current = { x: 0, y: 0 };
+  };
+
   return (
-    <section className="relative w-full bg-white border-b border-gray-100 overflow-hidden">
+    <section 
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="relative w-full bg-white border-b border-gray-100 overflow-hidden select-none"
+      style={{ perspective: '1200px' }}
+    >
       
       {/* Hero Canvas Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative h-[440px] sm:h-[540px] md:h-[660px] lg:h-[740px] flex flex-col justify-between pt-4 sm:pt-6 pb-2 md:pb-6">
 
-        {/* 1. TOP ROW: Quote on Left, Striped Number on Right */}
-        <div className="relative z-20 flex items-start justify-between gap-3">
+        {/* 1. TOP ROW: Quote on Left, Infinite-Hatched Number on Right */}
+        <div className="relative z-20 flex items-start justify-between gap-3 pointer-events-none">
           
           {/* Top Left Quote Block */}
-          <div className="max-w-[210px] sm:max-w-xs md:max-w-md">
+          <div 
+            className="max-w-[210px] sm:max-w-xs md:max-w-md pointer-events-auto transition-transform duration-200 ease-out"
+            style={{
+              transform: `translate3d(${coords.x * -6}px, ${coords.y * -4}px, 0)`,
+            }}
+          >
             <span className="text-2xl sm:text-4xl md:text-5xl font-serif text-gray-900 leading-none select-none block -mb-0.5">
               “
             </span>
@@ -26,23 +93,36 @@ export default function EditorialHero() {
             </p>
           </div>
 
-          {/* Top Right Diagonal-Hatched Number (Year '26 like '15 in reference) */}
-          <div className="shrink-0 select-none">
+          {/* Top Right Kinetic Diagonal-Hatched Number Stamp */}
+          <div 
+            className="shrink-0 select-none pointer-events-auto transition-transform duration-200 ease-out"
+            style={{
+              transform: `translate3d(${coords.x * 8}px, ${coords.y * 5}px, 0)`,
+            }}
+          >
             <div 
-              className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-none tracking-tighter"
+              className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-none tracking-tighter animate-stripe-drift cursor-default"
               style={{
                 backgroundImage: 'repeating-linear-gradient(45deg, #1A1A1A, #1A1A1A 3px, transparent 3px, transparent 8px)',
+                backgroundSize: '16px 16px',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}
+              title="Official Year 2026 Edition"
             >
               26
             </div>
           </div>
         </div>
 
-        {/* 2. BACKGROUND GIANT TYPOGRAPHY: HIPMORA */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 px-2 sm:px-4">
+        {/* 2. BACKGROUND GIANT TYPOGRAPHY: HIPMORA with Counter-Parallax Depth */}
+        <div 
+          className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 px-2 sm:px-4 will-change-transform"
+          style={{
+            transform: `translate3d(${coords.x * -22}px, ${coords.y * -8}px, 0)`,
+            transition: isHovered ? 'none' : 'transform 0.6s ease-out',
+          }}
+        >
           <span 
             className="text-[17vw] sm:text-[15vw] md:text-[13.5vw] lg:text-[14vw] font-black text-[#C62828] tracking-tight uppercase leading-none select-none text-center transform translate-y-2 sm:translate-y-4 md:translate-y-6"
           >
@@ -50,27 +130,43 @@ export default function EditorialHero() {
           </span>
         </div>
 
-        {/* 3. CENTER FOREGROUND CUTOUT CHARACTER (Clean Transparent PNG) */}
+        {/* 3. CENTER FOREGROUND CUTOUT CHARACTER (2.5D Spatial Perspective & Directional Shadow) */}
         <div className="absolute inset-x-0 bottom-0 z-20 flex justify-center items-end pointer-events-none">
-          <div className="relative w-[280px] sm:w-[360px] md:w-[460px] lg:w-[520px] h-[370px] sm:h-[470px] md:h-[590px] lg:h-[670px] pointer-events-auto">
+          <div 
+            className={`relative w-[280px] sm:w-[360px] md:w-[460px] lg:w-[520px] h-[370px] sm:h-[470px] md:h-[590px] lg:h-[670px] pointer-events-auto will-change-transform ${
+              !isHovered ? 'animate-editorial-breathe' : ''
+            }`}
+            style={{
+              transform: `translate3d(${coords.x * 16}px, ${coords.y * 6}px, 0) rotateY(${coords.x * 4.5}deg) rotateX(${-coords.y * 2.5}deg)`,
+              transformStyle: 'preserve-3d',
+              transition: isHovered ? 'none' : 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)',
+            }}
+          >
             <Image
-              src="/images/female-pose.png"
+              src="/images/female-fix.png"
               alt="Model Mahasiswa HIPMORA"
               fill
               priority
               sizes="(max-width: 640px) 280px, (max-width: 1024px) 460px, 520px"
-              className="object-contain object-bottom drop-shadow-2xl"
+              className="object-contain object-bottom transition-all duration-300"
+              style={{
+                filter: `drop-shadow(${-coords.x * 24}px ${16 + coords.y * 8}px 30px rgba(0, 0, 0, 0.18))`,
+              }}
             />
           </div>
         </div>
 
         {/* 4. DESKTOP WIDGETS: Floating at bottom-left and bottom-right (Desktop Only) */}
-        <div className="hidden md:flex relative z-30 items-end justify-between gap-4 w-full mt-auto">
+        <div className="hidden md:flex relative z-30 items-end justify-between gap-4 w-full mt-auto pointer-events-none">
           
           {/* Bottom Left: Catalog Media Preview Card */}
           <Link
             href="/products"
-            className="group flex items-center gap-3 bg-white/95 backdrop-blur-md p-2.5 rounded-2xl border border-gray-200/90 shadow-lg hover:shadow-xl hover:border-red-200 transition-all cursor-pointer max-w-xs"
+            className="group flex items-center gap-3 bg-white/95 backdrop-blur-md p-2.5 rounded-2xl border border-gray-200/90 shadow-lg hover:shadow-2xl hover:border-red-200 transition-all cursor-pointer max-w-xs pointer-events-auto transform hover:-translate-y-1.5 active:scale-98"
+            style={{
+              transform: `translate3d(${coords.x * -8}px, ${coords.y * -4}px, 0)`,
+              transition: 'transform 0.25s ease-out, box-shadow 0.25s ease-out, border-color 0.25s',
+            }}
           >
             <div className="relative w-20 h-14 sm:w-24 sm:h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0">
               <Image 
@@ -102,7 +198,13 @@ export default function EditorialHero() {
           </Link>
 
           {/* Bottom Right: Floating Dark Deals Widget */}
-          <div className="bg-[#111113] text-white rounded-2xl p-3 sm:p-3.5 shadow-2xl border border-white/10 w-68">
+          <div 
+            className="bg-[#111113] text-white rounded-2xl p-3 sm:p-3.5 shadow-2xl border border-white/10 w-68 pointer-events-auto transform hover:-translate-y-1.5 transition-all duration-200"
+            style={{
+              transform: `translate3d(${coords.x * 8}px, ${coords.y * -4}px, 0)`,
+              transition: 'transform 0.25s ease-out, box-shadow 0.25s ease-out',
+            }}
+          >
             <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-white/10">
               <span className="bg-[#C62828] text-white text-[9px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider">
                 SPECIAL DEALS
