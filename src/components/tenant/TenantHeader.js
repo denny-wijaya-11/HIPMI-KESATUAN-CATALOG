@@ -6,8 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import NotificationBell from "@/components/public/NotificationBell";
 
-export default function TenantHeader({ setIsSidebarOpen = () => {} }) {
-  const [user, setUser] = useState(null);
+export default function TenantHeader({ setIsSidebarOpen = () => {}, initialUser = null }) {
+  const [user, setUser] = useState(initialUser);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
@@ -19,7 +19,7 @@ export default function TenantHeader({ setIsSidebarOpen = () => {} }) {
         const res = await fetch('/api/profile');
         if (res.ok) {
           const data = await res.json();
-          setUser({ id: data._id, name: data.name, role: data.role });
+          setUser({ id: data._id, name: data.name, role: data.role, avatar: data.avatar });
         }
       } catch (e) {
         console.error(e);
@@ -52,12 +52,12 @@ export default function TenantHeader({ setIsSidebarOpen = () => {} }) {
       <button
         type="button"
         onClick={() => setIsSidebarOpen(true)}
-        className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 md:hidden"
+        className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-500 md:hidden"
       >
         <span className="sr-only">Open sidebar</span>
         <Bars3Icon className="h-6 w-6" aria-hidden="true" />
       </button>
-      <div className="flex-1 px-4 flex justify-between items-center">
+      <div className="flex-1 px-3 sm:px-6 flex justify-between items-center">
         <div className="flex-1 flex items-center min-w-0">
           <form onSubmit={handleSearch} className="w-full max-w-[130px] sm:max-w-xs relative text-gray-400 focus-within:text-gray-600">
             <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
@@ -74,13 +74,48 @@ export default function TenantHeader({ setIsSidebarOpen = () => {} }) {
             />
           </form>
         </div>
-        <div className="ml-2 md:ml-4 flex items-center space-x-2 md:space-x-4 flex-shrink-0">
+
+        <div className="ml-2 md:ml-4 flex items-center space-x-2 md:space-x-3 flex-shrink-0">
+          {/* Tombol Back ke Dashboard Utama */}
+          {user?.role === 'admin' ? (
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Link
+                href="/admin"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg text-white bg-red-700 hover:bg-red-800 transition-all shadow-xs group"
+                title="Kembali ke Dashboard Admin Utama"
+              >
+                <ArrowUturnLeftIcon className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+                <span className="hidden sm:inline">Dashboard Utama</span>
+                <span className="sm:hidden">Admin</span>
+              </Link>
+              <Link
+                href="/"
+                className="hidden md:inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                title="Kembali ke Beranda HIPMORA"
+              >
+                <HomeIcon className="w-3.5 h-3.5 text-gray-500" />
+                <span>Beranda</span>
+              </Link>
+            </div>
+          ) : (
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg text-white bg-red-700 hover:bg-red-800 transition-all shadow-xs group"
+              title="Kembali ke Halaman Beranda Utama"
+            >
+              <ArrowUturnLeftIcon className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+              <span>Kembali ke Beranda</span>
+            </Link>
+          )}
+
+          <div className="h-5 w-px bg-gray-200 hidden sm:block"></div>
+
           {user ? (
             <NotificationBell user={user} />
           ) : (
             <button
               type="button"
-              className="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              className="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
             >
               <span className="sr-only">View notifications</span>
               <BellIcon className="h-6 w-6" aria-hidden="true" />
@@ -111,36 +146,104 @@ export default function TenantHeader({ setIsSidebarOpen = () => {} }) {
                    </span>
                  )}
               </div>
-              <span className="ml-2 pr-2 font-medium text-gray-700 hidden sm:block">
+              <span className="ml-2 pr-2 font-medium text-gray-700 hidden sm:block max-w-[120px] truncate">
                 {user?.name || 'Tenant User'}
               </span>
             </button>
 
             {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                <div className="py-1" role="menu" aria-orientation="vertical">
+              <div className="absolute right-0 mt-2 w-52 rounded-xl shadow-lg bg-white ring-1 ring-black/5 py-1.5 z-50">
+                <div className="px-4 py-2 border-b border-gray-100 mb-1">
+                  <p className="text-xs text-gray-500 font-medium">Masuk sebagai</p>
+                  <p className="text-sm font-semibold text-gray-900 truncate">{user?.name || 'Tenant'}</p>
+                  <span className="inline-block mt-0.5 text-[10px] font-mono uppercase px-1.5 py-0.5 bg-red-50 text-red-700 rounded font-semibold">
+                    {user?.role === 'admin' ? 'Administrator' : 'Tenant / Penjual'}
+                  </span>
+                </div>
+                {user?.role === 'admin' && (
                   <Link
-                    href="/#tentang"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600"
+                    href="/admin"
+                    className="flex items-center gap-2.5 px-4 py-2 text-sm text-red-700 hover:bg-red-50 font-medium transition-colors"
                     role="menuitem"
                     onClick={() => setIsDropdownOpen(false)}
                   >
-                    Tentang Kami
+                    <ShieldCheckIcon className="w-4 h-4 text-red-600" />
+                    <span>Dashboard Admin Utama</span>
                   </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600"
-                    role="menuitem"
-                  >
-                    Log Out
-                  </button>
-                </div>
+                )}
+                <Link
+                  href="/"
+                  className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                  role="menuitem"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  <HomeIcon className="w-4 h-4 text-gray-400" />
+                  <span>Beranda Toko / Web</span>
+                </Link>
+                <Link
+                  href="/#tentang"
+                  className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                  role="menuitem"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  <InformationCircleIcon className="w-4 h-4 text-gray-400" />
+                  <span>Tentang Kami</span>
+                </Link>
+                <div className="border-t border-gray-100 my-1"></div>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2.5 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  role="menuitem"
+                >
+                  <ArrowLeftOnRectangleIcon className="w-4 h-4 text-red-500" />
+                  <span>Log Out</span>
+                </button>
               </div>
             )}
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+function ArrowUturnLeftIcon(props) {
+  return (
+    <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+    </svg>
+  );
+}
+
+function HomeIcon(props) {
+  return (
+    <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+    </svg>
+  );
+}
+
+function ShieldCheckIcon(props) {
+  return (
+    <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+    </svg>
+  );
+}
+
+function InformationCircleIcon(props) {
+  return (
+    <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+    </svg>
+  );
+}
+
+function ArrowLeftOnRectangleIcon(props) {
+  return (
+    <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+    </svg>
   );
 }
 

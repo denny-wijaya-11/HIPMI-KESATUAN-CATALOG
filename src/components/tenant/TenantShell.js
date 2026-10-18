@@ -4,15 +4,15 @@ import { useState, Suspense } from 'react';
 import TenantSidebar from './TenantSidebar';
 import TenantHeader from './TenantHeader';
 
-export default function TenantShell({ children }) {
+export default function TenantShell({ children, user = null }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900 flex">
-      <TenantSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+      <TenantSidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} user={user} />
       <div className="md:pl-64 flex flex-col flex-1 min-w-0">
         <Suspense fallback={<div className="h-16 bg-white border-b border-gray-200"></div>}>
-          <TenantHeader setIsSidebarOpen={setIsSidebarOpen} />
+          <TenantHeader setIsSidebarOpen={setIsSidebarOpen} initialUser={user} />
         </Suspense>
         <main className="flex-1 overflow-x-hidden">
           <div className="py-6">

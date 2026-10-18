@@ -12,8 +12,19 @@ const navigation = [
   { name: "Pesan / Chat", href: "/chat", icon: ChatBubbleIcon },
 ];
 
-export default function TenantSidebar({ isSidebarOpen = false, setIsSidebarOpen = () => {} }) {
+export default function TenantSidebar({ isSidebarOpen = false, setIsSidebarOpen = () => {}, user = null }) {
   const pathname = usePathname();
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch('/api/auth/logout', { method: 'POST' });
+      if (res.ok) {
+        window.location.href = '/';
+      }
+    } catch (err) {
+      console.error('Logout failed', err);
+    }
+  };
 
   return (
     <>
@@ -39,11 +50,50 @@ export default function TenantSidebar({ isSidebarOpen = false, setIsSidebarOpen 
 
           <div className="flex h-0 flex-1 flex-col overflow-y-auto pt-5 pb-4">
             <div className="flex flex-shrink-0 items-center px-4 justify-center">
-               <div className="relative w-48 h-12 flex items-center justify-center">
+               <Link href="/" title="Kembali ke Beranda HIPMORA" className="relative w-48 h-12 flex items-center justify-center hover:opacity-90 transition-opacity">
                  <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain" />
-               </div>
+               </Link>
             </div>
-            <nav className="mt-8 flex-1 space-y-1 px-2">
+
+            {/* Quick Switch / Back to Dashboard Utama */}
+            <div className="px-3 pt-4 pb-2 space-y-1">
+              {user?.role === 'admin' ? (
+                <>
+                  <Link
+                    href="/admin"
+                    onClick={() => setIsSidebarOpen(false)}
+                    className="flex items-center justify-between w-full px-3 py-2 text-xs font-semibold text-white bg-red-700 hover:bg-red-800 rounded-lg transition-all shadow-xs group"
+                    title="Kembali ke Dashboard Admin Utama"
+                  >
+                    <span className="flex items-center gap-2">
+                      <ArrowUturnLeftIcon className="w-4 h-4 text-white group-hover:-translate-x-0.5 transition-transform" />
+                      <span>Dashboard Admin</span>
+                    </span>
+                    <span className="text-[10px] bg-white/20 text-white px-1.5 py-0.5 rounded font-mono font-bold">UTAMA</span>
+                  </Link>
+                  <Link
+                    href="/"
+                    onClick={() => setIsSidebarOpen(false)}
+                    className="flex items-center gap-2 w-full px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors group"
+                  >
+                    <HomeIcon className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600" />
+                    <span>Ke Beranda Web</span>
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  href="/"
+                  onClick={() => setIsSidebarOpen(false)}
+                  className="flex items-center gap-2 w-full px-3 py-2 text-xs font-semibold text-white bg-red-700 hover:bg-red-800 rounded-lg transition-all shadow-xs group"
+                  title="Kembali ke Halaman Beranda Utama"
+                >
+                  <ArrowUturnLeftIcon className="w-4 h-4 text-white group-hover:-translate-x-0.5 transition-transform" />
+                  <span>Kembali ke Beranda Utama</span>
+                </Link>
+              )}
+            </div>
+
+            <nav className="mt-2 flex-1 space-y-1 px-2 border-t border-gray-100 pt-2">
               {navigation.map((item) => {
                 const isActive = item.href === '/tenant' ? pathname === '/tenant' : pathname.startsWith(item.href);
                 return (
@@ -67,24 +117,23 @@ export default function TenantSidebar({ isSidebarOpen = false, setIsSidebarOpen 
               })}
             </nav>
           </div>
-          <div className="flex-shrink-0 border-t border-gray-200 p-4">
-            <Link href="/" className="flex-shrink-0 w-full group block" onClick={() => setIsSidebarOpen(false)}>
-              <div className="flex items-center">
-                <div>
-                  <div className="flex h-10 w-10 rounded-full bg-gray-100 items-center justify-center border border-gray-200 group-hover:bg-gray-200 transition-colors">
-                    <ArrowLeftOnRectangleIcon className="h-6 w-6 text-gray-500" />
-                  </div>
-                </div>
-                <div className="ml-3">
-                  <p className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                    Logout
-                  </p>
-                  <p className="text-sm font-medium text-gray-500 group-hover:text-gray-700">
-                    Kembali ke web
-                  </p>
-                </div>
-              </div>
+          <div className="flex-shrink-0 flex flex-col border-t border-gray-200 p-3 space-y-1">
+            <Link
+              href="/"
+              onClick={() => setIsSidebarOpen(false)}
+              className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors group"
+            >
+              <HomeIcon className="h-5 w-5 text-gray-400 group-hover:text-gray-600 mr-3" />
+              <span>Kembali ke Beranda</span>
             </Link>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex items-center w-full px-3 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors group text-left"
+            >
+              <ArrowLeftOnRectangleIcon className="h-5 w-5 text-red-400 group-hover:text-red-600 mr-3" />
+              <span>Keluar (Logout)</span>
+            </button>
           </div>
         </div>
       </div>
@@ -92,15 +141,52 @@ export default function TenantSidebar({ isSidebarOpen = false, setIsSidebarOpen 
       {/* Desktop Sidebar */}
       <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
         <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
-          <div className="flex items-center h-28 flex-shrink-0 px-4 bg-white border-b border-gray-100">
+          <div className="flex items-center h-24 flex-shrink-0 px-4 bg-white border-b border-gray-100">
             <div className="flex items-center justify-center w-full py-2 h-full">
-              <div className="relative w-56 h-full flex items-center justify-center">
+              <Link href="/" title="Kembali ke Beranda HIPMORA" className="relative w-52 h-full flex items-center justify-center hover:opacity-90 transition-opacity">
                 <Image src="/images/MASKOT LOGO.png" alt="HIPMORA Logo" fill className="object-contain" />
-              </div>
+              </Link>
             </div>
           </div>
+
+          {/* Quick Switch / Back to Dashboard Utama */}
+          <div className="px-3 pt-3 pb-2 space-y-1 border-b border-gray-100">
+            {user?.role === 'admin' ? (
+              <>
+                <Link
+                  href="/admin"
+                  className="flex items-center justify-between w-full px-3 py-2 text-xs font-semibold text-white bg-red-700 hover:bg-red-800 rounded-lg transition-all shadow-xs group"
+                  title="Kembali ke Dashboard Admin Utama"
+                >
+                  <span className="flex items-center gap-2">
+                    <ArrowUturnLeftIcon className="w-4 h-4 text-white group-hover:-translate-x-0.5 transition-transform" />
+                    <span>Dashboard Admin</span>
+                  </span>
+                  <span className="text-[10px] bg-white/20 text-white px-1.5 py-0.5 rounded font-mono font-bold">UTAMA</span>
+                </Link>
+                <Link
+                  href="/"
+                  className="flex items-center gap-2 w-full px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors group"
+                  title="Kembali ke Beranda HIPMORA"
+                >
+                  <HomeIcon className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600" />
+                  <span>Ke Beranda Web</span>
+                </Link>
+              </>
+            ) : (
+              <Link
+                href="/"
+                className="flex items-center gap-2 w-full px-3 py-2 text-xs font-semibold text-white bg-red-700 hover:bg-red-800 rounded-lg transition-all shadow-xs group"
+                title="Kembali ke Halaman Beranda Utama"
+              >
+                <ArrowUturnLeftIcon className="w-4 h-4 text-white group-hover:-translate-x-0.5 transition-transform" />
+                <span>Kembali ke Beranda Utama</span>
+              </Link>
+            )}
+          </div>
+
           <div className="flex-1 flex flex-col overflow-y-auto">
-            <nav className="flex-1 px-3 py-4 space-y-1">
+            <nav className="flex-1 px-3 py-3 space-y-1">
               {navigation.map((item) => {
                 const isActive = item.href === '/tenant' ? pathname === '/tenant' : pathname.startsWith(item.href);
                 return (
@@ -132,28 +218,35 @@ export default function TenantSidebar({ isSidebarOpen = false, setIsSidebarOpen 
               })}
             </nav>
           </div>
-          <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
-            <Link href="/" className="flex-shrink-0 w-full group block">
-              <div className="flex items-center">
-                <div>
-                  <div className="flex h-9 w-9 rounded-full bg-gray-100 items-center justify-center border border-gray-200 group-hover:bg-gray-200 transition-colors">
-                    <ArrowLeftOnRectangleIcon className="h-5 w-5 text-gray-500" />
-                  </div>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                    Logout
-                  </p>
-                  <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">
-                    Kembali ke web
-                  </p>
-                </div>
-              </div>
+
+          <div className="flex-shrink-0 flex flex-col border-t border-gray-200 p-3 space-y-1">
+            <Link
+              href="/"
+              className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors group"
+            >
+              <HomeIcon className="h-5 w-5 text-gray-400 group-hover:text-gray-600 mr-3" />
+              <span>Kembali ke Beranda</span>
             </Link>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex items-center w-full px-3 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors group text-left"
+            >
+              <ArrowLeftOnRectangleIcon className="h-5 w-5 text-red-400 group-hover:text-red-600 mr-3" />
+              <span>Keluar (Logout)</span>
+            </button>
           </div>
         </div>
       </div>
     </>
+  );
+}
+
+function ArrowUturnLeftIcon(props) {
+  return (
+    <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+    </svg>
   );
 }
 
