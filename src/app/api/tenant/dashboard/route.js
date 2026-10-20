@@ -56,41 +56,51 @@ export async function GET(request) {
       }
     });
 
-    // 4. Sales for last 7 days
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
-    sevenDaysAgo.setHours(0, 0, 0, 0);
+    // 4. Sales for last 7 days (WIB / UTC+7)
+    const nowWib = new Date(Date.now() + 7 * 60 * 60 * 1000);
+    const startWib = new Date(nowWib);
+    startWib.setUTCDate(startWib.getUTCDate() - 6);
+    startWib.setUTCHours(0, 0, 0, 0);
+    const sevenDaysAgoUtc = new Date(startWib.getTime() - 7 * 60 * 60 * 1000);
 
     const aggregateMatch = {
       ...orderQuery,
-      status: 'Selesai',
-      createdAt: { $gte: sevenDaysAgo }
+      status: { $nin: ['Dibatalkan'] },
+      createdAt: { $gte: sevenDaysAgoUtc }
     };
 
-    // Aggregate daily sales
+    // Aggregate daily sales with timezone UTC+7
     const salesDataRaw = await Order.aggregate([
       {
         $match: aggregateMatch
       },
       {
         $group: {
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-          revenue: { $sum: "$totalAmount" },
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt", timezone: "+07:00" } },
+          revenue: {
+            $sum: {
+              $cond: [
+                { $in: ["$status", ["Selesai", "Dikirim", "Diproses"]] },
+                "$totalAmount",
+                0
+              ]
+            }
+          },
           orders: { $sum: 1 }
         }
       },
       { $sort: { "_id": 1 } }
     ]);
 
-    // Fill missing days
+    // Fill missing days in Indonesian timezone
     const salesChart = [];
     for (let i = 0; i < 7; i++) {
-      const d = new Date();
-      d.setDate(d.getDate() - (6 - i));
-      const dateStr = d.toISOString().split('T')[0]; // YYYY-MM-DD
+      const curWib = new Date(startWib);
+      curWib.setUTCDate(curWib.getUTCDate() + i);
+      const dateStr = curWib.toISOString().split('T')[0];
       const found = salesDataRaw.find(s => s._id === dateStr);
       
-      const dayName = d.toLocaleDateString('id-ID', { weekday: 'short' });
+      const dayName = curWib.toLocaleDateString('id-ID', { weekday: 'short', timeZone: 'UTC' });
       salesChart.push({
         date: dateStr,
         day: dayName,

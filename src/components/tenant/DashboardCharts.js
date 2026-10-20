@@ -28,22 +28,28 @@ export default function DashboardCharts({ metrics }) {
                 dataKey="day" 
                 axisLine={false} 
                 tickLine={false} 
-                tick={{fill: '#6b7280', fontSize: 10, dy: 4}} 
-                interval={metrics.salesChart.length > 5 ? 'preserveStartEnd' : 0}
+                tick={{fill: '#6b7280', fontSize: 11, dy: 4}} 
+                interval={0}
               />
               <YAxis 
                 axisLine={false} 
                 tickLine={false} 
                 tick={{fill: '#6b7280', fontSize: 10}} 
-                tickFormatter={(value) => value >= 1000 ? `Rp${value/1000}k` : `Rp${value}`}
-                tickCount={4}
+                domain={[0, (dataMax) => (dataMax <= 0 ? 100000 : Math.ceil(dataMax * 1.25))]}
+                tickFormatter={(value) => {
+                  if (value === 0) return 'Rp 0';
+                  if (value >= 1000000) return `Rp ${(value / 1000000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} jt`;
+                  if (value >= 1000) return `Rp ${Math.round(value / 1000)}k`;
+                  return `Rp ${value}`;
+                }}
+                tickCount={5}
               />
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
               <Tooltip 
                 formatter={(value) => [`Rp ${value.toLocaleString('id-ID')}`, 'Pendapatan']}
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px' }}
               />
-              <Area type="monotone" dataKey="revenue" stroke="#16a34a" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" />
+              <Area type="monotone" dataKey="revenue" stroke="#16a34a" strokeWidth={2.5} fillOpacity={1} fill="url(#colorRevenue)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -59,15 +65,16 @@ export default function DashboardCharts({ metrics }) {
                 dataKey="day" 
                 axisLine={false} 
                 tickLine={false} 
-                tick={{fill: '#6b7280', fontSize: 10, dy: 4}}
-                interval={metrics.salesChart.length > 5 ? 'preserveStartEnd' : 0}
+                tick={{fill: '#6b7280', fontSize: 11, dy: 4}}
+                interval={0}
               />
               <YAxis 
                 allowDecimals={false} 
                 axisLine={false} 
                 tickLine={false} 
                 tick={{fill: '#6b7280', fontSize: 10}} 
-                tickCount={4}
+                domain={[0, (dataMax) => (dataMax <= 0 ? 5 : Math.ceil(dataMax * 1.25))]}
+                tickCount={6}
               />
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
               <Tooltip 
