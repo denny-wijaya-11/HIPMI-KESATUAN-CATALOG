@@ -3,13 +3,12 @@ import Link from "next/link";
 import mongoose from "mongoose";
 import Product from "@/models/Product";
 import User from "@/models/User";
-import CategoryFilter from "@/components/public/CategoryFilter";
+import ProductFilterBar from "@/components/public/ProductFilterBar";
 import AddToCartButton from "@/components/public/AddToCartButton";
 import CartIcon from "@/components/public/CartIcon";
 import WishlistNavIcon from "@/components/public/WishlistNavIcon";
 import WishlistButton from "@/components/public/WishlistButton";
 import UserNavMenu from "@/components/public/UserNavMenu";
-import SearchBar from "@/components/mobile/SearchBar";
 import PublicHeader from "@/components/public/PublicHeader";
 import { getUserPayload } from "@/lib/auth";
 import dbConnect from '@/lib/mongodb';
@@ -91,87 +90,82 @@ export default async function ProductsPage({ searchParams }) {
       <main className="relative z-10">
         <section className="py-8 md:py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 md:mb-10 gap-4">
-              <div>
-                <div className="mb-4">
-                  <Link href="/" className="inline-flex items-center text-sm text-gray-500 hover:text-[#C62828] transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                    Kembali ke Beranda
-                  </Link>
-                </div>
-                {tenantDetails ? (
-                  <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm mt-4">
-                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-red-100 border-2 border-red-200 flex items-center justify-center overflow-hidden shrink-0">
-                      {tenantDetails.avatar ? (
-                        <img 
-                          src={tenantDetails.avatar} 
-                          alt={tenantDetails.name} 
-                          className="w-full h-full object-cover" 
-                          onError={(e) => { e.target.onerror = null; e.target.src = '/images/placeholder.png'; }}
-                        />
-                      ) : (
-                        <span className="text-red-700 font-bold text-xl md:text-2xl">{tenantDetails.name.charAt(0).toUpperCase()}</span>
-                      )}
-                    </div>
-                    <div>
-                      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">{tenantDetails.name}</h1>
-                      <p className="text-sm text-gray-500 flex items-center gap-1.5">
-                        <svg className="w-4 h-4 text-[#C62828]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
-                        {tenantDetails.university || 'Universitas Kesatuan'}
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2">Semua Produk</h1>
-                    <p className="text-gray-500 max-w-xl text-sm md:text-base">
-                      {actualUserUniversity && !isRoaming 
-                        ? `Menampilkan produk khusus dari mahasiswa ${actualUserUniversity}.` 
-                        : "Jelajahi seluruh karya dan produk inovatif dari anggota HIPMORA Kesatuan."}
-                    </p>
-                  </>
-                )}
-              </div>
-              
-              {/* Mode Roaming Desktop (Hidden on Mobile, moved below SearchBar for mobile) */}
-              <div className="hidden md:flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm">
-                <div className="flex flex-col">
-                  <span className="text-sm font-bold text-gray-900">Mode ROAMING</span>
-                  <span className="text-[10px] text-gray-500 leading-tight">Lihat produk di luar kampus</span>
-                </div>
-                <Link 
-                  href={`/products?${new URLSearchParams({ ...resolvedParams, roaming: (!actualUserUniversity || isRoaming) ? 'false' : 'true' }).toString()}`}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#C62828] focus:ring-offset-2 ${(!actualUserUniversity || isRoaming) ? 'bg-[#C62828]' : 'bg-gray-200'}`}
-                >
-                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${(!actualUserUniversity || isRoaming) ? 'translate-x-6' : 'translate-x-1'}`} />
+            {/* Header Section */}
+            <div className="mb-6 md:mb-8">
+              <div className="mb-3">
+                <Link href="/" className="inline-flex items-center text-xs sm:text-sm font-medium text-gray-500 hover:text-[#C62828] transition-colors group">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5 group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                  Kembali ke Beranda
                 </Link>
               </div>
+
+              {tenantDetails ? (
+                <div className="flex items-center gap-4 bg-white p-5 rounded-2xl border border-gray-200/80 shadow-xs">
+                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-red-100 border-2 border-red-200 flex items-center justify-center overflow-hidden shrink-0">
+                    {tenantDetails.avatar ? (
+                      <img 
+                        src={tenantDetails.avatar} 
+                        alt={tenantDetails.name} 
+                        className="w-full h-full object-cover" 
+                        onError={(e) => { e.target.onerror = null; e.target.src = '/images/placeholder.png'; }}
+                      />
+                    ) : (
+                      <span className="text-red-700 font-bold text-xl md:text-2xl">{tenantDetails.name.charAt(0).toUpperCase()}</span>
+                    )}
+                  </div>
+                  <div>
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">{tenantDetails.name}</h1>
+                    <p className="text-sm text-gray-500 flex items-center gap-1.5">
+                      <svg className="w-4 h-4 text-[#C62828]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                      {tenantDetails.university || 'Universitas Kesatuan'}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-1.5">
+                    Katalog Produk
+                  </h1>
+                  <p className="text-gray-500 text-xs sm:text-sm md:text-base max-w-2xl">
+                    {actualUserUniversity && !isRoaming 
+                      ? `Menampilkan produk unggulan karya mahasiswa ${actualUserUniversity}.` 
+                      : "Jelajahi seluruh karya, produk inovatif, dan jasa dari mahasiswa ekosistem HIPMORA."}
+                  </p>
+                </div>
+              )}
             </div>
 
-            <SearchBar initialQuery={search || ''} />
+            {/* Unified Filter & Search Bar */}
+            <ProductFilterBar
+              userUniversity={actualUserUniversity}
+              totalProducts={products.length}
+            />
 
-            {/* Mode Roaming Mobile */}
-            <div className="flex md:hidden items-center justify-between bg-white px-4 py-3 rounded-xl border border-gray-200 shadow-sm mb-6">
-              <div className="flex flex-col">
-                <span className="text-sm font-bold text-gray-900">Mode ROAMING</span>
-                <span className="text-xs text-gray-500 leading-tight">Lihat produk di luar kampus</span>
-              </div>
-              <Link 
-                href={`/products?${new URLSearchParams({ ...resolvedParams, roaming: (!actualUserUniversity || isRoaming) ? 'false' : 'true' }).toString()}`}
-                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#C62828] focus:ring-offset-2 ${(!actualUserUniversity || isRoaming) ? 'bg-[#C62828]' : 'bg-gray-200'}`}
-              >
-                <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${(!actualUserUniversity || isRoaming) ? 'translate-x-6' : 'translate-x-1'}`} />
-              </Link>
-            </div>
-
-            <CategoryFilter userUniversity={user?.university} />
-
+            {/* Product Grid */}
             <div className="grid gap-3 md:gap-6 grid-cols-2 lg:grid-cols-3">
               {products.length === 0 ? (
-                <div className="col-span-full text-center py-12 text-gray-400">
-                  Belum ada produk di katalog.
+                <div className="col-span-full bg-white rounded-2xl border border-gray-200/80 p-8 sm:p-14 text-center shadow-xs">
+                  <div className="mx-auto w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center text-[#C62828] mb-4">
+                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                  </div>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">Tidak Ada Produk Ditemukan</h3>
+                  <p className="text-xs sm:text-sm text-gray-500 max-w-md mx-auto mb-5 leading-relaxed">
+                    {search || category || region 
+                      ? 'Tidak ada produk yang cocok dengan kombinasi filter Anda saat ini. Silakan atur ulang filter atau cari kata kunci lain.'
+                      : 'Katalog saat ini masih kosong atau produk baru sedang dipersiapkan oleh para tenant.'}
+                  </p>
+                  <Link
+                    href="/products"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#C62828] hover:bg-red-800 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-xs transition-colors"
+                  >
+                    Reset Filter
+                  </Link>
                 </div>
               ) : (
                 products.map((product) => (
