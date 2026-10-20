@@ -22,13 +22,10 @@ export async function middleware(request) {
           const secret = await getJwtSecret();
           const { payload } = await jwtVerify(token, secret);
       
-      // Basic RBAC Example in Middleware
+      // Strict RBAC: Hanya akun dengan role 'admin' yang boleh mengakses /admin
       const userRole = payload.role;
-      const path = request.nextUrl.pathname;
-      
-      // If operator tries to access Admin/Developer-only settings
-      if (userRole === 'operator' && path.startsWith('/admin/settings')) {
-         return NextResponse.redirect(new URL('/admin', request.url));
+      if (userRole !== 'admin') {
+        return NextResponse.redirect(new URL('/', request.url));
       }
       
       return NextResponse.next();

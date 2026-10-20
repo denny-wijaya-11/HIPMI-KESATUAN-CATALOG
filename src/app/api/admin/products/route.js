@@ -46,19 +46,11 @@ function verifyOperatorUniversity(user, targetUniversity) {
 
 export async function GET(request) {
   const user = await getUserPayload();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!user || user.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   try {
     await connectDB();
     let query = {};
-    
-    // Jika role operator, ambil semua produk dari kampusnya dengan validasi
-    if (user.role === 'operator') {
-      if (!verifyOperatorUniversity(user, user.university)) {
-        return NextResponse.json({ error: 'Forbidden: University mismatch' }, { status: 403 });
-      }
-      query = { university: user.university };
-    }
 
     // Ambil data produk dan relasi ke nama pemiliknya
     const products = await Product.find(query)
@@ -73,7 +65,7 @@ export async function GET(request) {
 
 export async function POST(request) {
   const user = await getUserPayload();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!user || user.role !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   try {
     await connectDB();
