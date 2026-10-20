@@ -4,7 +4,7 @@ Selamat datang di repositori resmi HIPMI PT IBI Kesatuan Business Catalog & Web 
 
 Platform ini dirancang khusus untuk mempublikasikan, mendata, dan mempromosikan katalog bisnis serta profil wirausaha muda anggota HIPMI PT (Himpunan Pengusaha Muda Indonesia Perguruan Tinggi) IBI Kesatuan Bogor.
 
-📌 Tentang Proyek
+📌 Tentang Proyek 
 
 HIPMORA bertujuan untuk membangun ekosistem kewirausahaan digital yang terintegrasi bagi mahasiswa dan alumni IBI Kesatuan. Melalui platform ini, publik dan sesama anggota dapat dengan mudah menemukan berbagai produk, layanan, serta bidang usaha yang dijalankan oleh para pengusaha muda.
 
