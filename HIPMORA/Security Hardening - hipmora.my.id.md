@@ -108,3 +108,18 @@ Saat memperbaiki bug security, dokumentasikan:
 - **Commits**: 1b395b4
 - **Build**: Passed
 - **Vercel**: Ready for deploy once ENV vars set
+
+---
+
+## 2026-10-20 — Security Hardening Sprint 3 (Strict Admin RBAC & Route Defense)
+- **Issue**: Non-admin users (`role: 'user'` / tenants) were not strictly prevented from visiting `/admin` via manual URL entry in `src/middleware.js`. Additionally, `/api/admin/products` lacked strict role-based access verification, exposing admin product listing to any authenticated user.
+- **Fix**:
+  - **Middleware Gatekeeper ([src/middleware.js](file:///c:/AntiGravity%20-%20Global/HIPMI/src/middleware.js))**: Strictly verifies `payload.role === 'admin'`. Any non-admin request to `/admin/*` is immediately terminated and redirected to `/`.
+  - **Server Layout Guard ([src/app/admin/layout.js](file:///c:/AntiGravity%20-%20Global/HIPMI/src/app/admin/layout.js))**: Added server-side defense-in-depth check using `getUserPayload()`. Non-admins are redirected server-side before any child components render.
+  - **API Protection ([src/app/api/admin/products/route.js](file:///c:/AntiGravity%20-%20Global/HIPMI/src/app/api/admin/products/route.js))**: Explicitly rejects any request with `403 Forbidden` if `user.role !== 'admin'` for both GET and POST endpoints.
+  - **UI Isolation**: Tenant dashboard navigation buttons conditionally render the admin panel link strictly when `user?.role === 'admin'`.
+- **Files Modified**: `src/middleware.js`, `src/app/admin/layout.js`, `src/app/api/admin/products/route.js`
+- **Commits**: 4313df3
+- **Build**: Passed (51/51 routes)
+- **Production Status**: Deployed to `main` branch.
+
