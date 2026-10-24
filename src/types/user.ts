@@ -1,36 +1,51 @@
 export type UserRole = 'admin' | 'tenant' | 'user' | 'operator' | 'developer';
 
-export type TenantStatus = 'pending' | 'active' | 'suspended' | null;
+export type TenantStatus = 'none' | 'pending' | 'paid' | 'approved' | 'rejected' | 'suspended' | null;
+
+export type AuthProvider = 'local' | 'google';
 
 export interface ISavedAddress {
   label: string;
-  recipientName: string;
-  phoneNumber: string;
-  fullAddress: string;
+  name: string;
+  phone: string;
+  address: string;
   city: string;
-  postalCode: string;
-  isDefault?: boolean;
+  postalCode?: string;
+  notes?: string;
 }
 
 export interface ICartItem {
-  product: string; // Product ObjectId string
+  product: string; // Product ObjectId or Populated Product
   quantity: number;
-  variantName?: string;
-  price: number;
+}
+
+export interface IPaymentMethodInfo {
+  provider: string; // e.g., 'BCA', 'GoPay'
+  accountNumber: string;
+  accountName: string;
+  qrisImage?: string;
 }
 
 export interface IUser {
   _id: string;
   name: string;
   email: string;
+  password?: string;
   role: UserRole;
-  avatar?: string;
+  tenantStatus?: TenantStatus;
+  whatsapp?: string;
+  lastActive?: Date | string;
+  city?: string;
   university?: string;
   isStudent?: boolean;
-  tenantStatus?: TenantStatus;
+  address?: string;
   savedAddresses?: ISavedAddress[];
-  cart?: ICartItem[];
+  authProvider?: AuthProvider;
+  avatar?: string;
+  fcmToken?: string | null;
   wishlist?: string[];
+  cart?: ICartItem[];
+  paymentMethods?: IPaymentMethodInfo[];
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }

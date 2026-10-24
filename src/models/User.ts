@@ -1,22 +1,23 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, Model } from 'mongoose';
+import { IUser } from '@/types';
 
-function arrayLimit(val) {
+function arrayLimit(val: any[]) {
   return val.length <= 5;
 }
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new Schema<IUser>({
   email: {
     type: String,
     required: [true, 'Please provide an email'],
     unique: true,
     match: [
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, //JWT Token
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
       'Please fill a valid email address',
     ],
   },
   password: {
     type: String,
-    required: function() { return this.authProvider === 'local'; },
+    required: function(this: any) { return this.authProvider === 'local'; },
     minlength: 6,
     select: false,
   },
@@ -37,7 +38,7 @@ const UserSchema = new mongoose.Schema({
   },
   whatsapp: {
     type: String,
-    required: function() { return this.role !== 'developer' && this.role !== 'admin'; }
+    required: function(this: any) { return this.role !== 'developer' && this.role !== 'admin'; }
   },
   lastActive: {
     type: Date,
@@ -45,11 +46,11 @@ const UserSchema = new mongoose.Schema({
   },
   city: {
     type: String,
-    required: function() { return this.role !== 'developer' && this.role !== 'admin'; }
+    required: function(this: any) { return this.role !== 'developer' && this.role !== 'admin'; }
   },
   university: {
     type: String,
-    required: function() { return this.role !== 'developer' && this.role !== 'admin'; }
+    required: function(this: any) { return this.role !== 'developer' && this.role !== 'admin'; }
   },
   isStudent: {
     type: Boolean,
@@ -60,8 +61,8 @@ const UserSchema = new mongoose.Schema({
   },
   savedAddresses: {
     type: [{
-      label: { type: String, required: true }, // e.g., "Rumah", "Kost"
-      name: { type: String, required: true }, // Receiver's name
+      label: { type: String, required: true },
+      name: { type: String, required: true },
       phone: { type: String, required: true },
       address: { type: String, required: true },
       city: { type: String, required: true },
@@ -84,12 +85,12 @@ const UserSchema = new mongoose.Schema({
     default: null
   },
   wishlist: [{
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Product'
   }],
   cart: [{
     product: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'Product'
     },
     quantity: {
@@ -98,11 +99,13 @@ const UserSchema = new mongoose.Schema({
     }
   }],
   paymentMethods: [{
-    provider: { type: String, required: true }, // e.g., 'BCA', 'GoPay'
+    provider: { type: String, required: true },
     accountNumber: { type: String, required: true },
     accountName: { type: String, required: true },
-    qrisImage: { type: String } // URL to the QRIS image
+    qrisImage: { type: String }
   }]
 }, { timestamps: true });
 
-export default mongoose.models.User || mongoose.model('User', UserSchema);
+const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
+
+export default User;

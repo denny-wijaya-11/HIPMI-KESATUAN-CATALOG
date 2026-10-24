@@ -1,7 +1,8 @@
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
+import { IUserPayload } from '@/types';
 
-async function getJwtSecret() {
+export async function getJwtSecret(): Promise<Uint8Array> {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
     throw new Error('JWT_SECRET environment variable is required but not set');
@@ -9,7 +10,7 @@ async function getJwtSecret() {
   return new TextEncoder().encode(secret);
 }
 
-export async function getUserPayload() {
+export async function getUserPayload(): Promise<IUserPayload | null> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('auth_token')?.value;
@@ -18,10 +19,8 @@ export async function getUserPayload() {
     
     const secret = await getJwtSecret();
     const { payload } = await jwtVerify(token, secret);
-    return payload; // { id, email, name, role }
+    return payload as unknown as IUserPayload;
   } catch (err) {
     return null;
   }
 }
-
-export { getJwtSecret };

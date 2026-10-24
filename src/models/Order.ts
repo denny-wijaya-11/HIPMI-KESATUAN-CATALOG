@@ -1,8 +1,9 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, Model } from 'mongoose';
+import { IOrder } from '@/types';
 
-const OrderItemSchema = new mongoose.Schema({
+const OrderItemSchema = new Schema({
   product: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Product',
     required: true
   },
@@ -20,14 +21,14 @@ const OrderItemSchema = new mongoose.Schema({
   }
 });
 
-const OrderSchema = new mongoose.Schema({
+const OrderSchema = new Schema<IOrder>({
   buyer: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
   tenant: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
@@ -65,4 +66,6 @@ const OrderSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-export default mongoose.models.Order || mongoose.model('Order', OrderSchema);
+const Order: Model<IOrder> = mongoose.models.Order || mongoose.model<IOrder>('Order', OrderSchema);
+
+export default Order;

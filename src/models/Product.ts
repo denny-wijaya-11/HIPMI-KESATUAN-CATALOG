@@ -1,6 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, Model } from 'mongoose';
+import { IProduct } from '@/types';
 
-const ProductSchema = new mongoose.Schema({
+const ProductSchema = new Schema<IProduct>({
   name: {
     type: String,
     required: [true, 'Please provide a product name'],
@@ -62,7 +63,7 @@ const ProductSchema = new mongoose.Schema({
     }
   }],
   owner: {
-    type: mongoose.Schema.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
@@ -75,7 +76,7 @@ const ProductSchema = new mongoose.Schema({
     default: false
   },
   reviews: [{
-    user: { type: mongoose.Schema.ObjectId, ref: 'User', required: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, required: true },
     rating: { type: Number, required: true, min: 1, max: 5 },
     comment: { type: String, required: true, maxlength: 500 },
@@ -91,4 +92,6 @@ const ProductSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-export default mongoose.models.Product || mongoose.model('Product', ProductSchema);
+const Product: Model<IProduct> = mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema);
+
+export default Product;
