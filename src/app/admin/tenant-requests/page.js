@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 
 export default function TenantRequestsPage() {
@@ -10,11 +10,7 @@ export default function TenantRequestsPage() {
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState(null);
 
-  useEffect(() => {
-    fetchRequests();
-  }, []);
-
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     try {
       const res = await fetch('/api/admin/tenant-requests');
       if (!res.ok) throw new Error('Gagal mengambil data pengajuan');
@@ -23,10 +19,33 @@ export default function TenantRequestsPage() {
       setCurrentUserRole(data.role || '');
     } catch (err) {
       setError(err.message);
-    } finally {
-      setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    async function loadRequests() {
+      try {
+        const res = await fetch('/api/admin/tenant-requests');
+        if (!res.ok) throw new Error('Gagal mengambil data pengajuan');
+        const data = await res.json();
+        if (mounted) {
+          setRequests(data.requests || []);
+          setCurrentUserRole(data.role || '');
+        }
+      } catch (err) {
+        if (mounted) {
+          setError(err.message);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    }
+    loadRequests();
+    return () => { mounted = false; };
+  }, []);
 
   const handleAction = async (userId, action) => {
     let actionText = action === 'approve' ? 'menerima' : action === 'reject' ? 'menolak' : 'menandai lunas';

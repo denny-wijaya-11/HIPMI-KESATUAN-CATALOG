@@ -29,7 +29,7 @@ function ChatContent() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
-  const [isClient, setIsClient] = useState(false);
+  const [isClient, setIsClient] = useState(true);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [imageAttachment, setImageAttachment] = useState(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -45,8 +45,6 @@ function ChatContent() {
   const presetUserName = searchParams.get('userName') || '';
   const presetUserAvatar = searchParams.get('userAvatar') || '';
   const productId = searchParams.get('productId') || '';
-
-  useEffect(() => { setIsClient(true); }, []);
 
   useEffect(() => { activeContactRef.current = activeContact; }, [activeContact]);
 

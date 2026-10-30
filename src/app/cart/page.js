@@ -14,13 +14,12 @@ export default function CheckoutPage() {
   const [waLink, setWaLink] = useState('');
 
   // Auto-select all items initially when loaded
-  useEffect(() => {
-    if (isLoaded) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelectedItems(cart.map(item => item.cartItemId || item._id));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoaded, cart.length]);
+    useEffect(() => {
+      if (isLoaded) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setSelectedItems(cart.map(item => item.cartItemId || item._id));
+      }
+    }, [isLoaded, cart]);
 
   const toggleSelect = (id) => {
     setSelectedItems(prev => 

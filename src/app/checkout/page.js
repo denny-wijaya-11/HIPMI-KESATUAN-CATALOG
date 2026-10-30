@@ -21,11 +21,10 @@ export default function CheckoutPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const [isSameCampus, setIsSameCampus] = useState(false);
-  const [selectedAddressId, setSelectedAddressId] = useState('new');
-  const [saveNewAddress, setSaveNewAddress] = useState(false);
+    const [selectedAddressId, setSelectedAddressId] = useState('new');
+    const [saveNewAddress, setSaveNewAddress] = useState(false);
 
-  useEffect(() => {
+    useEffect(() => {
     fetch('/api/user/sync')
       .then(res => res.json())
       .then(data => {
@@ -51,18 +50,15 @@ export default function CheckoutPage() {
 
   const totalAmount = cart.reduce((total, item) => total + (Number(item.price) * (item.quantity || 1)), 0);
 
-  // Check if ALL products in the cart are from tenants in the same university
-  useEffect(() => {
-    if (user && user.university && cart.length > 0) {
-      const allSame = cart.every(item => {
-        const tenantUni = item.owner?.university || item.tenant?.university || item.university; // fallback depends on how it's populated
-        return tenantUni === user.university;
-      });
-      setIsSameCampus(allSame);
-    }
-  }, [cart, user]);
+    // Check if ALL products in the cart are from tenants in the same university
+    const isSameCampus = user && user.university && cart.length > 0
+      ? cart.every(item => {
+          const tenantUni = item.owner?.university || item.tenant?.university || item.university;
+          return tenantUni === user.university;
+        })
+      : false;
 
-  const handleInputChange = (e) => {
+    const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };

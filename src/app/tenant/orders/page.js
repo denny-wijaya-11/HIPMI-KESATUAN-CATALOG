@@ -32,21 +32,28 @@ export default function TenantOrdersPage() {
   const [actionSheet, setActionSheet] = useState(null); // { orderId, currentStatus }
   const [buyerExpanded, setBuyerExpanded] = useState(null); // orderId
 
-  async function fetchOrders() {
-    try {
-      const res = await fetch('/api/tenant/orders');
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Gagal mengambil pesanan');
-      setOrders(data.orders || []);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   useEffect(() => {
-    fetchOrders();
+    let mounted = true;
+    async function loadOrders() {
+      try {
+        const res = await fetch('/api/tenant/orders');
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Gagal mengambil pesanan');
+        if (mounted) {
+          setOrders(data.orders || []);
+        }
+      } catch (err) {
+        if (mounted) {
+          setError(err.message);
+        }
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
+      }
+    }
+    loadOrders();
+    return () => { mounted = false; };
   }, []);
 
   async function handleStatusChange(orderId, newStatus) {
